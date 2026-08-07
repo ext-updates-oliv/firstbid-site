@@ -74,6 +74,37 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
+/* Barra fina no topo mostrando o quanto já rolou da página. */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  z-index: 30;
+  background: linear-gradient(90deg, var(--accent), #8a5bff);
+  transition: width 0.1s linear;
+}
+
+/* Sublinhado que desliza da esquerda no hover dos links do menu. */
+.nav-links a {
+  position: relative;
+  padding-bottom: 2px;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+
 .nav-inner {
   display: flex;
   align-items: center;
@@ -320,10 +351,62 @@ section h2 {
 .how { border-bottom: 1px solid var(--border); }
 
 .steps {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+  padding-top: 30px;
 }
+
+/* Linha "pipeline" acima dos 4 passos, com um brilho que percorre da esquerda
+   pra direita — reforça visualmente que é uma sequência (01 -> 02 -> 03 -> 04).
+   Só faz sentido no layout de 4 colunas; escondida quando empilha (ver media
+   query no fim do arquivo). */
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2%;
+  right: 2%;
+  height: 1px;
+  background: var(--border);
+}
+.steps::after {
+  content: "";
+  position: absolute;
+  top: -1.5px;
+  left: 0;
+  width: 90px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  filter: blur(1px);
+  animation: pipeline-sweep 5s ease-in-out infinite;
+}
+@keyframes pipeline-sweep {
+  0% { left: -90px; }
+  100% { left: 100%; }
+}
+
+/* Spotlight que segue o cursor — compartilhado entre .step/.game-card/.why-card.
+   `--x`/`--y` são setados via JS (pointermove); sem JS ou em touch, o
+   ::before some (opacity 0 -> nunca fica um brilho preso no canto). */
+.step, .game-card, .why-card {
+  position: relative;
+  overflow: hidden;
+}
+.step::before, .game-card::before, .why-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  background: radial-gradient(220px circle at var(--x, 50%) var(--y, 50%), rgba(91, 140, 255, 0.14), transparent 70%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.step:hover::before, .game-card:hover::before, .why-card:hover::before { opacity: 1; }
+.step > *, .game-card > *, .why-card > * { position: relative; z-index: 1; }
 
 .step {
   background: var(--card);
@@ -565,14 +648,15 @@ section h2 {
     transform: none;
     transition: none;
   }
-  .hero-glow-a, .hero-glow-b, .pulse-dot { animation: none; }
+  .hero-glow-a, .hero-glow-b, .pulse-dot, .steps::after { animation: none; }
   html { scroll-behavior: auto; }
 }
 
 /* ---------- responsive ---------- */
 
 @media (max-width: 860px) {
-  .steps { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(2, 1fr); padding-top: 0; }
+  .steps::before, .steps::after { display: none; }
   .why-grid { grid-template-columns: repeat(2, 1fr); }
   .game-grid { grid-template-columns: 1fr; }
   .stats { grid-template-columns: repeat(2, 1fr); }

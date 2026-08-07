@@ -14,6 +14,7 @@
 <body>
 
   <div class="noise-overlay" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <header class="nav" id="siteNav">
     <div class="wrap nav-inner">
@@ -213,6 +214,32 @@
       document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
     } else {
       document.querySelectorAll("[data-reveal]").forEach((el) => el.classList.add("is-visible"));
+    }
+
+    // Barra de progresso de leitura no topo — largura = quanto já rolou da página.
+    const progress = document.getElementById("scrollProgress");
+    const onProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : "0%";
+    };
+    onProgress();
+    window.addEventListener("scroll", onProgress, { passive: true });
+    window.addEventListener("resize", onProgress);
+
+    // Spotlight que segue o cursor dentro de cada card (via CSS custom
+    // properties --x/--y, lidas por um ::before com radial-gradient). Só liga
+    // em quem tem hover de verdade (mouse) — sem efeito nenhum em touch, e
+    // desligado se o visitante pediu menos movimento.
+    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const podeHover = window.matchMedia("(hover: hover)").matches;
+    if (!semMovimento && podeHover) {
+      document.querySelectorAll(".step, .game-card, .why-card").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--x", `${e.clientX - rect.left}px`);
+          card.style.setProperty("--y", `${e.clientY - rect.top}px`);
+        });
+      });
     }
   </script>
 </body>
