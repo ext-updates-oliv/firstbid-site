@@ -23,6 +23,7 @@
         <a href="#how">How it works</a>
         <a href="#games">Games</a>
         <a href="#why">Why FirstBid</a>
+        <a href="#reviews" id="navReviews" hidden>Reviews</a>
       </nav>
       <a class="btn btn-primary btn-small" href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">Discord</a>
     </div>
@@ -34,17 +35,18 @@
       <div class="hero-glow hero-glow-a" aria-hidden="true"></div>
       <div class="hero-glow hero-glow-b" aria-hidden="true"></div>
       <div class="wrap hero-inner">
-        <p class="eyebrow" data-reveal>Eldorado.gg boosting automation</p>
-        <h1 data-reveal>The fastest first-message bot<br />for <span class="text-gradient">Eldorado.gg</span> orders.</h1>
+        <h1 data-reveal>The fastest first-message bot<br />for <span class="text-accent">Eldorado.gg</span> orders.</h1>
         <p class="hero-sub" data-reveal>
           The moment a new boosting order lands, FirstBid reads the mode, group size,
           current rank, and desired rank — then sends the right price and a personalized
           message before anyone else does. You take the conversation from there.
         </p>
         <div class="hero-cta" data-reveal>
-          <a class="btn btn-primary btn-shine" href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">
-            <span>Talk on Discord</span> <span class="btn-arrow">→</span>
-          </a>
+          <span class="cta-halo">
+            <a class="btn btn-primary btn-shine" href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">
+              <span>Talk on Discord</span> <span class="btn-arrow">→</span>
+            </a>
+          </span>
           <a class="btn btn-ghost" href="#how">See how it works</a>
         </div>
 
@@ -142,22 +144,38 @@
         <h2 data-reveal>Why FirstBid</h2>
         <div class="why-grid">
           <div class="why-card" data-reveal>
-            <span class="why-icon">⚡</span>
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2" /></svg>
+            </span>
             <h3>Speed where it matters</h3>
             <p>The first seller to respond usually wins the order. FirstBid is built to be that seller, every time.</p>
           </div>
           <div class="why-card" data-reveal data-reveal-delay="1">
-            <span class="why-icon">🎛️</span>
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                <line x1="6" y1="5" x2="6" y2="19" /><circle cx="6" cy="10" r="2.1" />
+                <line x1="12" y1="5" x2="12" y2="19" /><circle cx="12" cy="15" r="2.1" />
+                <line x1="18" y1="5" x2="18" y2="19" /><circle cx="18" cy="8" r="2.1" />
+              </svg>
+            </span>
             <h3>Fully dynamic</h3>
             <p>No hardcoded ranks or prices. Configure your own ranks, modes, group sizes, and a full price matrix from a dashboard.</p>
           </div>
           <div class="why-card" data-reveal data-reveal-delay="2">
-            <span class="why-icon">🔒</span>
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+              </svg>
+            </span>
             <h3>License-locked</h3>
             <p>Every install is protected by a license key tied to your machine — your setup stays yours.</p>
           </div>
           <div class="why-card" data-reveal data-reveal-delay="3">
-            <span class="why-icon">🙋</span>
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 3.5l6.2 16.4 1.9-6.5 6.5-1.9z" />
+              </svg>
+            </span>
             <h3>You stay in control</h3>
             <p>No AI negotiating on your behalf. FirstBid sends the opening move — every conversation after that is genuinely you.</p>
           </div>
@@ -177,9 +195,11 @@
       <div class="cta-glow" aria-hidden="true"></div>
       <div class="wrap cta-band-inner">
         <h2 data-reveal>Ready to be the first seller they hear from?</h2>
-        <a class="btn btn-primary btn-shine" data-reveal href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">
-          <span>Talk on Discord</span> <span class="btn-arrow">→</span>
-        </a>
+        <span class="cta-halo" data-reveal>
+          <a class="btn btn-primary btn-shine" href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">
+            <span>Talk on Discord</span> <span class="btn-arrow">→</span>
+          </a>
+        </span>
       </div>
     </section>
   </main>
@@ -290,6 +310,7 @@
           .join("");
 
         document.getElementById("reviews").hidden = false;
+        document.getElementById("navReviews").hidden = false;
         grid.querySelectorAll(".review-card").forEach((card) => {
           revealObserve(card);
           wireSpotlight(card);
