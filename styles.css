@@ -5,8 +5,8 @@
   --border: #23262f;
   --text: #e9eaee;
   --text-dim: #9a9daa;
-  --accent: #5b8cff;
-  --accent-soft: rgba(91, 140, 255, 0.12);
+  --accent: #ffc950;
+  --accent-soft: rgba(255, 201, 80, 0.12);
   --green: #37d67a;
   --radius: 14px;
   --wrap: 1080px;
@@ -82,7 +82,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   height: 2px;
   width: 0%;
   z-index: 30;
-  background: linear-gradient(90deg, var(--accent), #8a5bff);
+  background: linear-gradient(90deg, var(--accent), #ffe29a);
   transition: width 0.1s linear;
 }
 
@@ -160,11 +160,11 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .btn-primary {
   background: var(--accent);
   color: #0a0b0f;
-  box-shadow: 0 0 0 0 rgba(91, 140, 255, 0.5);
+  box-shadow: 0 0 0 0 rgba(255, 201, 80, 0.5);
 }
 .btn-primary:hover {
-  background: #6f9aff;
-  box-shadow: 0 8px 28px -6px rgba(91, 140, 255, 0.65);
+  background: #ffd670;
+  box-shadow: 0 8px 28px -6px rgba(255, 201, 80, 0.65);
 }
 
 .btn-ghost {
@@ -254,7 +254,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   height: 360px;
   top: -120px;
   right: 6%;
-  background: #8a5bff;
+  background: #ffe29a;
   animation: float-b 17s ease-in-out infinite;
 }
 
@@ -270,7 +270,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .hero-inner { position: relative; z-index: 1; text-align: center; }
 
 .text-gradient {
-  background: linear-gradient(90deg, var(--accent), #8a5bff);
+  background: linear-gradient(90deg, var(--accent), #ffe29a);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -410,7 +410,7 @@ section h2 {
   inset: 0;
   z-index: 0;
   opacity: 0;
-  background: radial-gradient(220px circle at var(--x, 50%) var(--y, 50%), rgba(91, 140, 255, 0.14), transparent 70%);
+  background: radial-gradient(220px circle at var(--x, 50%) var(--y, 50%), rgba(255, 201, 80, 0.14), transparent 70%);
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
@@ -427,7 +427,7 @@ section h2 {
 .step:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(91, 140, 255, 0.5);
+  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
 }
 
 .step-num {
@@ -475,7 +475,7 @@ section h2 {
 .game-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent) inset, 0 22px 50px -18px rgba(91, 140, 255, 0.5);
+  box-shadow: 0 0 0 1px var(--accent) inset, 0 22px 50px -18px rgba(255, 201, 80, 0.5);
 }
 
 .game-live {
@@ -483,7 +483,7 @@ section h2 {
   box-shadow: 0 0 0 1px var(--accent) inset;
 }
 .game-live:hover {
-  box-shadow: 0 0 0 1px var(--accent) inset, 0 26px 60px -16px rgba(91, 140, 255, 0.65);
+  box-shadow: 0 0 0 1px var(--accent) inset, 0 26px 60px -16px rgba(255, 201, 80, 0.65);
 }
 
 /* Setinha no canto, escondida por padrão, entra com fade + slide no hover.
@@ -600,7 +600,7 @@ section h2 {
 .why-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(91, 140, 255, 0.5);
+  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
 }
 
 .why-icon {
@@ -640,7 +640,7 @@ section h2 {
 .review-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(91, 140, 255, 0.5);
+  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
 }
 
 .review-stars {
