@@ -455,16 +455,54 @@ section h2 {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 30px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.game-card:hover { transform: translateY(-4px); }
+/* Glow que "sangra" pra fora do card no hover — igual ao efeito do
+   eldobot.xyz (conferido ao vivo: é hover por card, colorido por jogo, não é
+   um spotlight seguindo o mouse pela tela toda — isso lá é só decoração fixa
+   de fundo). Aqui como só temos Fortnite ativo, usamos a cor de marca (azul).
+   Quando um 2º jogo entrar, dá pra variar via uma custom property tipo
+   `--game-color` por card, mesmo esquema deles. */
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset, 0 22px 50px -18px rgba(91, 140, 255, 0.5);
+}
 
 .game-live {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent) inset;
 }
 .game-live:hover {
-  box-shadow: 0 0 0 1px var(--accent) inset, 0 18px 40px -16px rgba(91, 140, 255, 0.55);
+  box-shadow: 0 0 0 1px var(--accent) inset, 0 26px 60px -16px rgba(91, 140, 255, 0.65);
+}
+
+/* Setinha no canto, escondida por padrão, entra com fade + slide no hover.
+   Canto INFERIOR direito de propósito (não o superior) — o superior já tem o
+   badge "Live"/"Coming soon" ali, colidindo. */
+.card-arrow {
+  position: absolute;
+  bottom: 22px;
+  right: 22px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.game-card:hover .card-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .pulse-dot {
