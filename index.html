@@ -195,6 +195,14 @@
     </div>
   </footer>
 
+  <script type="module">
+    // Vercel Web Analytics — site estático, sem build/npm, então usa o pacote
+    // direto de um CDN de módulos ES em vez de instalar (o jeito recomendado
+    // pra "Other" nos docs deles: import { inject } from '@vercel/analytics').
+    import { inject } from "https://esm.sh/@vercel/analytics";
+    inject();
+  </script>
+
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
