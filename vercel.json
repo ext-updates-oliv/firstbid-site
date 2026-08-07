@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/download",
-      "destination": "https://github.com/ext-updates-oliv/firstbid-releases/releases/latest/download/FirstBid-Setup-latest.exe",
-      "permanent": false
+      "destination": "/install.html"
     }
   ]
 }

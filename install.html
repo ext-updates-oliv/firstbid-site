@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download FirstBid</title>
+  <meta name="description" content="Download FirstBid and a quick note on the Windows security prompts you'll see the first time you run it." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .install-wrap { max-width: 640px; margin: 0 auto; padding: 96px 24px 64px; }
+    .install-wrap h1 { font-size: 2rem; margin-bottom: 10px; }
+    .install-wrap > p.section-sub { text-align: left; margin: 0 0 36px; }
+    .notice {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      margin-bottom: 28px;
+    }
+    .notice h2 { font-size: 1.05rem; margin: 0 0 8px; }
+    .notice p { color: var(--text-dim); font-size: 0.93rem; line-height: 1.6; margin: 0 0 14px; }
+    .notice p:last-child { margin-bottom: 0; }
+    .notice ol { margin: 0; padding-left: 20px; color: var(--text); font-size: 0.93rem; line-height: 1.7; }
+    .notice ol li b { color: var(--accent); }
+    .notice + .notice { margin-top: -8px; }
+    .download-cta { margin: 36px 0 8px; }
+    .download-hint { color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <header class="nav" id="siteNav">
+    <div class="wrap nav-inner">
+      <a href="index.html" class="logo"><img src="logo.png" alt="FirstBid" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a class="btn btn-primary btn-small" href="https://discord.com/users/244894320363175937" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="install-wrap">
+      <h1>Downloading FirstBid</h1>
+      <p class="section-sub">Two Windows prompts show up the first time you run it — both are expected. Here's why, and what to click.</p>
+
+      <div class="notice">
+        <h2>1. Browser says the file "isn't commonly downloaded"</h2>
+        <p>Microsoft Edge/Chrome flags any new file that hasn't been downloaded many times yet — it's a popularity check, not a virus scan.</p>
+        <ol>
+          <li>Open the Downloads panel and find <b>FirstBid-Setup-latest.exe</b></li>
+          <li>Click <b>"..."</b> (or "See more") next to it</li>
+          <li>Choose <b>"Keep"</b> (or "Download anyway")</li>
+        </ol>
+      </div>
+
+      <div class="notice">
+        <h2>2. "Windows protected your PC"</h2>
+        <p>This is Microsoft Defender SmartScreen. It appears for any app that doesn't yet have a paid code-signing certificate — FirstBid is a small tool sold directly, not distributed through an app store, so it hasn't built up that reputation yet. It does not mean the app is unsafe.</p>
+        <ol>
+          <li>Click <b>"More info"</b></li>
+          <li>Click <b>"Run anyway"</b></li>
+        </ol>
+      </div>
+
+      <div class="download-cta">
+        <a class="btn btn-primary btn-block btn-shine" href="https://github.com/ext-updates-oliv/firstbid-releases/releases/latest/download/FirstBid-Setup-latest.exe">
+          Download FirstBid-Setup-latest.exe
+        </a>
+        <p class="download-hint">Your price table, ranks, messages, and Eldorado login are never touched by an update — only added to.</p>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
