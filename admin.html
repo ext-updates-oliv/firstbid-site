@@ -44,6 +44,12 @@
       border-radius: 10px;
       padding: 16px 18px;
     }
+    .admin-item-key {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin: 4px 0 0;
+    }
     .admin-item-remove {
       background: none;
       border: 1px solid var(--border);
@@ -52,11 +58,13 @@
       padding: 4px 10px;
       cursor: pointer;
       font-size: 0.8rem;
+      white-space: nowrap;
     }
     .admin-item-remove:hover { border-color: #ff5b5b; color: #ff5b5b; }
     .admin-actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
     .admin-actions button { cursor: pointer; }
-    textarea#jsonOut {
+    .admin-section-label { color: var(--text-dim); font-size: 0.82rem; margin: 4px 0 10px; }
+    textarea.json-box {
       width: 100%;
       min-height: 160px;
       margin-top: 16px;
@@ -77,27 +85,33 @@
     <p style="color: var(--text-dim); margin-top: 0;">Ferramenta local só pra você — não é parte do site público.</p>
 
     <div class="admin-warning">
-      <strong>Como funciona:</strong> isto NÃO publica nada sozinho. Você preenche as reviews aqui,
-      clica em "Baixar reviews.json" no final, e substitui o arquivo <code>reviews.json</code> na pasta
-      do site (ou me manda o conteúdo pra eu trocar e publicar). Sem review de verdade cadastrada,
-      a seção "What sellers say" continua escondida no site — não coloque nada que não seja um
-      feedback real de alguém que usou o bot.
+      <strong>Como funciona:</strong> a chave de licença é só pra VOCÊ controlar (uma review por
+      chave — evita duplicar o mesmo cliente) e <strong>nunca vai pro arquivo público</strong>
+      <code>reviews.json</code> que o site carrega. No final tem dois downloads separados: um pro
+      site (sem chave nenhuma) e um backup seu (com chave, pra recarregar aqui depois e continuar
+      de onde parou). Sem review de verdade cadastrada, a seção "What sellers say" continua
+      escondida no site — não coloque nada que não seja um feedback real de alguém que usou o bot.
     </div>
 
-    <h2>Carregar reviews já existentes (opcional)</h2>
+    <h2>Carregar backup existente (opcional)</h2>
+    <p class="admin-section-label">Carregue o backup COM chave que você baixou da última vez (não o reviews.json público — esse não tem chave pra continuar o controle).</p>
     <div class="admin-field">
-      <label for="loadFile">Selecionar o reviews.json atual</label>
+      <label for="loadFile">Selecionar o backup</label>
       <input type="file" id="loadFile" accept="application/json" />
     </div>
 
     <h2>Nova review</h2>
+    <div class="admin-field">
+      <label for="fKey">Chave de licença do cliente</label>
+      <input type="text" id="fKey" placeholder="ex.: FN-CW4A-NTPJ-6GD8" />
+    </div>
     <div class="admin-field">
       <label for="fName">Nome (ou @discord do comprador)</label>
       <input type="text" id="fName" placeholder="ex.: lucasrl1" />
     </div>
     <div class="admin-row">
       <div class="admin-field">
-        <label for="fRole">Contexto (opcional)</label>
+        <label for="fRole">Contexto (opcional, aparece no site)</label>
         <input type="text" id="fRole" placeholder="ex.: Fortnite seller since Aug 2026" />
       </div>
       <div class="admin-field">
@@ -122,16 +136,24 @@
     <div class="admin-list" id="list"></div>
 
     <div class="admin-actions">
-      <button class="btn btn-ghost" id="showJsonBtn" type="button">Mostrar reviews.json</button>
-      <button class="btn btn-primary" id="downloadBtn" type="button">Baixar reviews.json</button>
-      <button class="btn btn-ghost" id="copyBtn" type="button">Copiar JSON</button>
+      <button class="btn btn-ghost" id="showJsonBtn" type="button">Mostrar reviews.json (público)</button>
+      <button class="btn btn-primary" id="downloadPublicBtn" type="button">Baixar reviews.json (site)</button>
+      <button class="btn btn-ghost" id="downloadBackupBtn" type="button">Baixar backup (com chave)</button>
+      <button class="btn btn-ghost" id="copyBtn" type="button">Copiar reviews.json</button>
     </div>
     <div class="admin-status" id="status"></div>
-    <textarea id="jsonOut" hidden readonly></textarea>
+    <textarea class="json-box" id="jsonOut" hidden readonly></textarea>
   </div>
 
   <script>
+    // Formato interno (com `key`, nunca publicado): { key, name, role, rating, text }
     let reviews = [];
+
+    function setStatus(msg, ok) {
+      const el = document.getElementById("status");
+      el.textContent = msg;
+      el.style.color = ok ? "var(--green)" : "#ff5b5b";
+    }
 
     function render() {
       const list = document.getElementById("list");
@@ -143,6 +165,7 @@
             <div style="color: var(--accent); letter-spacing: 2px;">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
             <p style="margin: 6px 0;">"${r.text}"</p>
             <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0;">${r.name}${r.role ? " — " + r.role : ""}</p>
+            <p class="admin-item-key">chave: ${r.key || "(sem chave registrada)"}</p>
           </div>
           <button class="admin-item-remove" data-i="${i}">Remover</button>
         </div>`
@@ -158,20 +181,30 @@
     }
 
     document.getElementById("addBtn").addEventListener("click", () => {
+      const key = document.getElementById("fKey").value.trim();
       const name = document.getElementById("fName").value.trim();
       const text = document.getElementById("fText").value.trim();
       const role = document.getElementById("fRole").value.trim();
       const rating = Number(document.getElementById("fRating").value);
+
       if (!name || !text) {
-        document.getElementById("status").textContent = "Preenche nome e texto pelo menos.";
-        document.getElementById("status").style.color = "#ff5b5b";
+        setStatus("Preenche nome e texto pelo menos.", false);
         return;
       }
-      reviews.push({ name, role: role || undefined, rating, text });
+      // Uma review por chave — evita duplicar o mesmo cliente por engano.
+      // Sem chave preenchida não bloqueia (nem todo review antigo vai ter
+      // chave registrada), só avisa quando a MESMA chave já foi usada.
+      if (key && reviews.some((r) => r.key === key)) {
+        setStatus(`Essa chave (${key}) já tem uma review cadastrada — remove a antiga primeiro se for substituir.`, false);
+        return;
+      }
+
+      reviews.push({ key: key || undefined, name, role: role || undefined, rating, text });
+      document.getElementById("fKey").value = "";
       document.getElementById("fName").value = "";
       document.getElementById("fRole").value = "";
       document.getElementById("fText").value = "";
-      document.getElementById("status").textContent = "";
+      setStatus("Review adicionada.", true);
       render();
     });
 
@@ -185,45 +218,59 @@
           if (Array.isArray(parsed)) {
             reviews = parsed;
             render();
-            document.getElementById("status").textContent = `Carregado: ${parsed.length} review(s).`;
-            document.getElementById("status").style.color = "var(--green)";
+            setStatus(`Carregado: ${parsed.length} review(s).`, true);
           }
         } catch {
-          document.getElementById("status").textContent = "Arquivo inválido — não é um JSON de lista.";
-          document.getElementById("status").style.color = "#ff5b5b";
+          setStatus("Arquivo inválido — não é um JSON de lista.", false);
         }
       };
       reader.readAsText(file);
     });
 
-    function currentJson() {
+    // O que vai pro SITE: nunca a chave.
+    function publicJson() {
+      return JSON.stringify(
+        reviews.map(({ key, ...rest }) => rest),
+        null,
+        2
+      );
+    }
+
+    // Backup SEU: com chave, pra continuar o controle da próxima vez.
+    function backupJson() {
       return JSON.stringify(reviews, null, 2);
+    }
+
+    function download(filename, content) {
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     document.getElementById("showJsonBtn").addEventListener("click", () => {
       const out = document.getElementById("jsonOut");
-      out.value = currentJson();
+      out.value = publicJson();
       out.hidden = !out.hidden;
     });
 
-    document.getElementById("downloadBtn").addEventListener("click", () => {
-      const blob = new Blob([currentJson()], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "reviews.json";
-      a.click();
-      URL.revokeObjectURL(url);
+    document.getElementById("downloadPublicBtn").addEventListener("click", () => {
+      download("reviews.json", publicJson());
+    });
+
+    document.getElementById("downloadBackupBtn").addEventListener("click", () => {
+      download("reviews-backup-com-chave.json", backupJson());
     });
 
     document.getElementById("copyBtn").addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(currentJson());
-        document.getElementById("status").textContent = "JSON copiado pra área de transferência.";
-        document.getElementById("status").style.color = "var(--green)";
+        await navigator.clipboard.writeText(publicJson());
+        setStatus("reviews.json (público, sem chave) copiado pra área de transferência.", true);
       } catch {
-        document.getElementById("status").textContent = "Não deu pra copiar sozinho — use \"Mostrar reviews.json\" e copie na mão.";
-        document.getElementById("status").style.color = "#ff5b5b";
+        setStatus('Não deu pra copiar sozinho — use "Mostrar reviews.json" e copie na mão.', false);
       }
     });
 
