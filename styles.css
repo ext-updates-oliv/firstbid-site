@@ -481,21 +481,23 @@ section h2 {
 /* Glow que "sangra" pra fora do card no hover — igual ao efeito do
    eldobot.xyz (conferido ao vivo: é hover por card, colorido por jogo, não é
    um spotlight seguindo o mouse pela tela toda — isso lá é só decoração fixa
-   de fundo). Aqui como só temos Fortnite ativo, usamos a cor de marca (azul).
-   Quando um 2º jogo entrar, dá pra variar via uma custom property tipo
-   `--game-color` por card, mesmo esquema deles. */
+   de fundo). Cor por jogo via `--game-color` (custom property setada inline
+   no card, ex.: o vermelho oficial do Valorant) — sem ela, cai na cor de
+   marca (amarelo) igual sempre foi com só o Fortnite. */
 .game-card:hover {
   transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent) inset, 0 22px 50px -18px rgba(255, 201, 80, 0.5);
+  border-color: var(--game-color, var(--accent));
+  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset,
+    0 22px 50px -18px color-mix(in srgb, var(--game-color, var(--accent)) 50%, transparent);
 }
 
 .game-live {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent) inset;
+  border-color: var(--game-color, var(--accent));
+  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset;
 }
 .game-live:hover {
-  box-shadow: 0 0 0 1px var(--accent) inset, 0 26px 60px -16px rgba(255, 201, 80, 0.65);
+  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset,
+    0 26px 60px -16px color-mix(in srgb, var(--game-color, var(--accent)) 65%, transparent);
 }
 
 /* Setinha no canto, escondida por padrão, entra com fade + slide no hover.
@@ -522,8 +524,8 @@ section h2 {
 .game-card:hover .card-arrow {
   opacity: 1;
   transform: translate(0, 0);
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--game-color, var(--accent));
+  color: var(--game-color, var(--accent));
 }
 
 .pulse-dot {
@@ -586,8 +588,8 @@ section h2 {
   top: 7px;
   width: 9px;
   height: 5px;
-  border-left: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
+  border-left: 2px solid var(--game-color, var(--accent));
+  border-bottom: 2px solid var(--game-color, var(--accent));
   transform: rotate(-45deg);
 }
 
