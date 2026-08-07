@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "name": "LucasSSL",
+    "rating": 5,
+    "text": "Setup took less than 5 minutes and it has been running flawlessly ever since. Best investment for automated bidding/selling."
+  },
+  {
+    "name": "oliveiraski",
+    "rating": 5,
+    "text": "Absolutely essential tool if you handle high volume. Lightning fast and super reliable."
+  },
+  {
+    "name": "Matboy",
+    "rating": 5,
+    "text": "Does exactly what it promises. Saved me dozens of hours of manual work every week"
+  },
+  {
+    "name": "Pierre",
+    "rating": 5,
+    "text": "10/10 bot. Fast, easy to configure, and support helped me set it up instantly."
+  },
+  {
+    "name": "Lgb",
+    "rating": 5,
+    "text": "Smooth UI, simple license activation, and works like a charm. 5 stars."
+  }
+]
