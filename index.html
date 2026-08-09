@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FirstBid — First-message bot for Eldorado.gg</title>
-  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends a personalized price offer in seconds — dynamic pricing by rank, mode, and group size. You take the conversation from there." />
+  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends a personalized price offer in seconds — dynamic pricing by rank, mode, and group size, across 10 games. It pings your Telegram when the buyer replies; you take the conversation from there." />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Marca que o JS roda ANTES da primeira pintura. O CSS só esconde o
+       conteúdo pra animar (`html.js [data-reveal]`) sob esta classe — script
+       bloqueado/quebrado deixa a página legível em vez de totalmente vazia. -->
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 
@@ -60,8 +64,8 @@
             <span class="stat-label">First-offer speed</span>
           </div>
           <div class="stat">
-            <span class="stat-num">Multi-game</span>
-            <span class="stat-label">Architecture, ready to grow</span>
+            <span class="stat-num">10 games</span>
+            <span class="stat-label">Live, and every one configurable</span>
           </div>
           <div class="stat">
             <span class="stat-num">License-locked</span>
@@ -95,7 +99,7 @@
           <div class="step" data-reveal data-reveal-delay="3">
             <span class="step-num">04</span>
             <h3>You take it from there</h3>
-            <p>FirstBid doesn't negotiate for you. Once the first message is out, the conversation is 100% yours — no AI pretending to be you.</p>
+            <p>FirstBid doesn't negotiate for you. Once the first message is out, the conversation is 100% yours — no AI pretending to be you. It just pings your Telegram when the buyer replies.</p>
           </div>
         </div>
       </div>
@@ -323,6 +327,42 @@
             <h3>You stay in control</h3>
             <p>No AI negotiating on your behalf. FirstBid sends the opening move — every conversation after that is genuinely you.</p>
           </div>
+          <div class="why-card" data-reveal>
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" /><path d="M13.7 20a2 2 0 0 1-3.4 0" />
+              </svg>
+            </span>
+            <h3>Pinged the second they reply</h3>
+            <p>Connect your own Telegram bot and FirstBid taps you on the shoulder the moment a buyer answers, so you're at the keyboard when it counts instead of watching a dashboard.</p>
+          </div>
+          <div class="why-card" data-reveal data-reveal-delay="1">
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 20V4" /><path d="M5 7l3-3 3 3" /><path d="M16 4v16" /><path d="M13 17l3 3 3-3" />
+              </svg>
+            </span>
+            <h3>Hungry or premium, one click</h3>
+            <p>Flip a game between Hungry (-20%), Normal, and Expensive (+20%) whenever the market moves. Your price table is never rewritten, so switch back and every number is exactly where you left it.</p>
+          </div>
+          <div class="why-card" data-reveal data-reveal-delay="2">
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 5h16l-6 7v6l-4 2v-8z" />
+              </svg>
+            </span>
+            <h3>Only the orders you want</h3>
+            <p>Register the rank ranges you actually boost. Anything outside them is skipped on its own: no half-answered orders to clean up, no offers you'd regret.</p>
+          </div>
+          <div class="why-card" data-reveal data-reveal-delay="3">
+            <span class="why-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 12a8 8 0 1 1-2.3-5.6" /><path d="M20 4v5h-5" />
+              </svg>
+            </span>
+            <h3>Updates land on their own</h3>
+            <p>New versions install themselves in the background. Your prices, ranges, messages, keys and Eldorado login carry over untouched, every single time.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -402,9 +442,17 @@
 
     // Barra de progresso de leitura no topo — largura = quanto já rolou da página.
     const progress = document.getElementById("scrollProgress");
+    // Atualiza por transform (ver .scroll-progress no CSS) e só uma vez por
+    // frame — o evento de scroll dispara muito mais que isso.
+    let progressAgendado = false;
     const onProgress = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : "0%";
+      if (progressAgendado) return;
+      progressAgendado = true;
+      requestAnimationFrame(() => {
+        progressAgendado = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+      });
     };
     onProgress();
     window.addEventListener("scroll", onProgress, { passive: true });
@@ -426,6 +474,42 @@
       });
     };
     document.querySelectorAll(".step, .game-card, .why-card").forEach(wireSpotlight);
+
+    // Momento focal da página: o pulso atravessa a linha do pipeline UMA vez,
+    // quando a seção entra na tela, e cada passo acende conforme ele passa —
+    // é o próprio produto (pedido entra no 01, oferta sai no 04, em segundos).
+    // Os atrasos abaixo acompanham a curva de `pipeline-sweep` (1.9s,
+    // cubic-bezier(.16,1,.3,1) — começa rápido e desacelera), por isso os
+    // intervalos crescem em vez de serem iguais.
+    const steps = document.querySelector(".steps");
+    if (steps) {
+      const acender = () => {
+        const cards = steps.querySelectorAll(".step");
+        if (semMovimento) {
+          cards.forEach((c) => c.classList.add("is-lit"));
+          return;
+        }
+        steps.classList.add("is-running");
+        [90, 380, 760, 1180].forEach((ms, i) => {
+          setTimeout(() => cards[i]?.classList.add("is-lit"), ms);
+        });
+      };
+      if ("IntersectionObserver" in window) {
+        const pipeObs = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              pipeObs.disconnect(); // roda uma vez só, nao a cada scroll
+              acender();
+            }
+          },
+          { threshold: 0.45 }
+        );
+        pipeObs.observe(steps);
+      } else {
+        acender();
+      }
+    }
 
     // Reviews: carregadas de reviews.json (lista simples, editada com o
     // admin.html local — NUNCA reviews inventadas, ver HANDOFF do site). A

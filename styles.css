@@ -12,6 +12,31 @@
   --wrap: 1080px;
 }
 
+/* Superfícies que o navegador desenha por padrão (seleção, anel de foco, barra
+   de rolagem, cursor de texto). Sem isto elas vêm no cinza do Chrome e destoam
+   do resto — é o detalhe mais barato que separa uma página construída de uma
+   montada. */
+::selection { background: rgba(255, 201, 80, 0.3); color: #fff; text-shadow: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #2f3341 var(--bg);
+  caret-color: var(--accent);
+  accent-color: var(--accent);
+}
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: #2f3341;
+  border-radius: 99px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: #414658; }
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -80,10 +105,15 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   top: 0;
   left: 0;
   height: 2px;
-  width: 0%;
+  width: 100%;
   z-index: 30;
   background: linear-gradient(90deg, var(--accent), #ffe29a);
-  transition: width 0.1s linear;
+  /* `scaleX` em vez de `width`: largura força layout a cada frame de scroll —
+     numa barra que atualiza no scroll inteiro isso é o caminho mais curto pra
+     travar. Transform roda no compositor. */
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
 }
 
 /* Sublinhado que desliza da esquerda no hover dos links do menu. */
@@ -392,21 +422,42 @@ section h2 {
   height: 1px;
   background: var(--border);
 }
+/* O pulso percorre a linha UMA vez, quando a seção entra na tela, e cada passo
+   acende conforme ele passa (classe `is-lit`, disparada pelo observer no
+   index.html). Antes isto era um loop infinito de 5s que rodava até fora da
+   tela: bonito, mas decorativo — não dizia nada e gastava frame à toa. Agora é
+   a mesma coisa que o produto faz: um sinal entra no 01 e sai no 04. */
 .steps::after {
   content: "";
   position: absolute;
   top: -1.5px;
-  left: 0;
+  left: -90px;
   width: 90px;
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   filter: blur(1px);
-  animation: pipeline-sweep 5s ease-in-out infinite;
+  opacity: 0;
+}
+.steps.is-running::after {
+  animation: pipeline-sweep 1.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 @keyframes pipeline-sweep {
-  0% { left: -90px; }
-  100% { left: 100%; }
+  0% { left: -90px; opacity: 0; }
+  10% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* Estado "o pulso ainda não chegou aqui" — só sob `html.js`, pra página sem
+   script continuar legível com os números já dourados. */
+html.js .step-num { color: var(--text-dim); transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+html.js .step.is-lit .step-num { color: var(--accent); }
+html.js .step.is-lit { animation: step-ignite 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes step-ignite {
+  0% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0), 0 0 0 0 rgba(255, 201, 80, 0); }
+  35% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.9), 0 12px 30px -16px rgba(255, 201, 80, 0.5); }
+  100% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.4), 0 0 0 0 rgba(255, 201, 80, 0); }
 }
 
 /* Spotlight que segue o cursor — compartilhado entre .step/.game-card/.why-card.
@@ -751,12 +802,17 @@ section h2 {
 
 /* ---------- scroll reveal ---------- */
 
-[data-reveal] {
+/* Escondido só quando o JS confirmou que roda (`html.js`, setado inline no
+   <head>). Sem essa trava, um script que falhe deixa a PÁGINA INTEIRA em
+   opacity 0 — o conteúdo tem que sobreviver à ausência de JS.
+   Distância curta e ease-out exponencial de propósito: a entrada das seções
+   acompanha, quem conduz é o pulso do pipeline. */
+html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(12px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-[data-reveal].is-visible {
+html.js [data-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -765,14 +821,22 @@ section h2 {
 [data-reveal-delay="3"] { transition-delay: 0.24s; }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
+  html.js [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
   }
-  .hero-glow-a, .hero-glow-b, .pulse-dot, .steps::after, .cta-halo::before { animation: none; }
+  .hero-glow-a, .hero-glow-b, .pulse-dot, .cta-halo::before { animation: none; }
   .cta-halo::before { opacity: 0; }
   html { scroll-behavior: auto; }
+
+  /* Sem o pulso viajando: os passos já chegam acesos, então a sequência
+     continua LEGÍVEL (os números dourados seguem contando 01->04) — só não
+     tem movimento. Esconder o pulso e deixar os números apagados apagaria
+     informação, não só animação. */
+  .steps.is-running::after { animation: none; opacity: 0; }
+  html.js .step-num { color: var(--accent); transition: none; }
+  html.js .step.is-lit { animation: none; box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.4); }
 }
 
 /* ---------- responsive ---------- */
