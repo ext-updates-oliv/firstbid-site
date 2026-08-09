@@ -602,6 +602,10 @@ section h2 {
 
 /* ---------- why ---------- */
 
+.why h2 {
+  margin-bottom: 56px;
+}
+
 .why-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
