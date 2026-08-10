@@ -8,10 +8,11 @@ web
 
 ## Users
 
-Primary user: sellers/boosters on Eldorado.gg (starting with Fortnite rank boosting) who
-run their own seller account and want to win more boosting orders. The visitor to
-firstbid.xyz is a booster evaluating whether to buy the bot for their own account, not
-the end buyer of a boost. Each install is licensed to one seller, one machine.
+Primary user: sellers/boosters on Eldorado.gg who run their own seller account and want
+to win more boosting orders. The visitor to firstbid.xyz is a booster evaluating whether
+to buy the bot for their own account, not the end buyer of a boost. Licensing is per
+game: one key unlocks one game on one machine, so a seller working several games holds
+several keys at once.
 
 ## Product Purpose
 
@@ -26,11 +27,11 @@ respond, without the seller having to watch the marketplace constantly.
 ## Positioning
 
 The bot other sellers can't copy-paste: 100% dynamic configuration (ranks, modes, group
-sizes, price matrix — nothing hardcoded) built multi-game from day one, so the same
-architecture that ships Fortnite today can add another game without a rewrite. No AI
-pretends to be the seller past the opening message — that's a deliberate constraint, not
-a missing feature, aimed at sellers who don't trust "AI negotiators" with their buyer
-relationships.
+sizes, price matrix — nothing hardcoded) built multi-game from day one. That claim is no
+longer structural only: ten games run on the same architecture, each one added by
+configuration rather than a rewrite. No AI pretends to be the seller past the opening
+message — that's a deliberate constraint, not a missing feature, aimed at sellers who
+don't trust "AI negotiators" with their buyer relationships.
 
 ## Operating Context
 
@@ -47,12 +48,19 @@ over Discord DM (no storefront/checkout flow on the site itself).
 ## Capabilities and Constraints
 
 - No AI negotiation of any kind, at any point after the opening message — this is a
-  trust commitment, not a current-version limitation.
+  trust commitment, not a current-version limitation. The bot may *alert* the seller on
+  Telegram when a buyer replies, but it never answers for them.
 - Fully dynamic: ranks, modes, party sizes, price matrix, and message templates are all
   seller-configured, nothing hardcoded per game.
-- Multi-game architecture already built; Fortnite is the only game live today, more are
-  planned but undated.
-- License-locked per machine; license revalidates periodically and needs internet.
+- Ten games live: Fortnite, Valorant, Rocket League, Brawl Stars, Rainbow Six Siege X,
+  Marvel Rivals, League of Legends, EA Sports FC, Apex Legends, Call of Duty. More are
+  added by configuration, undated.
+- Price levels: each game can run Hungry (-12%), Normal, or Expensive (+12%) without
+  rewriting the seller's price table.
+- A custom message can cover every rank at once, and may optionally answer orders the
+  bot has no price for — sending only text, never an offer.
+- License-locked per machine and per game; licenses revalidate periodically and need
+  internet.
 - Undecided/not yet public: pricing of the bot itself, a self-serve checkout flow.
 
 ## Brand Commitments
@@ -68,12 +76,14 @@ over Discord DM (no storefront/checkout flow on the site itself).
 
 ## Evidence on Hand
 
-No real testimonials yet — `reviews.json` in this repo is an empty array by design (the
-"What sellers say" section only renders once at least one real review exists; never
-populate it with invented reviews). No measured metrics exist yet (no public user count,
-no measured response-time numbers) — the current pitch rests on the mechanism itself
-(speed + full dynamic config), not on stats. Do not invent numbers, customer counts, or
-quotes.
+`reviews.json` now holds six testimonials and the "What sellers say" section renders.
+The section is still gated on the file being non-empty, and the standing rule has not
+changed: **never add a review that a real seller did not give.** Anyone editing this
+file is responsible for the claims on a public sales page.
+
+No measured metrics exist (no public user count, no measured response-time numbers) —
+the pitch rests on the mechanism itself (speed + full dynamic config), not on stats. Do
+not invent numbers or customer counts.
 
 ## Product Principles
 
@@ -83,8 +93,9 @@ quotes.
    in control after the first message."
 3. Keep the Eldorado-gold link legible even in a bolder execution — it's doing real
    trust work, not decoration.
-4. Multi-game-ready is a structural claim (architecture), not a promise of games that
-   don't exist yet — "Fortnite live, more coming" stays honest.
+4. Name the games that actually run today (ten of them) and never a game that doesn't.
+   The multi-game claim is now demonstrated, not aspirational — keep it that way by
+   updating this list instead of hinting at what might come.
 
 ## Accessibility & Inclusion
 
