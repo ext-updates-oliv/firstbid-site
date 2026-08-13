@@ -77,12 +77,17 @@
       font-size: 0.82rem;
     }
     .admin-status { font-size: 0.85rem; color: var(--green); margin-top: 8px; min-height: 1.2em; }
+    .admin-item > div { min-width: 0; overflow-wrap: anywhere; }
+    @media (max-width: 520px) {
+      .admin-row { flex-direction: column; gap: 0; }
+      .admin-item { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
   <div class="admin-wrap">
     <h1 style="margin-bottom: 8px;">Painel de reviews</h1>
-    <p style="color: var(--text-dim); margin-top: 0;">Ferramenta local só pra você — não é parte do site público.</p>
+    <p style="color: var(--text-dim); margin-top: 0;">Ferramenta local só pra você — este arquivo não deve ser publicado com o site.</p>
 
     <div class="admin-warning">
       <strong>Como funciona:</strong> a chave de licença é só pra VOCÊ controlar (uma review por
@@ -155,6 +160,26 @@
       el.style.color = ok ? "var(--green)" : "#ff5b5b";
     }
 
+    function escapeHtml(value) {
+      return String(value ?? "").replace(
+        /[&<>"']/g,
+        (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]
+      );
+    }
+
+    function normalizeReview(review) {
+      if (!review || typeof review !== "object" || Array.isArray(review)) return null;
+
+      const key = typeof review.key === "string" ? review.key.trim() : "";
+      const name = typeof review.name === "string" ? review.name.trim() : "";
+      const role = typeof review.role === "string" ? review.role.trim() : "";
+      const text = typeof review.text === "string" ? review.text.trim() : "";
+      const rating = Number(review.rating);
+
+      if (!name || !text || !Number.isInteger(rating) || rating < 1 || rating > 5) return null;
+      return { key: key || undefined, name, role: role || undefined, rating, text };
+    }
+
     function render() {
       const list = document.getElementById("list");
       list.innerHTML = reviews
@@ -163,9 +188,9 @@
         <div class="admin-item">
           <div>
             <div style="color: var(--accent); letter-spacing: 2px;">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
-            <p style="margin: 6px 0;">"${r.text}"</p>
-            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0;">${r.name}${r.role ? " — " + r.role : ""}</p>
-            <p class="admin-item-key">chave: ${r.key || "(sem chave registrada)"}</p>
+            <p style="margin: 6px 0;">"${escapeHtml(r.text)}"</p>
+            <p style="color: var(--text-dim); font-size: 0.85rem; margin: 0;">${escapeHtml(r.name)}${r.role ? " — " + escapeHtml(r.role) : ""}</p>
+            <p class="admin-item-key">chave: ${escapeHtml(r.key || "(sem chave registrada)")}</p>
           </div>
           <button class="admin-item-remove" data-i="${i}">Remover</button>
         </div>`
@@ -215,13 +240,16 @@
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
-          if (Array.isArray(parsed)) {
-            reviews = parsed;
-            render();
-            setStatus(`Carregado: ${parsed.length} review(s).`, true);
-          }
+          if (!Array.isArray(parsed)) throw new Error("O backup não é uma lista.");
+
+          const normalized = parsed.map(normalizeReview);
+          if (normalized.some((review) => !review)) throw new Error("O backup contém uma review inválida.");
+
+          reviews = normalized;
+          render();
+          setStatus(`Carregado: ${normalized.length} review(s).`, true);
         } catch {
-          setStatus("Arquivo inválido — não é um JSON de lista.", false);
+          setStatus("Arquivo inválido — use um backup JSON gerado por este painel.", false);
         }
       };
       reader.readAsText(file);
@@ -230,7 +258,7 @@
     // O que vai pro SITE: nunca a chave.
     function publicJson() {
       return JSON.stringify(
-        reviews.map(({ key, ...rest }) => rest),
+        reviews.map(({ name, role, rating, text }) => ({ name, role, rating, text })),
         null,
         2
       );

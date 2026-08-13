@@ -713,6 +713,12 @@ html.js .step.is-lit { animation: step-ignite 0.75s cubic-bezier(0.16, 1, 0.3, 1
   gap: 24px;
 }
 
+.review-card:only-child {
+  grid-column: 1 / -1;
+  width: min(100%, 560px);
+  justify-self: center;
+}
+
 .review-card {
   background: var(--card);
   border: 1px solid var(--border);

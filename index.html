@@ -22,7 +22,7 @@
 
   <header class="nav" id="siteNav">
     <div class="wrap nav-inner">
-      <a href="#top" class="logo"><img src="logo.png" alt="FirstBid" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <nav class="nav-links">
         <a href="#how">How it works</a>
         <a href="#games">Games</a>
@@ -69,7 +69,7 @@
           </div>
           <div class="stat">
             <span class="stat-num">License-locked</span>
-            <span class="stat-label">One key, one machine</span>
+            <span class="stat-label">One key, one game, one machine</span>
           </div>
         </div>
       </div>
@@ -316,7 +316,7 @@
               </svg>
             </span>
             <h3>License-locked</h3>
-            <p>Every install is protected by a license key tied to your machine — your setup stays yours.</p>
+            <p>Each game is protected by its own license key tied to your machine — your setup stays yours.</p>
           </div>
           <div class="why-card" data-reveal data-reveal-delay="3">
             <span class="why-icon" aria-hidden="true">
@@ -390,7 +390,7 @@
 
   <footer class="footer">
     <div class="wrap footer-inner">
-      <a href="#top" class="logo"><img src="logo.png" alt="FirstBid" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
     </div>
     <div class="wrap footer-legal">
@@ -519,18 +519,33 @@
     fetch("reviews.json")
       .then((res) => (res.ok ? res.json() : []))
       .then((reviews) => {
-        if (!Array.isArray(reviews) || reviews.length === 0) return;
+        const validReviews = Array.isArray(reviews)
+          ? reviews.filter(
+              (r) =>
+                r &&
+                typeof r === "object" &&
+                typeof r.name === "string" &&
+                r.name.trim() &&
+                typeof r.text === "string" &&
+                r.text.trim() &&
+                Number.isFinite(r.rating) &&
+                r.rating >= 1 &&
+                r.rating <= 5 &&
+                (r.role == null || typeof r.role === "string")
+            )
+          : [];
+        if (validReviews.length === 0) return;
 
         const esc = (s) =>
           String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
         const stars = (n) => "★".repeat(Math.max(0, Math.min(5, Math.round(n)))) + "☆".repeat(5 - Math.max(0, Math.min(5, Math.round(n))));
 
         const grid = document.getElementById("reviewGrid");
-        grid.innerHTML = reviews
+        grid.innerHTML = validReviews
           .map(
             (r, i) => `
           <div class="review-card" data-reveal ${i % 3 ? `data-reveal-delay="${Math.min(i % 3, 3)}"` : ""}>
-            <div class="review-stars">${stars(r.rating)}</div>
+            <div class="review-stars" role="img" aria-label="${r.rating} out of 5 stars"><span aria-hidden="true">${stars(r.rating)}</span></div>
             <p class="review-text">"${esc(r.text)}"</p>
             <p class="review-author">${esc(r.name)}${r.role ? ` <span class="review-role">— ${esc(r.role)}</span>` : ""}</p>
           </div>`

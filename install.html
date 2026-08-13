@@ -30,6 +30,9 @@
     .notice + .notice { margin-top: -8px; }
     .download-cta { margin: 36px 0 8px; }
     .download-hint { color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 12px; }
+    @media (max-width: 520px) {
+      .download-cta .btn { white-space: normal; overflow-wrap: anywhere; text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -38,7 +41,7 @@
 
   <header class="nav" id="siteNav">
     <div class="wrap nav-inner">
-      <a href="index.html" class="logo"><img src="logo.png" alt="FirstBid" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="index.html" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <a class="btn btn-primary btn-small" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
     </div>
   </header>
