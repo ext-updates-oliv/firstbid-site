@@ -42,8 +42,10 @@ install starts at zero ranges/prices = AUTO-SKIP on everything until configured)
 runs via Eldorado's official Seller API when the seller's account has it enabled,
 falling back to browser automation (Playwright) otherwise — invisible to the seller
 either way. firstbid.xyz is the pre-purchase marketing surface; the dashboard (a
-separate project) is the post-purchase operating surface. Sale/support currently happens
-over Discord DM (no storefront/checkout flow on the site itself).
+separate project) is the post-purchase operating surface. Sale and support happen in the
+Discord server (discord.gg/UwD3a7ccG5): a buy panel there builds a SellAuth checkout link,
+payment goes through Stripe, and the license key is delivered automatically by webhook.
+The site itself still has no checkout flow — every button points to the server.
 
 ## Capabilities and Constraints
 
