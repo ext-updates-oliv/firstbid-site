@@ -28,7 +28,7 @@ respond, without the seller having to watch the marketplace constantly.
 
 The bot other sellers can't copy-paste: 100% dynamic configuration (ranks, modes, group
 sizes, price matrix — nothing hardcoded) built multi-game from day one. That claim is no
-longer structural only: ten games run on the same architecture, each one added by
+longer structural only: eleven games run on the same architecture, each one added by
 configuration rather than a rewrite. No AI pretends to be the seller past the opening
 message — that's a deliberate constraint, not a missing feature, aimed at sellers who
 don't trust "AI negotiators" with their buyer relationships.
@@ -54,9 +54,9 @@ The site itself still has no checkout flow — every button points to the server
   Telegram when a buyer replies, but it never answers for them.
 - Fully dynamic: ranks, modes, party sizes, price matrix, and message templates are all
   seller-configured, nothing hardcoded per game.
-- Ten games live: Fortnite, Valorant, Rocket League, Brawl Stars, Rainbow Six Siege X,
-  Marvel Rivals, League of Legends, EA Sports FC, Apex Legends, Call of Duty. More are
-  added by configuration, undated.
+- Eleven games live: Fortnite, Valorant, Rocket League, Brawl Stars, Rainbow Six Siege X,
+  Marvel Rivals, League of Legends, EA Sports FC, Apex Legends, Call of Duty, Overwatch.
+  More are added by configuration, undated.
 - Price levels: each game can run Hungry (-12%), Normal, or Expensive (+12%) without
   rewriting the seller's price table.
 - A custom message can cover every rank at once, and may optionally answer orders the

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FirstBid — First-message bot for Eldorado.gg</title>
-  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends a personalized price offer in seconds — dynamic pricing by rank, mode, and group size, across 10 games. It pings your Telegram when the buyer replies; you take the conversation from there." />
+  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends a personalized price offer in seconds — dynamic pricing by rank, mode, and group size, across 11 games. It pings your Telegram when the buyer replies; you take the conversation from there." />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -64,7 +64,7 @@
             <span class="stat-label">First-offer speed</span>
           </div>
           <div class="stat">
-            <span class="stat-num">10 games</span>
+            <span class="stat-num">11 games</span>
             <span class="stat-label">Live, and every one configurable</span>
           </div>
           <div class="stat">
@@ -271,7 +271,23 @@
             </a>
           </div>
 
-          <div class="game-card game-soon" data-reveal data-reveal-delay="3">
+          <div class="game-card game-live" data-reveal data-reveal-delay="3" style="--game-color:#fa9c1e;">
+            <div class="game-card-head">
+              <h3>Overwatch</h3>
+              <span class="badge badge-live"><span class="pulse-dot"></span>Live</span>
+            </div>
+            <ul class="game-features">
+              <li>Rank boost, Bronze V to Top 500</li>
+              <li>Priced per platform (PC, PlayStation, Xbox)</li>
+              <li>Solo and Duo, priced separately</li>
+              <li>Custom messages, even per target rank</li>
+            </ul>
+            <a class="btn btn-primary btn-block btn-shine" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">
+              Get this bot
+            </a>
+          </div>
+
+          <div class="game-card game-soon" data-reveal>
             <span class="card-arrow" aria-hidden="true">→</span>
             <div class="game-card-head">
               <h3>More games</h3>
