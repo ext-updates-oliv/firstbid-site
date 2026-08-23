@@ -863,3 +863,220 @@ html.js [data-reveal].is-visible {
   .review-grid { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; gap: 16px; align-items: flex-start; }
 }
+
+/* ============================================================
+   PRICING — jogo × duração
+   ------------------------------------------------------------
+   A compra acontece AQUI, não no Discord. Cada botão vai direto
+   pro checkout da SellAuth (`/checkout-link?cart[0][...]`), com a
+   variante do jogo escolhido na aba de cima e da duração do card.
+   O Discord continua existindo pra comunidade e suporte — mas
+   nenhum caminho de compra passa por lá.
+   ============================================================ */
+
+.pricing { border-bottom: 1px solid var(--border); position: relative; }
+
+/* Brilho frio atrás dos cards, no mesmo espírito dos .hero-glow, só que
+   contido: a seção de preço tem que parecer o ponto quente da página sem
+   competir com o herói. */
+.pricing::before {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  width: min(780px, 92%);
+  height: 420px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(255, 201, 80, 0.09), transparent 68%);
+  filter: blur(46px);
+  pointer-events: none;
+  z-index: 0;
+}
+.pricing > .wrap { position: relative; z-index: 1; }
+
+/* --- abas de jogo --- */
+
+.plan-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 28px auto 40px;
+  max-width: 900px;
+}
+
+.plan-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.18s;
+  white-space: nowrap;
+}
+.plan-tab:hover { color: var(--text); border-color: #33374a; transform: translateY(-1px); }
+
+.plan-tab[aria-selected="true"] {
+  color: var(--accent);
+  border-color: rgba(255, 201, 80, 0.55);
+  background: var(--accent-soft);
+}
+.plan-tab-emoji { font-size: 1rem; line-height: 1; }
+
+/* --- os três cards --- */
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 26px 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.plan-card:hover { border-color: #33374a; transform: translateY(-3px); }
+
+/* O mensal é o plano que a página recomenda: borda dourada, brilho próprio e
+   o único botão cheio. Os outros dois existem pra dar contraste de preço. */
+.plan-card-featured {
+  border-color: rgba(255, 201, 80, 0.5);
+  background: linear-gradient(180deg, rgba(255, 201, 80, 0.05), var(--card) 42%);
+}
+.plan-card-featured:hover { border-color: rgba(255, 201, 80, 0.75); }
+
+.plan-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 14px 6px;
+  border-radius: 0 0 9px 9px;
+  background: var(--accent);
+  color: #171307;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.plan-term {
+  margin: 8px 0 14px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.plan-card-featured .plan-term { color: var(--accent); }
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 3px;
+  font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  line-height: 1;
+}
+.plan-currency { font-size: 1.5rem; font-weight: 700; color: var(--text-dim); }
+.plan-amount { font-size: 3.1rem; font-weight: 700; letter-spacing: -0.02em; }
+.plan-card-featured .plan-amount { color: var(--accent); }
+
+.plan-access {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+.plan-pitch {
+  margin: 6px 0 22px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  min-height: 2.6em;
+}
+
+.plan-features {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 11px;
+  font-size: 0.9rem;
+}
+/* Marcador por ::before ABSOLUTO, não por grid/flex no <li>.
+   Num container de grade o `<strong>` de dentro do texto vira um item de grade
+   por conta própria e sai da linha — foi exatamente o que aconteceu com
+   "$10/month", que colidiu com a palavra seguinte. Com posicionamento
+   absoluto o conteúdo do item continua sendo texto corrido normal. */
+.plan-features li {
+  position: relative;
+  padding-left: 27px;
+  color: var(--text);
+}
+.plan-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+.plan-features li strong { color: var(--accent); font-weight: 700; }
+.plan-features li.plan-feature-dim { color: var(--text-dim); }
+.plan-features li.plan-feature-dim::before { content: "—"; color: #4a4f60; }
+
+/* O botão fica colado no fim do card mesmo quando um card tem menos itens
+   que o outro — sem isso os três CTAs ficam em alturas diferentes. */
+.plan-cta { margin-top: auto; }
+
+/* Estado de variante ainda não cadastrada na SellAuth. Nunca deixa um botão
+   levar pra um checkout que não existe: ele fica inerte e diz por quê. */
+.plan-cta[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.45;
+  border-color: var(--border);
+  background: var(--bg-soft);
+  color: var(--text-dim);
+  box-shadow: none;
+}
+
+.plan-note {
+  margin: 26px auto 0;
+  max-width: 620px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.plan-note strong { color: var(--text); }
+
+@media (max-width: 900px) {
+  .plan-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  /* No empilhado, o recomendado sobe pro topo: é o primeiro que o polegar
+     alcança, em vez de ficar escondido embaixo de dois planos mais caros
+     por dia. */
+  .plan-card-featured { order: -1; }
+  .plan-pitch { min-height: 0; }
+}
+
+@media (max-width: 560px) {
+  .plan-tabs { gap: 6px; margin-bottom: 32px; }
+  .plan-tab { padding: 8px 13px; font-size: 0.82rem; }
+  .plan-amount { font-size: 2.7rem; }
+}
