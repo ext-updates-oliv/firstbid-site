@@ -1039,8 +1039,6 @@ html.js [data-reveal].is-visible {
   font-weight: 700;
 }
 .plan-features li strong { color: var(--accent); font-weight: 700; }
-.plan-features li.plan-feature-dim { color: var(--text-dim); }
-.plan-features li.plan-feature-dim::before { content: "—"; color: #4a4f60; }
 
 /* O botão fica colado no fim do card mesmo quando um card tem menos itens
    que o outro — sem isso os três CTAs ficam em alturas diferentes. */
