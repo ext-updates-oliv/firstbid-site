@@ -966,11 +966,28 @@ html.js [data-reveal].is-visible {
   transition: opacity 0.18s;
 }
 .plan-tab:hover .plan-tab-logo { opacity: 0.85; }
-/* A aba escolhida tinge a marca do dourado da casa, em vez de só clarear:
-   é o mesmo acento do preço e do botão, e amarra a escolha ao resto da tela. */
-.plan-tab[aria-selected="true"] .plan-tab-logo {
-  opacity: 1;
-  filter: brightness(0) invert(0.85) sepia(1) saturate(6) hue-rotate(354deg);
+
+/* A aba ESCOLHIDA sai da silhueta e mostra a arte original.
+   Silhueta funciona para marca feita de letras (FORTNITE, VALORANT continuam
+   legíveis), mas achata emblema preenchido — a Brawl Stars virava um borrão
+   sólido e não dava pra saber que jogo era. Cor original resolve para os dois
+   tipos, e a pílula dourada em volta continua marcando a seleção. */
+.plan-tab[aria-selected="true"] .plan-tab-logo { opacity: 1; filter: none; }
+
+/* O nome do jogo escolhido, entre a fileira de marcas e os planos. Marca de
+   17px é pequena demais para ser prova de identidade sozinha — ainda mais
+   emblema sem texto, como a da Brawl Stars. Aqui, e não dentro da aba, porque
+   dentro dela o nome alargava a pílula e a fileira inteira se reorganizava a
+   cada clique. */
+.plan-jogo {
+  margin: -18px 0 30px;
+  text-align: center;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  min-height: 1.5em;
 }
 
 /* Some da tela, continua para leitor de tela. */

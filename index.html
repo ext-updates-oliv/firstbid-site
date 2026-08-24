@@ -401,6 +401,7 @@
         </p>
 
         <div class="plan-tabs" role="tablist" aria-label="Choose your game" id="planTabs" data-reveal></div>
+        <p class="plan-jogo" id="planJogo" aria-live="polite" data-reveal></p>
 
         <div class="plan-grid">
           <div class="plan-card" data-plan="3" data-reveal>
@@ -645,6 +646,12 @@
         [...abas.children].forEach((botao, i) =>
           botao.setAttribute("aria-selected", String(i === indice))
         );
+
+        // Nome do jogo escolhido, entre as marcas e os planos. `aria-live` faz
+        // o leitor de tela anunciar a troca — quem não vê a pílula dourada
+        // precisa saber que o preço abaixo mudou de jogo.
+        const rotulo = document.getElementById("planJogo");
+        if (rotulo) rotulo.textContent = jogo.nome;
 
         for (const cta of botoesCta) {
           const dias = cta.closest("[data-plan]")?.dataset.plan;
