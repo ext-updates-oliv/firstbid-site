@@ -1154,3 +1154,133 @@ html.js [data-reveal].is-visible {
   .plan-tab { padding: 8px 13px; font-size: 0.82rem; }
   .plan-amount { font-size: 2.7rem; }
 }
+
+/* ============================================================
+   GRADE DE JOGOS (home) e peças da PÁGINA DE PREÇO
+   ------------------------------------------------------------
+   A seção Games tinha 11 cartões de ~170px cada, dois por linha:
+   quase mil pixels de rolagem repetindo os MESMOS dois pontos em
+   todos ("solo e duo", "custom messages"). Isso subiu uma vez pro
+   subtítulo, e o que cada jogo tem de próprio foi pra página de
+   preço — onde só interessa depois de escolher o jogo.
+   ============================================================ */
+
+.grade-jogos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.jogo-celula {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 104px;
+  padding: 20px 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+.jogo-celula:hover {
+  border-color: rgba(255, 201, 80, 0.45);
+  transform: translateY(-2px);
+  background: #151822;
+}
+
+/* Marca maior aqui do que na aba (a grade tem espaço), mas com a MESMA
+   normalização por área — só com outro alvo, definido no pricing.js.
+   Aqui a cor é SEMPRE a original: esta grade é vitrine dos jogos atendidos,
+   não seletor. A silhueta cinza da página de preço existe pra separar "não
+   escolhido" de "escolhido"; sem essa distinção ela só apagaria a vitrine. */
+.jogo-logo {
+  width: auto;
+  max-width: 108px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Suporte claro atrás da marca. Sem ele a cor original nao funciona nesta
+   grade: seis das onze (Fortnite, Valorant, Siege X, Apex, Call of Duty,
+   Overwatch) sao pretas e desapareciam no #08090d — dava pra ver o cartao e
+   nao a marca. Um painel claro e como fileira de logo de parceiro e resolvida
+   em qualquer site: as coloridas continuam coloridas e as pretas aparecem. */
+.jogo-marca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eceef3;
+}
+
+.jogo-nome {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.25;
+  transition: color 0.2s;
+}
+.jogo-celula:hover .jogo-nome { color: var(--text); }
+
+.grade-nota {
+  margin: 26px 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+/* Botão do Discord no cabeçalho, ao lado do Buy now. */
+.nav-acoes { display: flex; align-items: center; gap: 10px; }
+.btn-discord { display: inline-flex; align-items: center; gap: 7px; }
+.icone-discord { width: 16px; height: 16px; flex: 0 0 16px; }
+.btn-discord:hover { border-color: #5865f2; color: #fff; }
+
+@media (max-width: 720px) {
+  /* No celular o cabeçalho não comporta os dois: fica só o "Buy now", que é
+     o que a página existe pra fazer. O Discord segue no rodapé. */
+  .nav-acoes .btn-discord { display: none; }
+}
+
+/* --- página de preço --- */
+
+.pricing-pagina { padding-top: 132px; }
+.pricing-pagina h1 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  letter-spacing: -0.02em;
+}
+
+/* O que este jogo tem de diferente. Some quando não há nada a dizer. */
+.plan-detalhes {
+  list-style: none;
+  margin: 0 auto 34px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+  max-width: 780px;
+}
+.plan-detalhes li {
+  padding: 6px 13px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--bg-soft);
+  font-size: 0.84rem;
+  color: var(--text-dim);
+}
+.plan-detalhes:empty { display: none; }
+
+.link-acento { color: var(--accent); border-bottom: 1px solid rgba(255, 201, 80, 0.35); }
+.link-acento:hover { border-bottom-color: var(--accent); }

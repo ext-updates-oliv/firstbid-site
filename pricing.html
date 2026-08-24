@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — FirstBid</title>
+  <meta name="description" content="FirstBid pricing: 3 days, 1 week or 1 month, per game. One key unlocks one game on one machine, delivered the moment your payment clears." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <header class="nav nav-scrolled" id="siteNav">
+    <div class="wrap nav-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <nav class="nav-links">
+        <a href="/#how">How it works</a>
+        <a href="/#games">Games</a>
+        <a href="/pricing" aria-current="page">Pricing</a>
+        <a href="/#why">Why FirstBid</a>
+      </nav>
+      <div class="nav-acoes">
+        <a class="btn btn-ghost btn-small btn-discord" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">
+          <svg class="icone-discord" viewBox="0 0 127 96" aria-hidden="true" focusable="false"><path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.14ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"/></svg>
+          <span>Discord</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="pricing" class="pricing pricing-pagina">
+      <div class="wrap">
+        <h1 data-reveal>Pricing</h1>
+        <p class="section-sub" data-reveal>
+          One key unlocks one game on one machine. Pick the game, pick how long you
+          want it — checkout is instant and the key lands on screen the moment you pay.
+        </p>
+
+        <div class="plan-tabs" role="tablist" aria-label="Choose your game" id="planTabs" data-reveal></div>
+        <p class="plan-jogo" id="planJogo" aria-live="polite" data-reveal></p>
+        <ul class="plan-detalhes" id="planDetalhes" data-reveal></ul>
+
+        <div class="plan-grid">
+          <div class="plan-card" data-plan="3" data-reveal>
+            <p class="plan-term">3 days</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">2</span></p>
+            <p class="plan-access">3 days of access</p>
+            <p class="plan-pitch">Run it on real orders before you commit to anything.</p>
+            <ul class="plan-features">
+              <li>The complete bot — nothing held back</li>
+              <li>Your own price matrix, every rank pair</li>
+              <li>Telegram ping when the buyer replies</li>
+            </ul>
+            <a class="btn btn-ghost btn-block plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
+          </div>
+
+          <div class="plan-card" data-plan="7" data-reveal data-reveal-delay="1">
+            <p class="plan-term">1 week</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">4.50</span></p>
+            <p class="plan-access">7 days of access</p>
+            <p class="plan-pitch">A full week of the Eldorado rush, start to finish.</p>
+            <ul class="plan-features">
+              <li>Everything in the 3-day plan</li>
+              <li>Covers a whole weekend of orders</li>
+            </ul>
+            <a class="btn btn-ghost btn-block plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
+          </div>
+
+          <div class="plan-card plan-card-featured" data-plan="30" data-reveal data-reveal-delay="2">
+            <span class="plan-badge">Best value</span>
+            <p class="plan-term">1 month</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">18</span></p>
+            <p class="plan-access">30 days of access</p>
+            <p class="plan-pitch">The plan built to be kept — cheapest per day, and the fewest trips to checkout.</p>
+            <ul class="plan-features">
+              <li>Everything in the 1-week plan</li>
+              <li><strong>30 days</strong> without touching checkout again</li>
+              <li>Lowest price per day of the three</li>
+            </ul>
+            <a class="btn btn-primary btn-block btn-shine plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
+          </div>
+        </div>
+
+        <p class="plan-note" data-reveal>
+          <strong>3-day guarantee.</strong> If the bot does not run on your machine, or does not do what
+          this page says it does, open a ticket within 3 days and we fix it — or you get your money back.
+        </p>
+
+        <p class="plan-note" data-reveal>
+          Every game is priced the same, and every one gets <strong>solo and duo priced separately</strong>
+          plus <strong>custom messages per target rank</strong>. Need help choosing?
+          <a class="link-acento" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Ask on Discord</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
+    </div>
+    <div class="wrap footer-legal">
+      <p>FirstBid is an independent tool and is not affiliated with, endorsed by, or sponsored by Eldorado.gg.</p>
+      <p>© <span id="year"></span> FirstBid. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="pricing.js"></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal simples, igual ao da home. Sem IntersectionObserver o conteúdo
+    // fica visível — a animação nunca pode ser pré-requisito de leitura.
+    let revealObserve = (el) => el.classList.add("is-visible");
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        }
+      }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+      revealObserve = (el) => observer.observe(el);
+    }
+    document.querySelectorAll("[data-reveal]").forEach(revealObserve);
+
+    const progress = document.getElementById("scrollProgress");
+    let agendado = false;
+    const onProgress = () => {
+      if (agendado) return;
+      agendado = true;
+      requestAnimationFrame(() => {
+        agendado = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+      });
+    };
+    onProgress();
+    window.addEventListener("scroll", onProgress, { passive: true });
+    window.addEventListener("resize", onProgress);
+
+    const abas = document.getElementById("planTabs");
+    const botoesCta = [...document.querySelectorAll("[data-plan-cta]")];
+    const rotulo = document.getElementById("planJogo");
+    const detalhes = document.getElementById("planDetalhes");
+
+    function selecionarJogo(indice) {
+      const jogo = CATALOGO[indice];
+      if (!jogo) return;
+
+      [...abas.children].forEach((botao, i) =>
+        botao.setAttribute("aria-selected", String(i === indice))
+      );
+
+      rotulo.textContent = jogo.nome;
+      // O que este jogo tem de diferente dos outros. Mora aqui, e não repetido
+      // em 11 cartões na home, porque só faz sentido depois de escolher o jogo.
+      detalhes.innerHTML = "";
+      for (const texto of [jogo.rank, jogo.escopo]) {
+        const li = document.createElement("li");
+        li.innerHTML = texto;
+        detalhes.appendChild(li);
+      }
+
+      for (const cta of botoesCta) {
+        const dias = cta.closest("[data-plan]")?.dataset.plan;
+        const variantId = jogo.variants[dias];
+        if (variantId) {
+          cta.href = linkDeCheckout(variantId);
+          cta.removeAttribute("aria-disabled");
+          cta.textContent = "Get started";
+        } else {
+          // Sem variante cadastrada: nunca deixar o botão navegar. Remover o
+          // href tira o link do foco do teclado também, não só do clique.
+          cta.removeAttribute("href");
+          cta.setAttribute("aria-disabled", "true");
+          cta.textContent = "Coming soon";
+        }
+      }
+    }
+
+    CATALOGO.forEach((jogo, i) => {
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "plan-tab";
+      botao.setAttribute("role", "tab");
+      botao.setAttribute("aria-selected", "false");
+      const nome = document.createElement("span");
+      nome.textContent = jogo.nome;
+      nome.className = "visualmente-oculto";
+      botao.append(marcaDoJogo(jogo, "plan-tab-logo"), nome);
+      botao.addEventListener("click", () => selecionarJogo(i));
+      abas.appendChild(botao);
+    });
+
+    // Uma URL só: `/pricing` serve os 11 jogos, e a escolha acontece nas abas.
+    // Sem âncora por jogo de propósito — decisão do dono. Um endereço só é um
+    // endereço só pra divulgar, e não existe link que possa apontar pra um
+    // jogo que amanhã mude de nome.
+    selecionarJogo(0);
+
+    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const podeHover = window.matchMedia("(hover: hover)").matches;
+    if (!semMovimento && podeHover) {
+      document.querySelectorAll(".plan-card").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--x", `${e.clientX - rect.left}px`);
+          card.style.setProperty("--y", `${e.clientY - rect.top}px`);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

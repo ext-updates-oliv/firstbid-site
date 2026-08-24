@@ -4,6 +4,10 @@
     {
       "source": "/download",
       "destination": "/install.html"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/pricing.html"
     }
   ]
 }
