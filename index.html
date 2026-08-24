@@ -669,9 +669,36 @@
         botao.className = "plan-tab";
         botao.setAttribute("role", "tab");
         botao.setAttribute("aria-selected", "false");
-        botao.innerHTML = `<span class="plan-tab-emoji" aria-hidden="true"></span><span></span>`;
-        botao.firstChild.textContent = jogo.emoji;
-        botao.lastChild.textContent = jogo.nome;
+
+        // A marca do jogo entra como imagem em `logos/<slug>.png`, mas SÓ quando
+        // `logo: true` está no CATALOGO. Sem o flag a aba usa o emoji e não
+        // dispara requisição nenhuma — senão a página pediria 11 arquivos
+        // inexistentes e colecionaria 404 a cada visita enquanto as artes não
+        // chegam. Para acender uma marca: soltar o arquivo e pôr `logo: true`.
+        //
+        // O `onerror` continua como rede de segurança para o caso de um arquivo
+        // sumir depois: cai no emoji em vez de mostrar o ícone quebrado.
+        const marca = document.createElement("span");
+        marca.className = "plan-tab-marca";
+        marca.setAttribute("aria-hidden", "true");
+        if (jogo.logo) {
+          const img = document.createElement("img");
+          img.className = "plan-tab-logo";
+          img.alt = "";
+          img.loading = "lazy";
+          img.src = `logos/${slugDoJogo(jogo.nome)}.png`;
+          img.addEventListener("error", () => {
+            marca.textContent = jogo.emoji;
+          });
+          marca.appendChild(img);
+        } else {
+          marca.textContent = jogo.emoji;
+        }
+
+        const nome = document.createElement("span");
+        nome.textContent = jogo.nome;
+
+        botao.append(marca, nome);
         botao.addEventListener("click", () => selecionarJogo(i));
         abas.appendChild(botao);
       });

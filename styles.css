@@ -927,7 +927,32 @@ html.js [data-reveal].is-visible {
   border-color: rgba(255, 201, 80, 0.55);
   background: var(--accent-soft);
 }
-.plan-tab-emoji { font-size: 1rem; line-height: 1; }
+
+/* Marca do jogo. O slot tem tamanho FIXO mesmo antes de a imagem carregar —
+   sem isso as abas mudam de largura quando as 11 marcas chegam e a fileira
+   inteira se reorganiza na frente do visitante. */
+.plan-tab-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  font-size: 1rem;
+  line-height: 1;
+}
+.plan-tab-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Marca de terceiro em cima de fundo escuro costuma vir com borda clara ou
+     sombra própria; dessaturar levemente a não-selecionada evita que 11 logos
+     coloridos briguem entre si e com o dourado da aba ativa. */
+  filter: grayscale(0.35);
+  transition: filter 0.18s;
+}
+.plan-tab:hover .plan-tab-logo,
+.plan-tab[aria-selected="true"] .plan-tab-logo { filter: none; }
 
 /* --- os três cards --- */
 

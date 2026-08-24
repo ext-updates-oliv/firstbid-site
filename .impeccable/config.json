@@ -8,6 +8,15 @@
         "value": "space grotesk",
         "createdAt": "2026-08-07T05:41:19.200Z",
         "reason": "User confirmed keeping the dark/gold + Space Grotesk identity even for the bolder matrix-hero redesign (2026-08-07 session)"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "styles.css"
+        ],
+        "createdAt": "2026-08-24T02:09:05.163Z",
+        "reason": "Dono confirmou: grade do heroi e intencional, vem do commit 1324b8c de 2026-08-06"
       }
     ]
   }
