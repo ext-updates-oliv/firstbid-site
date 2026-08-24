@@ -965,13 +965,15 @@ html.js [data-reveal].is-visible {
   opacity: 0.5;
   transition: opacity 0.18s;
 }
-.plan-tab:hover .plan-tab-logo { opacity: 0.85; }
-
-/* A aba ESCOLHIDA sai da silhueta e mostra a arte original.
+/* Passar o mouse já revela a arte original — dá pra reconhecer o jogo antes de
+   clicar, sem precisar escolher pra descobrir. A pílula dourada NÃO vem junto:
+   ela é só da aba escolhida, senão o hover fingiria seleção.
+   A aba ESCOLHIDA usa a mesma cor original, e o dourado em volta é o que
+   separa "estou olhando" de "escolhi".
    Silhueta funciona para marca feita de letras (FORTNITE, VALORANT continuam
    legíveis), mas achata emblema preenchido — a Brawl Stars virava um borrão
-   sólido e não dava pra saber que jogo era. Cor original resolve para os dois
-   tipos, e a pílula dourada em volta continua marcando a seleção. */
+   sólido e não dava pra saber que jogo era. Cor original resolve os dois. */
+.plan-tab:hover .plan-tab-logo,
 .plan-tab[aria-selected="true"] .plan-tab-logo { opacity: 1; filter: none; }
 
 /* O nome do jogo escolhido, entre a fileira de marcas e os planos. Marca de
