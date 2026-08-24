@@ -593,11 +593,14 @@
     // ----------------------------------------------------------
     // FONTE ÚNICA dos ids. `variants` é {dias: variantId da SellAuth}.
     //
-    // Os ids de 30 dias são os que JÁ existem na loja (produto 832908) e
-    // funcionam agora. Os de 3 e 7 dias são `null` porque as variantes ainda
-    // não foram criadas no painel da SellAuth — enquanto forem null o botão
-    // fica inerte em vez de mandar o comprador pra um checkout inexistente.
-    // Para ligar um plano: troque o null pelo variantId e nada mais.
+    // Os 33 ids são reais e conferidos contra a API da loja em 2026-08-23:
+    // todos com preço certo, URL de entrega preenchida, quantidade travada em
+    // 1 e estoque infinito. Cada um também está no `productMap` do webhook na
+    // VM com a duração correspondente — sem isso o comprador pagaria e não
+    // receberia key. Se acrescentar um plano aqui, acrescente lá TAMBÉM.
+    //
+    // Um plano com id `null` faz o botão ficar inerte em vez de mandar o
+    // comprador pra um checkout inexistente. Hoje nenhum está null.
     //
     // O formato do link é o MESMO que `checkoutLink()` monta em
     // FirstBid-Discord/lib.js — se um dia mudar lá, muda aqui também.
@@ -605,17 +608,17 @@
     const SELLAUTH = { base: "https://firstbid.mysellauth.com", productId: 832908, currency: "USD" };
 
     const CATALOGO = [
-      { nome: "Fortnite",            emoji: "🔫", variants: { 3: null, 7: null, 30: 1436014 } },
-      { nome: "Valorant",            emoji: "🎯", variants: { 3: null, 7: null, 30: 1436093 } },
-      { nome: "Rocket League",       emoji: "🚗", variants: { 3: null, 7: null, 30: 1436094 } },
-      { nome: "Brawl Stars",         emoji: "⭐", variants: { 3: null, 7: null, 30: 1436095 } },
-      { nome: "Rainbow Six Siege X", emoji: "🛡", variants: { 3: null, 7: null, 30: 1436096 } },
-      { nome: "Marvel Rivals",       emoji: "🦸", variants: { 3: null, 7: null, 30: 1436097 } },
-      { nome: "League of Legends",   emoji: "⚔", variants: { 3: null, 7: null, 30: 1436098 } },
-      { nome: "EA Sports FC",        emoji: "⚽", variants: { 3: null, 7: null, 30: 1436099 } },
-      { nome: "Apex Legends",        emoji: "🏹", variants: { 3: null, 7: null, 30: 1436100 } },
-      { nome: "Call of Duty",        emoji: "💥", variants: { 3: null, 7: null, 30: 1436101 } },
-      { nome: "Overwatch",           emoji: "🦾", variants: { 3: null, 7: null, 30: 1473358 } },
+      { nome: "Fortnite",            emoji: "🔫", variants: { 3: 1514852, 7: 1515755, 30: 1436014 } },
+      { nome: "Valorant",            emoji: "🎯", variants: { 3: 1515772, 7: 1515773, 30: 1436093 } },
+      { nome: "Rocket League",       emoji: "🚗", variants: { 3: 1515774, 7: 1515775, 30: 1436094 } },
+      { nome: "Brawl Stars",         emoji: "⭐", variants: { 3: 1515776, 7: 1515777, 30: 1436095 } },
+      { nome: "Rainbow Six Siege X", emoji: "🛡", variants: { 3: 1515778, 7: 1515779, 30: 1436096 } },
+      { nome: "Marvel Rivals",       emoji: "🦸", variants: { 3: 1515780, 7: 1515781, 30: 1436097 } },
+      { nome: "League of Legends",   emoji: "⚔", variants: { 3: 1515782, 7: 1515783, 30: 1436098 } },
+      { nome: "EA Sports FC",        emoji: "⚽", variants: { 3: 1515784, 7: 1515785, 30: 1436099 } },
+      { nome: "Apex Legends",        emoji: "🏹", variants: { 3: 1515786, 7: 1515787, 30: 1436100 } },
+      { nome: "Call of Duty",        emoji: "💥", variants: { 3: 1515788, 7: 1515789, 30: 1436101 } },
+      { nome: "Overwatch",           emoji: "🦾", variants: { 3: 1515790, 7: 1515791, 30: 1473358 } },
     ];
 
     const slugDoJogo = (nome) => nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
