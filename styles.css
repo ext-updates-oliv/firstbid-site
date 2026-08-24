@@ -941,18 +941,50 @@ html.js [data-reveal].is-visible {
   font-size: 1rem;
   line-height: 1;
 }
+/* A marca É a etiqueta: altura fixa, largura pelo aspecto do próprio wordmark.
+   `max-width` protege contra um arquivo muito largo (Call of Duty é 5,7:1)
+   esticar a aba e quebrar a fileira. */
+/* A altura real é calculada no JS por normalização de área (ver index.html).
+   O valor aqui é só o ponto de partida antes de a imagem carregar, pra aba
+   já nascer com a altura certa e não pular quando a marca chega. */
 .plan-tab-logo {
-  width: 100%;
-  height: 100%;
+  height: 17px;
+  width: auto;
+  max-width: 96px;
   object-fit: contain;
-  /* Marca de terceiro em cima de fundo escuro costuma vir com borda clara ou
-     sombra própria; dessaturar levemente a não-selecionada evita que 11 logos
-     coloridos briguem entre si e com o dourado da aba ativa. */
-  filter: grayscale(0.35);
-  transition: filter 0.18s;
+  display: block;
+  /* Silhueta BRANCA, não a arte original. Duas razões, nesta ordem:
+     1. A maioria destes wordmarks vem em preto. Sobre o #08090d da página eles
+        simplesmente somem — medido na tela: só Brawl Stars e a aba ativa
+        apareciam.
+     2. A 17px a cor não é legível de qualquer jeito, e onze paletas de jogos
+        diferentes brigariam entre si e com o dourado da aba escolhida.
+     `brightness(0)` achata tudo em preto e `invert(1)` vira branco — funciona
+     com qualquer PNG transparente, colorido ou não, sem editar arquivo. */
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+  transition: opacity 0.18s;
 }
-.plan-tab:hover .plan-tab-logo,
-.plan-tab[aria-selected="true"] .plan-tab-logo { filter: none; }
+.plan-tab:hover .plan-tab-logo { opacity: 0.85; }
+/* A aba escolhida tinge a marca do dourado da casa, em vez de só clarear:
+   é o mesmo acento do preço e do botão, e amarra a escolha ao resto da tela. */
+.plan-tab[aria-selected="true"] .plan-tab-logo {
+  opacity: 1;
+  filter: brightness(0) invert(0.85) sepia(1) saturate(6) hue-rotate(354deg);
+}
+
+/* Some da tela, continua para leitor de tela. */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* --- os três cards --- */
 

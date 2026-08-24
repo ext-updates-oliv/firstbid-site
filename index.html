@@ -608,17 +608,17 @@
     const SELLAUTH = { base: "https://firstbid.mysellauth.com", productId: 832908, currency: "USD" };
 
     const CATALOGO = [
-      { nome: "Fortnite",            emoji: "🔫", variants: { 3: 1514852, 7: 1515755, 30: 1436014 } },
-      { nome: "Valorant",            emoji: "🎯", variants: { 3: 1515772, 7: 1515773, 30: 1436093 } },
-      { nome: "Rocket League",       emoji: "🚗", variants: { 3: 1515774, 7: 1515775, 30: 1436094 } },
-      { nome: "Brawl Stars",         emoji: "⭐", variants: { 3: 1515776, 7: 1515777, 30: 1436095 } },
-      { nome: "Rainbow Six Siege X", emoji: "🛡", variants: { 3: 1515778, 7: 1515779, 30: 1436096 } },
-      { nome: "Marvel Rivals",       emoji: "🦸", variants: { 3: 1515780, 7: 1515781, 30: 1436097 } },
-      { nome: "League of Legends",   emoji: "⚔", variants: { 3: 1515782, 7: 1515783, 30: 1436098 } },
-      { nome: "EA Sports FC",        emoji: "⚽", variants: { 3: 1515784, 7: 1515785, 30: 1436099 } },
-      { nome: "Apex Legends",        emoji: "🏹", variants: { 3: 1515786, 7: 1515787, 30: 1436100 } },
-      { nome: "Call of Duty",        emoji: "💥", variants: { 3: 1515788, 7: 1515789, 30: 1436101 } },
-      { nome: "Overwatch",           emoji: "🦾", variants: { 3: 1515790, 7: 1515791, 30: 1473358 } },
+      { nome: "Fortnite",            emoji: "🔫", logo: true, variants: { 3: 1514852, 7: 1515755, 30: 1436014 } },
+      { nome: "Valorant",            emoji: "🎯", logo: true, variants: { 3: 1515772, 7: 1515773, 30: 1436093 } },
+      { nome: "Rocket League",       emoji: "🚗", logo: true, variants: { 3: 1515774, 7: 1515775, 30: 1436094 } },
+      { nome: "Brawl Stars",         emoji: "⭐", logo: true, variants: { 3: 1515776, 7: 1515777, 30: 1436095 } },
+      { nome: "Rainbow Six Siege X", emoji: "🛡", logo: true, variants: { 3: 1515778, 7: 1515779, 30: 1436096 } },
+      { nome: "Marvel Rivals",       emoji: "🦸", logo: true, variants: { 3: 1515780, 7: 1515781, 30: 1436097 } },
+      { nome: "League of Legends",   emoji: "⚔", logo: true, variants: { 3: 1515782, 7: 1515783, 30: 1436098 } },
+      { nome: "EA Sports FC",        emoji: "⚽", logo: true, variants: { 3: 1515784, 7: 1515785, 30: 1436099 } },
+      { nome: "Apex Legends",        emoji: "🏹", logo: true, variants: { 3: 1515786, 7: 1515787, 30: 1436100 } },
+      { nome: "Call of Duty",        emoji: "💥", logo: true, variants: { 3: 1515788, 7: 1515789, 30: 1436101 } },
+      { nome: "Overwatch",           emoji: "🦾", logo: true, variants: { 3: 1515790, 7: 1515791, 30: 1473358 } },
     ];
 
     const slugDoJogo = (nome) => nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -670,35 +670,60 @@
         botao.setAttribute("role", "tab");
         botao.setAttribute("aria-selected", "false");
 
-        // A marca do jogo entra como imagem em `logos/<slug>.png`, mas SÓ quando
-        // `logo: true` está no CATALOGO. Sem o flag a aba usa o emoji e não
-        // dispara requisição nenhuma — senão a página pediria 11 arquivos
-        // inexistentes e colecionaria 404 a cada visita enquanto as artes não
-        // chegam. Para acender uma marca: soltar o arquivo e pôr `logo: true`.
+        // As marcas dos jogos são WORDMARKS horizontais — já contêm o nome
+        // escrito, e em proporções muito diferentes (Call of Duty é 5,7:1,
+        // Apex é 1,5:1). Espremer isso num quadradinho ao lado do nome daria
+        // um borrão ilegível e repetiria a palavra duas vezes. Então quando a
+        // marca existe ela É a etiqueta: altura fixa, largura livre.
         //
-        // O `onerror` continua como rede de segurança para o caso de um arquivo
-        // sumir depois: cai no emoji em vez de mostrar o ícone quebrado.
-        const marca = document.createElement("span");
-        marca.className = "plan-tab-marca";
-        marca.setAttribute("aria-hidden", "true");
+        // O nome continua no DOM para leitor de tela (`.visualmente-oculto`) e
+        // volta a aparecer se a imagem falhar — `onerror` remove a imagem e
+        // tira a classe, em vez de deixar o ícone quebrado do navegador.
+        const nome = document.createElement("span");
+        nome.textContent = jogo.nome;
+
         if (jogo.logo) {
           const img = document.createElement("img");
           img.className = "plan-tab-logo";
           img.alt = "";
-          img.loading = "lazy";
-          img.src = `logos/${slugDoJogo(jogo.nome)}.png`;
-          img.addEventListener("error", () => {
-            marca.textContent = jogo.emoji;
+          img.decoding = "async";
+          // SEM `loading="lazy"`: a fileira de abas nasce dentro de um
+          // `[data-reveal]`, que o CSS esconde até a animação rodar, e imagem
+          // preguiçosa dentro de container escondido não chega a carregar — as
+          // 11 abas viravam círculos vazios, porque o nome fica oculto quando a
+          // marca existe. São 11 imagens no primeiro dobra da seção; adiar não
+          // ganhava nada e custava a aba inteira.
+          // Os listeners vêm ANTES do `src`: com a imagem em cache o `load`
+          // dispara imediatamente e um listener preso depois nunca o veria.
+          // Altura fixa NÃO funciona aqui: as marcas vão de 1,5:1 (Apex) a 7:1
+          // (Valorant), e com a mesma altura o wordmark largo ocupa 4,5× a
+          // área do quadrado — medido. O olho lê isso como "uns jogos são mais
+          // importantes que outros".
+          //
+          // Normalizar por ÁREA resolve: para a proporção r, altura = √(A/r).
+          // Marca quadrada fica mais alta, wordmark largo mais baixo, e todas
+          // pesam igual na fileira. Como sai da proporção real do arquivo, se
+          // trocar uma logo depois ela se ajusta sozinha.
+          img.addEventListener("load", () => {
+            const r = img.naturalWidth / img.naturalHeight;
+            if (!r || !isFinite(r)) return;
+            const AREA = 950;
+            img.style.height = `${Math.min(22, Math.max(12, Math.sqrt(AREA / r)))}px`;
           });
-          marca.appendChild(img);
+          img.addEventListener("error", () => {
+            img.remove();
+            nome.classList.remove("visualmente-oculto");
+          });
+          img.src = `logos/${slugDoJogo(jogo.nome)}.png`;
+          nome.classList.add("visualmente-oculto");
+          botao.append(img, nome);
         } else {
+          const marca = document.createElement("span");
+          marca.className = "plan-tab-marca";
+          marca.setAttribute("aria-hidden", "true");
           marca.textContent = jogo.emoji;
+          botao.append(marca, nome);
         }
-
-        const nome = document.createElement("span");
-        nome.textContent = jogo.nome;
-
-        botao.append(marca, nome);
         botao.addEventListener("click", () => selecionarJogo(i));
         abas.appendChild(botao);
       });
