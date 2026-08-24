@@ -22,7 +22,15 @@
 // O formato do link é o MESMO que `checkoutLink()` monta em
 // FirstBid-Discord/lib.js — se um dia mudar lá, muda aqui também.
 // ==========================================================
-const SELLAUTH = { base: "https://firstbid.mysellauth.com", productId: 832908, currency: "USD" };
+// `shopId` é o id NUMÉRICO da loja (260587), diferente do subdomínio em `base`.
+// O embed exige os dois: o id pra saber de quem é o carrinho, a url pra saber
+// onde ele mora. Confirmado no painel da SellAuth.
+const SELLAUTH = {
+  base: "https://firstbid.mysellauth.com",
+  shopId: 260587,
+  productId: 832908,
+  currency: "USD",
+};
 
 const CATALOGO = [
   { nome: "Fortnite", emoji: "🔫", logo: true,

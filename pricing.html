@@ -114,6 +114,11 @@
     </div>
   </footer>
 
+  <!-- Checkout embutido da SellAuth: o comprador paga num modal aqui mesmo, sem
+       trocar de domínio. `defer` porque nada acima depende dele, e os botões
+       continuam sendo links de verdade — se este script não carregar (bloqueador,
+       rede, fora do ar), o clique leva pra loja como antes. Botão morto nunca. -->
+  <script src="https://static.sellauth.com/embed/v3.min.js" defer></script>
   <script src="pricing.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -176,13 +181,28 @@
         const dias = cta.closest("[data-plan]")?.dataset.plan;
         const variantId = jogo.variants[dias];
         if (variantId) {
+          // Duas rotas para o MESMO variantId, de propósito:
+          //  - `href` é a rota que nunca falha (leva pra loja da SellAuth);
+          //  - os `data-sellauth-*` fazem o embed abrir o modal aqui mesmo.
+          // Com o script carregado o embed intercepta e o href nunca é usado;
+          // sem ele, o clique navega normalmente. É a diferença entre um botão
+          // mais bonito e um botão que pode morrer.
           cta.href = linkDeCheckout(variantId);
+          cta.dataset.sellauthShop = String(SELLAUTH.shopId);
+          cta.dataset.sellauthShopUrl = SELLAUTH.base;
+          cta.dataset.sellauthCart = JSON.stringify([
+            { productId: SELLAUTH.productId, variantId, quantity: 1 },
+          ]);
+          cta.dataset.sellauthTheme = "dark";
           cta.removeAttribute("aria-disabled");
           cta.textContent = "Get started";
         } else {
           // Sem variante cadastrada: nunca deixar o botão navegar. Remover o
           // href tira o link do foco do teclado também, não só do clique.
           cta.removeAttribute("href");
+          for (const k of ["sellauthShop", "sellauthShopUrl", "sellauthCart", "sellauthTheme"]) {
+            delete cta.dataset[k];
+          }
           cta.setAttribute("aria-disabled", "true");
           cta.textContent = "Coming soon";
         }
