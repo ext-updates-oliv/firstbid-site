@@ -8,10 +8,10 @@
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=Chivo+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <!-- Marca que o JS roda ANTES da primeira pintura. O CSS só esconde o
-       conteúdo pra animar (`html.js [data-reveal]`) sob esta classe — script
+       conteúdo pra animar (`html.js [data-strike]`) sob esta classe — script
        bloqueado/quebrado deixa a página legível em vez de totalmente vazia. -->
   <script>
     document.documentElement.classList.add("js");
@@ -21,17 +21,36 @@
     // descartado — todos caem em /pricing e escolhem o jogo nas abas.
     // Roda ANTES da primeira pintura, então ninguém vê a home piscar.
     // `replace` não deixa lixo no histórico.
+    // NÃO REMOVER: é o que mantém os botões já publicados no Discord vivos.
     if (/^#pricing/.test(location.hash || "")) location.replace("/pricing");
   </script>
 </head>
 <body>
+<!--
+THESIS: Every price the seller configured is already present, unlit; the order that
+lands strikes exactly one forward. Refuses the dark-SaaS hero with glass cards.
+OWN-WORLD: Ink-blue ground under a bronze gauze plane that runs past every edge —
+no boxes, rules or dividers; grouping is mesh density and depth. Cathode gold
+(#ffc950) means ACTIVE, never decoration. Condensed numeral display face, bone
+prose lifted clear of the mesh.
+STORY: A boosting order has seconds of life; the seller who answers first takes it;
+FirstBid is that answer. Then he goes to /pricing.
+FIRST VIEWPORT: Headline at half-screen scale on the left; on the right a real order
+strikes one price forward out of a stack of unlit ghosts. Primary action at eye line.
+FORM: Cathode numeral stack, candidate 5 of the grounded list, seed 0ffaafde.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
 
-  <div class="noise-overlay" aria-hidden="true"></div>
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="gauze-plane" aria-hidden="true"></div>
+  <div class="tube-heat" id="tubeHeat" aria-hidden="true"></div>
 
   <header class="nav" id="siteNav">
     <div class="wrap nav-inner">
-      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span>First<span class="logo-accent">Bid</span></span></a>
+      <span class="nav-estado" aria-hidden="true">
+        <span class="ponto"></span>
+        <span class="rotulo">Watching Eldorado.gg</span>
+      </span>
       <nav class="nav-links">
         <a href="#how">How it works</a>
         <a href="#games">Games</a>
@@ -40,7 +59,7 @@
         <a href="#reviews" id="navReviews" hidden>Reviews</a>
       </nav>
       <div class="nav-acoes">
-        <a class="btn btn-ghost btn-small btn-discord" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">
+        <a class="btn btn-ghost btn-small" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">
           <svg class="icone-discord" viewBox="0 0 127 96" aria-hidden="true" focusable="false"><path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.14ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"/></svg>
           <span>Discord</span>
         </a>
@@ -50,195 +69,318 @@
   </header>
 
   <main>
+
+    <!-- ================= HERO ================= -->
     <section id="top" class="hero">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-a" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-b" aria-hidden="true"></div>
+      <div class="ghost-field" aria-hidden="true">
+        <span class="ghost-row" data-depth="1" style="top: 4%;  left: -6%;">0123456789</span>
+        <span class="ghost-row" data-depth="2" style="top: 32%; left: -18%;">4567890123</span>
+        <span class="ghost-row" data-depth="3" style="top: 61%; left: -3%;">8901234567</span>
+      </div>
+
       <div class="wrap hero-inner">
-        <h1 data-reveal>The fastest first-message bot<br />for <span class="text-accent">Eldorado.gg</span> orders.</h1>
-        <p class="hero-sub" data-reveal>
-          The moment a new boosting order lands, FirstBid reads the mode, group size,
-          current rank, and desired rank — then sends the right price and a personalized
-          message before anyone else does. You take the conversation from there.
-        </p>
-        <div class="hero-cta" data-reveal>
-          <span class="cta-halo">
-            <a class="btn btn-primary btn-shine" href="/pricing">
-              <span>See pricing</span> <span class="btn-arrow">→</span>
+        <div class="hero-esq">
+          <h1 data-strike>
+            <span class="linha">The fastest</span>
+            <span class="linha struck">first message</span>
+            <span class="linha linha-menor">for Eldorado.gg</span>
+          </h1>
+          <p class="prosa hero-prosa" data-strike data-strike-delay="1">
+            The moment a new boosting order lands, FirstBid reads the mode, group size,
+            current rank, and desired rank — then sends the right price and a personalized
+            message before anyone else does. You take the conversation from there.
+          </p>
+          <div class="hero-cta" data-strike data-strike-delay="2">
+            <a class="btn btn-primary" href="/pricing">
+              <span>See pricing</span> <span class="btn-seta" aria-hidden="true">→</span>
             </a>
-          </span>
-          <a class="btn btn-ghost" href="#how">See how it works</a>
-        </div>
-
-        <div class="stats" data-reveal>
-          <div class="stat">
-            <span class="stat-num">100%</span>
-            <span class="stat-label">Dynamic pricing</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">Seconds</span>
-            <span class="stat-label">First-offer speed</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">11 games</span>
-            <span class="stat-label">Live, and every one configurable</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">License-locked</span>
-            <span class="stat-label">One key, one game, one machine</span>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section id="how" class="how">
-      <div class="wrap">
-        <h2 data-reveal>How it works</h2>
-        <p class="section-sub" data-reveal>No AI negotiation, no black box — just the fastest possible first contact.</p>
-
-        <div class="steps">
-          <div class="step" data-reveal>
-            <span class="step-num">01</span>
-            <h3>New order detected instantly</h3>
-            <p>FirstBid watches your Eldorado.gg seller account 24/7 and catches new boosting requests the moment they're posted.</p>
+        <!-- O aparelho. Um pedido de exemplo entra e um preço é puxado à frente,
+             enquanto os outros da matriz continuam presentes e apagados. -->
+        <div class="tubo" data-strike data-strike-delay="1">
+          <div class="tubo-topo">
+            <span class="rotulo rotulo-aceso">Order in</span>
+            <span class="rotulo"><span id="relogio">00:00:00</span> UTC</span>
           </div>
-          <div class="step" data-reveal data-reveal-delay="1">
-            <span class="step-num">02</span>
-            <h3>Reads the exact request</h3>
-            <p>Mode, group size (solo/duo), current rank, and desired rank — matched against the pricing table you set up yourself.</p>
-          </div>
-          <div class="step" data-reveal data-reveal-delay="2">
-            <span class="step-num">03</span>
-            <h3>Sends the offer, in seconds</h3>
-            <p>Price, delivery time, and a personalized opening message go out automatically — before the buyer moves on to the next seller.</p>
-          </div>
-          <div class="step" data-reveal data-reveal-delay="3">
-            <span class="step-num">04</span>
-            <h3>You take it from there</h3>
-            <p>FirstBid doesn't negotiate for you. Once the first message is out, the conversation is 100% yours — no AI pretending to be you. It just pings your Telegram when the buyer replies.</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section id="games" class="games">
-      <div class="wrap">
-        <h2 data-reveal>Games</h2>
-        <p class="section-sub" data-reveal>Eleven games live, and every rank, mode and price table is configured by you — nothing hardcoded.
-          Solo and duo are priced separately on all of them, with custom messages per target rank.</p>
+          <dl class="tubo-pedido">
+            <div>
+              <dt>Game</dt>
+              <dd id="pedidoJogo">Valorant</dd>
+            </div>
+            <div>
+              <dt>Rank</dt>
+              <dd id="pedidoRank">Gold II → Platinum I</dd>
+            </div>
+            <div>
+              <dt>Mode</dt>
+              <dd id="pedidoModo">Duo · Competitive</dd>
+            </div>
+          </dl>
 
-        <div class="grade-jogos" id="gradeJogos" data-reveal></div>
-
-        <p class="grade-nota" data-reveal>Pick a game to see its ranks, regions and the three plans.</p>
-      </div>
-    </section>
-
-    <section id="why" class="why">
-      <div class="wrap">
-        <h2 data-reveal>Why FirstBid</h2>
-        <div class="why-grid">
-          <div class="why-card" data-reveal>
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2" /></svg>
+          <div class="valor" aria-live="polite">
+            <span class="valor-pilha" aria-hidden="true">
+              <span>31</span><span>46</span><span>19</span><span>58</span>
             </span>
+            <span class="valor-cifra struck">$</span>
+            <span class="struck" id="valorPreco">24</span>
+          </div>
+
+          <div class="tubo-rodape">
+            <span class="rotulo">Offer sent in</span>
+            <span class="tubo-tempo" id="tempoEnvio">1.2s</span>
+            <span class="rotulo">Example order · you set every number</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PIPELINE ================= -->
+    <!-- A sequência é a informação aqui: a ordem dos quatro estados é o produto. -->
+    <section id="how" class="pipeline">
+      <div class="pipeline-trilho" id="pipelineTrilho">
+        <div class="pipeline-cena">
+          <div class="ghost-field" aria-hidden="true">
+            <span class="ghost-row" data-depth="3" style="top: 10%; left: -12%;">2468013579</span>
+            <span class="ghost-row" data-depth="2" style="top: 55%; left: -22%;">1357902468</span>
+          </div>
+          <div class="wrap">
+            <h2 class="secao-cabeca" data-strike>How it works</h2>
+            <p class="prosa" data-strike data-strike-delay="1">
+              No AI negotiation, no black box — just the fastest possible first contact.
+            </p>
+
+            <ol class="pipeline-lista" id="pipelineLista">
+              <li class="passo" data-estado="apagado">
+                <span class="passo-num" aria-hidden="true">01</span>
+                <div class="passo-txt">
+                  <h3>New order detected instantly</h3>
+                  <p>FirstBid watches your Eldorado.gg seller account 24/7 and catches new boosting requests the moment they're posted.</p>
+                </div>
+              </li>
+              <li class="passo" data-estado="apagado">
+                <span class="passo-num" aria-hidden="true">02</span>
+                <div class="passo-txt">
+                  <h3>Reads the exact request</h3>
+                  <p>Mode, group size (solo/duo), current rank, and desired rank — matched against the pricing table you set up yourself.</p>
+                </div>
+              </li>
+              <li class="passo" data-estado="apagado">
+                <span class="passo-num" aria-hidden="true">03</span>
+                <div class="passo-txt">
+                  <h3>Sends the offer, in seconds</h3>
+                  <p>Price, delivery time, and a personalized opening message go out automatically — before the buyer moves on to the next seller.</p>
+                </div>
+              </li>
+              <li class="passo" data-estado="apagado">
+                <span class="passo-num" aria-hidden="true">04</span>
+                <div class="passo-txt">
+                  <h3>You take it from there</h3>
+                  <p>FirstBid doesn't negotiate for you. Once the first message is out, the conversation is 100% yours — no AI pretending to be you. It just pings your Telegram when the buyer replies.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= A MATRIZ ================= -->
+    <section class="secao matriz-cena">
+      <div class="ghost-field" aria-hidden="true">
+        <span class="ghost-row" data-depth="3" style="top: 24%; left: -8%;">9753108642</span>
+      </div>
+      <div class="wrap">
+        <div class="secao-cabeca">
+          <h2 data-strike>Every price already exists</h2>
+          <p class="prosa" data-strike data-strike-delay="1">
+            Nothing is hardcoded. You fill the table once — every rank against every rank,
+            solo and duo priced apart — and from then on an incoming order doesn't get
+            calculated, it gets <em>found</em>. That is why the answer takes seconds.
+          </p>
+        </div>
+
+        <div class="matriz-quadro">
+          <span class="matriz-canto">To →</span>
+          <div class="matriz-eixo-x" id="matrizEixoX" aria-hidden="true"></div>
+          <div class="matriz-eixo-y" id="matrizEixoY" aria-hidden="true"></div>
+          <div class="matriz-grade" id="matrizGrade" role="img" aria-label="Example price matrix: an incoming order lights the cell where the current rank meets the desired rank."></div>
+        </div>
+
+        <div class="matriz-leitura">
+          <span class="rotulo">Found</span>
+          <span class="valor-linha" id="matrizValor">$24</span>
+          <span class="rotulo" id="matrizRotulo">Gold II → Platinum I · duo</span>
+          <span class="rotulo">Example table · you set your own</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= JOGOS ================= -->
+    <section id="games" class="secao">
+      <div class="wrap">
+        <div class="secao-cabeca">
+          <h2 data-strike>Eleven games live</h2>
+          <p class="prosa" data-strike data-strike-delay="1">
+            Every rank, mode and price table is configured by you — nothing hardcoded.
+            Solo and duo are priced separately on all of them, with custom messages per
+            target rank.
+          </p>
+        </div>
+
+        <div class="jogos-grade" id="gradeJogos"></div>
+
+        <p class="prosa" style="margin-top: 2rem;" data-strike>Pick a game to see its ranks, regions and the three plans.</p>
+      </div>
+    </section>
+
+    <!-- ================= POR QUE ================= -->
+    <section id="why" class="secao">
+      <div class="ghost-field" aria-hidden="true">
+        <span class="ghost-row" data-depth="3" style="top: 8%; left: -16%;">6420864208</span>
+      </div>
+      <div class="wrap">
+        <h2 class="secao-cabeca" data-strike>Why FirstBid</h2>
+
+        <div class="razoes">
+          <article class="razao" data-strike>
             <h3>Speed where it matters</h3>
-            <p>The first seller to respond usually wins the order. FirstBid is built to be that seller, every time.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="1">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-                <line x1="6" y1="5" x2="6" y2="19" /><circle cx="6" cy="10" r="2.1" />
-                <line x1="12" y1="5" x2="12" y2="19" /><circle cx="12" cy="15" r="2.1" />
-                <line x1="18" y1="5" x2="18" y2="19" /><circle cx="18" cy="8" r="2.1" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2" /></svg>
+              </span>
+              <p>The first seller to respond usually wins the order. FirstBid is built to be that seller, every time.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>Fully dynamic</h3>
-            <p>No hardcoded ranks or prices. Configure your own ranks, modes, group sizes, and a full price matrix from a dashboard.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="2">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                  <line x1="6" y1="5" x2="6" y2="19" /><circle cx="6" cy="10" r="2.1" />
+                  <line x1="12" y1="5" x2="12" y2="19" /><circle cx="12" cy="15" r="2.1" />
+                  <line x1="18" y1="5" x2="18" y2="19" /><circle cx="18" cy="8" r="2.1" />
+                </svg>
+              </span>
+              <p>No hardcoded ranks or prices. Configure your own ranks, modes, group sizes, and a full price matrix from a dashboard.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>License-locked</h3>
-            <p>Each game is protected by its own license key tied to your machine — your setup stays yours.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="3">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4.5 3.5l6.2 16.4 1.9-6.5 6.5-1.9z" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+                </svg>
+              </span>
+              <p>Each game is protected by its own license key tied to your machine — your setup stays yours.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>You stay in control</h3>
-            <p>No AI negotiating on your behalf. FirstBid sends the opening move — every conversation after that is genuinely you.</p>
-          </div>
-          <div class="why-card" data-reveal>
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" /><path d="M13.7 20a2 2 0 0 1-3.4 0" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.5 3.5l6.2 16.4 1.9-6.5 6.5-1.9z" />
+                </svg>
+              </span>
+              <p>No AI negotiating on your behalf. FirstBid sends the opening move — every conversation after that is genuinely you.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>Pinged the second they reply</h3>
-            <p>Connect your own Telegram bot and FirstBid taps you on the shoulder the moment a buyer answers, so you're at the keyboard when it counts instead of watching a dashboard.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="1">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 20V4" /><path d="M5 7l3-3 3 3" /><path d="M16 4v16" /><path d="M13 17l3 3 3-3" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" /><path d="M13.7 20a2 2 0 0 1-3.4 0" />
+                </svg>
+              </span>
+              <p>Connect your own Telegram bot and FirstBid taps you on the shoulder the moment a buyer answers, so you're at the keyboard when it counts instead of watching a dashboard.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>Hungry or premium, one click</h3>
-            <p>Flip a game between Hungry (-12%), Normal, and Expensive (+12%) whenever the market moves. Your price table is never rewritten, so switch back and every number is exactly where you left it.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="2">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 5h16l-6 7v6l-4 2v-8z" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 20V4" /><path d="M5 7l3-3 3 3" /><path d="M16 4v16" /><path d="M13 17l3 3 3-3" />
+                </svg>
+              </span>
+              <p>Flip a game between Hungry (-12%), Normal, and Expensive (+12%) whenever the market moves. Your price table is never rewritten, so switch back and every number is exactly where you left it.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>Only the orders you want</h3>
-            <p>Register the rank ranges you actually boost. Anything outside them is skipped on its own: no half-answered orders to clean up, no offers you'd regret.</p>
-          </div>
-          <div class="why-card" data-reveal data-reveal-delay="3">
-            <span class="why-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 12a8 8 0 1 1-2.3-5.6" /><path d="M20 4v5h-5" />
-              </svg>
-            </span>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5h16l-6 7v6l-4 2v-8z" />
+                </svg>
+              </span>
+              <p>Register the rank ranges you actually boost. Anything outside them is skipped on its own: no half-answered orders to clean up, no offers you'd regret.</p>
+            </div>
+          </article>
+
+          <article class="razao" data-strike>
             <h3>Updates land on their own</h3>
-            <p>New versions install themselves in the background. Your prices, ranges, messages, keys and Eldorado login carry over untouched, every single time.</p>
-          </div>
+            <div class="razao-corpo">
+              <span class="razao-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 12a8 8 0 1 1-2.3-5.6" /><path d="M20 4v5h-5" />
+                </svg>
+              </span>
+              <p>New versions install themselves in the background. Your prices, ranges, messages, keys and Eldorado login carry over untouched, every single time.</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <section id="reviews" class="reviews" hidden>
+    <!-- ================= REVIEWS ================= -->
+    <section id="reviews" class="secao" hidden>
       <div class="wrap">
-        <h2 data-reveal>What sellers say</h2>
-        <p class="section-sub" data-reveal>Real feedback from people running FirstBid.</p>
-        <div class="review-grid" id="reviewGrid"></div>
+        <div class="secao-cabeca">
+          <h2 data-strike>What sellers say</h2>
+          <p class="prosa" data-strike data-strike-delay="1">Real feedback from people running FirstBid.</p>
+        </div>
+        <div class="reviews-grade" id="reviewGrid"></div>
       </div>
     </section>
 
-        <section class="cta-band">
-      <div class="cta-glow" aria-hidden="true"></div>
-      <div class="wrap cta-band-inner">
-        <h2 data-reveal>Ready to be the first seller they hear from?</h2>
-        <p class="section-sub" data-reveal>Every second you are not the first message is a buyer already talking to someone else.
-          Pick your game, pick your plan, and be the one they hear from first.</p>
-        <span class="cta-halo" data-reveal>
-          <a class="btn btn-primary btn-shine" href="/pricing">
-            <span>See pricing</span> <span class="btn-arrow">→</span>
+    <!-- ================= FECHO ================= -->
+    <section class="fecho">
+      <div class="ghost-field" aria-hidden="true">
+        <span class="ghost-row" data-depth="2" style="top: 18%; left: -10%;">0000000000</span>
+        <span class="ghost-row" data-depth="3" style="top: 58%; left: -20%;">1111111111</span>
+      </div>
+      <div class="wrap">
+        <h2 data-strike>Be the <span class="struck">first</span> they hear from</h2>
+        <p class="prosa" data-strike data-strike-delay="1">
+          Every second you are not the first message is a buyer already talking to someone
+          else. Pick your game, pick your plan, and be the one they hear from first.
+        </p>
+        <div class="hero-cta" style="justify-content: center;" data-strike data-strike-delay="2">
+          <a class="btn btn-primary" href="/pricing">
+            <span>See pricing</span> <span class="btn-seta" aria-hidden="true">→</span>
           </a>
-        </span>
+        </div>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
     <div class="wrap footer-inner">
-      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span>First<span class="logo-accent">Bid</span></span></a>
       <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
     </div>
     <div class="wrap footer-legal">
@@ -249,8 +391,7 @@
 
   <script type="module">
     // Vercel Web Analytics — site estático, sem build/npm, então usa o pacote
-    // direto de um CDN de módulos ES em vez de instalar (o jeito recomendado
-    // pra "Other" nos docs deles: import { inject } from '@vercel/analytics').
+    // direto de um CDN de módulos ES em vez de instalar.
     import { inject } from "https://esm.sh/@vercel/analytics";
     inject();
   </script>
@@ -259,139 +400,176 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // Nav ganha sombra/fundo mais opaco depois de rolar um pouco.
-    const nav = document.getElementById("siteNav");
-    const onScroll = () => nav.classList.toggle("nav-scrolled", window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    // Scroll-reveal simples (sem dependência): observa [data-reveal] e
-    // adiciona .is-visible quando entra na tela. `revealObserve` fica
-    // exposta pra registrar elementos criados DEPOIS (ex.: os cards de review,
-    // montados via fetch — eles não existem ainda nesta primeira varredura).
-    // Silenciosa se o navegador não tiver IntersectionObserver (elementos
-    // ficam visíveis normalmente, .is-visible não é pré-requisito pra
-    // leitura, só pra animação).
-    let revealObserve = (el) => el.classList.add("is-visible");
+    // ---- entrada: o conteúdo é puxado à frente uma vez, e fica ----------------
+    let strikeObserve = (el) => el.classList.add("acendeu");
     if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            }
+      const obs = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add("acendeu");
+            obs.unobserve(e.target);
           }
         },
-        { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+        { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
       );
-      revealObserve = (el) => observer.observe(el);
+      strikeObserve = (el) => obs.observe(el);
     }
-    document.querySelectorAll("[data-reveal]").forEach(revealObserve);
+    document.querySelectorAll("[data-strike]").forEach((el) => strikeObserve(el));
 
-    // Barra de progresso de leitura no topo — largura = quanto já rolou da página.
-    const progress = document.getElementById("scrollProgress");
-    // Atualiza por transform (ver .scroll-progress no CSS) e só uma vez por
-    // frame — o evento de scroll dispara muito mais que isso.
-    let progressAgendado = false;
-    const onProgress = () => {
-      if (progressAgendado) return;
-      progressAgendado = true;
-      requestAnimationFrame(() => {
-        progressAgendado = false;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
-      });
+    // ---- o relógio do painel -------------------------------------------------
+    const relogio = document.getElementById("relogio");
+    const tique = () => {
+      relogio.textContent = new Date().toISOString().slice(11, 19);
     };
-    onProgress();
-    window.addEventListener("scroll", onProgress, { passive: true });
-    window.addEventListener("resize", onProgress);
+    tique();
+    setInterval(tique, 1000);
 
-    // Spotlight que segue o cursor dentro de cada card (via CSS custom
-    // properties --x/--y, lidas por um ::before com radial-gradient). Só liga
-    // em quem tem hover de verdade (mouse) — sem efeito nenhum em touch, e
-    // desligado se o visitante pediu menos movimento. `wireSpotlight` fica
-    // exposta pra ligar em cards criados depois (reviews, via fetch).
-    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const podeHover = window.matchMedia("(hover: hover)").matches;
-    const wireSpotlight = (card) => {
-      if (semMovimento || !podeHover) return;
-      card.addEventListener("pointermove", (e) => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty("--x", `${e.clientX - rect.left}px`);
-        card.style.setProperty("--y", `${e.clientY - rect.top}px`);
-      });
-    };
-    document.querySelectorAll(".step, .why-card, .jogo-celula").forEach(wireSpotlight);
-
-    // Momento focal da página: o pulso atravessa a linha do pipeline UMA vez,
-    // quando a seção entra na tela, e cada passo acende conforme ele passa —
-    // é o próprio produto (pedido entra no 01, oferta sai no 04, em segundos).
-    // Os atrasos abaixo acompanham a curva de `pipeline-sweep` (1.9s,
-    // cubic-bezier(.16,1,.3,1) — começa rápido e desacelera), por isso os
-    // intervalos crescem em vez de serem iguais.
-    const steps = document.querySelector(".steps");
-    if (steps) {
-      const acender = () => {
-        const cards = steps.querySelectorAll(".step");
-        if (semMovimento) {
-          cards.forEach((c) => c.classList.add("is-lit"));
-          return;
-        }
-        steps.classList.add("is-running");
-        [90, 380, 760, 1180].forEach((ms, i) => {
-          setTimeout(() => cards[i]?.classList.add("is-lit"), ms);
+    // ---- o pipeline preso na tela -------------------------------------------
+    // A câmera (o scroll) desliza; o estado faz SNAP. O passo que acabou de
+    // apagar fica um degrau em rastro, como o fósforo de verdade.
+    const trilho = document.getElementById("pipelineTrilho");
+    const passos = [...document.querySelectorAll("#pipelineLista .passo")];
+    if (trilho && passos.length) {
+      let ultimo = -1;
+      const posicionar = () => {
+        const caixa = trilho.getBoundingClientRect();
+        const total = caixa.height - window.innerHeight;
+        if (total <= 0) return;
+        const andado = Math.min(Math.max(-caixa.top / total, 0), 0.9999);
+        const i = Math.floor(andado * passos.length);
+        if (i === ultimo) return;
+        ultimo = i;
+        passos.forEach((p, j) => {
+          p.dataset.estado = j === i ? "ativo" : j === i - 1 ? "rastro" : "apagado";
         });
       };
-      if ("IntersectionObserver" in window) {
-        const pipeObs = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (!entry.isIntersecting) continue;
-              pipeObs.disconnect(); // roda uma vez só, nao a cada scroll
-              acender();
-            }
-          },
-          { threshold: 0.45 }
-        );
-        pipeObs.observe(steps);
-      } else {
-        acender();
+      posicionar();
+      window.addEventListener("scroll", posicionar, { passive: true });
+      window.addEventListener("resize", posicionar);
+    }
+
+    // ---- a matriz: todo preço presente, um aceso ----------------------------
+    // Tabela de EXEMPLO. Os números não são preço do FirstBid nem preço de
+    // ninguém: servem pra mostrar o formato da tabela que o vendedor preenche.
+    const grade = document.getElementById("matrizGrade");
+    const matrizValor = document.getElementById("matrizValor");
+    const matrizRotulo = document.getElementById("matrizRotulo");
+    const RANKS = ["Iron", "Bronze", "Silver", "Gold", "Plat", "Diamond", "Asc", "Immortal"];
+    if (grade) {
+      // Os eixos saem da MESMA lista da grade: nao existe jeito de um dizer
+      // Gold e o outro dizer outra coisa.
+      const eixoX = document.getElementById("matrizEixoX");
+      const eixoY = document.getElementById("matrizEixoY");
+      // Em tela estreita a celula tem ~36px: 4 letras nao cabem e o rotulo
+      // vira borrao. Duas letras ainda identificam o rank na sequencia.
+      const letras = window.matchMedia("(max-width: 720px)").matches ? 2 : 4;
+      for (const r of RANKS) {
+        const x = document.createElement("span");
+        x.textContent = r.slice(0, letras);
+        eixoX.appendChild(x);
+        const y = document.createElement("span");
+        y.textContent = r.slice(0, letras);
+        eixoY.appendChild(y);
+      }
+
+      const celulas = [];
+      for (let linha = 0; linha < RANKS.length; linha++) {
+        for (let col = 0; col < RANKS.length; col++) {
+          const c = document.createElement("span");
+          c.className = "celula";
+          if (col <= linha) {
+            // Não existe preço pra descer de rank: a célula fica presente e escura.
+            c.dataset.estado = "fora";
+            c.textContent = "·";
+          } else {
+            const passos = col - linha;
+            c.textContent = String(8 + passos * 8 + linha * 3);
+            c.dataset.de = RANKS[linha];
+            c.dataset.para = RANKS[col];
+          }
+          grade.appendChild(c);
+          celulas.push(c);
+        }
+      }
+
+      const acender = (c) => {
+        if (!c || c.dataset.estado === "fora") return;
+        for (const outra of celulas) {
+          if (outra.dataset.estado === "fora") continue;
+          outra.dataset.estado = outra === c ? "ativo" : "apagado";
+        }
+        matrizValor.textContent = "$" + c.textContent;
+        matrizRotulo.textContent = `${c.dataset.de} → ${c.dataset.para} · duo`;
+      };
+
+      grade.addEventListener("pointermove", (ev) => {
+        const c = ev.target.closest(".celula");
+        if (c) acender(c);
+      });
+
+      // Sem ponteiro (celular) e com o site parado, o aparelho continua vivo:
+      // um pedido novo "chega" e acende outra célula.
+      const validas = celulas.filter((c) => c.dataset.estado !== "fora");
+      if (!semMovimento.matches && validas.length) {
+        let i = 0;
+        setInterval(() => {
+          i = (i + 7) % validas.length;
+          acender(validas[i]);
+        }, 2600);
+      } else if (validas.length) {
+        acender(validas[Math.floor(validas.length / 3)]);
       }
     }
 
-    // Grade de marcas dos jogos. Substituiu 11 cartões que ocupavam a tela
-    // inteira e repetiam os mesmos dois pontos em todos ("solo e duo", "custom
-    // messages") — isso subiu uma vez para o subtítulo da seção. O que cada
-    // jogo tem de próprio (faixa de rank, região/plataforma) vive agora na
-    // página de preço, no contexto de quem já escolheu o jogo.
-    const grade = document.getElementById("gradeJogos");
-    if (grade && typeof CATALOGO !== "undefined") {
+    // ---- o calor da válvula segue o ponteiro --------------------------------
+    const calor = document.getElementById("tubeHeat");
+    if (calor && !semMovimento.matches && window.matchMedia("(pointer: fine)").matches) {
+      let alvoX = 72, alvoY = 32, x = 72, y = 32, rodando = false;
+      const passo = () => {
+        x += (alvoX - x) * 0.06;
+        y += (alvoY - y) * 0.06;
+        calor.style.setProperty("--heat-x", x.toFixed(2) + "%");
+        calor.style.setProperty("--heat-y", y.toFixed(2) + "%");
+        if (Math.abs(alvoX - x) > 0.1 || Math.abs(alvoY - y) > 0.1) {
+          requestAnimationFrame(passo);
+        } else {
+          rodando = false;
+        }
+      };
+      window.addEventListener("pointermove", (ev) => {
+        alvoX = (ev.clientX / window.innerWidth) * 100;
+        alvoY = (ev.clientY / window.innerHeight) * 100;
+        if (!rodando) { rodando = true; requestAnimationFrame(passo); }
+      }, { passive: true });
+    }
+
+    // ---- grade de jogos ------------------------------------------------------
+    const gradeJogos = document.getElementById("gradeJogos");
+    if (gradeJogos && typeof CATALOGO !== "undefined") {
       for (const jogo of CATALOGO) {
         const a = document.createElement("a");
-        a.className = "jogo-celula";
+        a.className = "jogo";
         a.href = "/pricing";
-        const caixa = document.createElement("span");
-        caixa.className = "jogo-marca";
-        caixa.append(marcaDoJogo(jogo, "jogo-logo"));
-        a.appendChild(caixa);
+        a.appendChild(marcaDoJogo(jogo, "jogo-logo-grande"));
         const nome = document.createElement("span");
         nome.className = "jogo-nome";
         nome.textContent = jogo.nome;
         a.appendChild(nome);
-        grade.appendChild(a);
+        gradeJogos.appendChild(a);
       }
     }
 
-    // Reviews: carregadas de reviews.json (lista simples, editada com o
-    // admin.html local — NUNCA reviews inventadas, ver HANDOFF do site). A
-    // seção inteira (`hidden` no HTML) só aparece quando existe pelo menos
-    // 1 review de verdade — uma seção "Reviews" vazia no ar pareceria pior
-    // que não ter seção nenhuma.
+    // ---- reviews -------------------------------------------------------------
+    // Carregadas de reviews.json (lista simples, editada com o admin.html
+    // local — NUNCA reviews inventadas). A seção inteira (`hidden` no HTML) só
+    // aparece quando existe pelo menos 1 review de verdade.
     fetch("reviews.json")
       .then((res) => (res.ok ? res.json() : []))
       .then((reviews) => {
-        const validReviews = Array.isArray(reviews)
+        const validas = Array.isArray(reviews)
           ? reviews.filter(
               (r) =>
                 r &&
@@ -406,34 +584,33 @@
                 (r.role == null || typeof r.role === "string")
             )
           : [];
-        if (validReviews.length === 0) return;
+        if (validas.length === 0) return;
 
         const esc = (s) =>
           String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-        const stars = (n) => "★".repeat(Math.max(0, Math.min(5, Math.round(n)))) + "☆".repeat(5 - Math.max(0, Math.min(5, Math.round(n))));
+        const estrelas = (n) => {
+          const k = Math.max(0, Math.min(5, Math.round(n)));
+          return "★".repeat(k) + "☆".repeat(5 - k);
+        };
 
         const grid = document.getElementById("reviewGrid");
-        grid.innerHTML = validReviews
+        grid.innerHTML = validas
           .map(
             (r, i) => `
-          <div class="review-card" data-reveal ${i % 3 ? `data-reveal-delay="${Math.min(i % 3, 3)}"` : ""}>
-            <div class="review-stars" role="img" aria-label="${r.rating} out of 5 stars"><span aria-hidden="true">${stars(r.rating)}</span></div>
-            <p class="review-text">"${esc(r.text)}"</p>
-            <p class="review-author">${esc(r.name)}${r.role ? ` <span class="review-role">— ${esc(r.role)}</span>` : ""}</p>
-          </div>`
+          <article class="review" data-strike ${i % 3 ? `data-strike-delay="${Math.min(i % 3, 3)}"` : ""}>
+            <div class="review-estrelas" role="img" aria-label="${r.rating} out of 5 stars"><span aria-hidden="true">${estrelas(r.rating)}</span></div>
+            <p class="review-texto">"${esc(r.text)}"</p>
+            <p class="review-autor">${esc(r.name)}${r.role ? ` — ${esc(r.role)}` : ""}</p>
+          </article>`
           )
           .join("");
 
         document.getElementById("reviews").hidden = false;
         document.getElementById("navReviews").hidden = false;
-        grid.querySelectorAll(".review-card").forEach((card) => {
-          revealObserve(card);
-          wireSpotlight(card);
-        });
+        grid.querySelectorAll("[data-strike]").forEach((el) => strikeObserve(el));
       })
       .catch(() => {
-        // Sem reviews.json ou rede falhou: a seção simplesmente continua
-        // escondida (comportamento padrão), não é erro visível pro visitante.
+        // Sem reviews.json ou rede falhou: a seção continua escondida.
       });
   </script>
 </body>

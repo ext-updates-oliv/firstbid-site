@@ -1,1286 +1,1134 @@
+/* =========================================================================
+   FirstBid — mundo visual "pilha de numerais catódicos".
+
+   A regra que governa tudo: TODO valor possível está presente ao mesmo tempo,
+   apagado, atrás de uma malha de bronze. Um é puxado à frente e acende.
+   É literalmente a matriz de preço do vendedor: todos os preços existem, e o
+   pedido que chega escolhe UM.
+
+   Consequências que não se negociam aqui:
+   - o plano de malha corre além de TODA borda e nunca é emoldurado;
+   - não existe caixa, régua ou divisória de agrupamento — o que agrupa é
+     densidade de malha e profundidade;
+   - a prosa sai de cima da malha, senão não se lê;
+   - valor troca por SNAP, nunca por tween. O que desliza é a câmera (o
+     scroll), não o número.
+   ========================================================================= */
+
 :root {
-  --bg: #08090d;
-  --bg-soft: #0f1117;
-  --card: #12141c;
-  --border: #23262f;
-  --text: #e9eaee;
-  --text-dim: #9a9daa;
-  --accent: #ffc950;
-  --accent-soft: rgba(255, 201, 80, 0.12);
-  --green: #37d67a;
-  --radius: 14px;
-  --wrap: 1080px;
+  /* Os dois únicos matizes do mundo: tinta-azul e o cátodo aceso.
+     O cátodo é o #ffc950 da marca — a mesma cor do botão "Buy now" da
+     Eldorado. Aqui ele deixa de ser enfeite e passa a significar ATIVO. */
+  --ground: #070b14;
+  --ground-deep: #04070e;
+  --ground-lift: #0b111d;
+
+  --glow: #ffc950;
+  --glow-core: #fff0c8;   /* o núcleo mais quente do dígito aceso */
+  --glow-decay: #9c7434;  /* rastro do valor que acabou de apagar */
+
+  --ghost: #1a2334;       /* numeral presente, apagado */
+  --ghost-lit: #2b3a55;   /* fantasma mais perto da superfície */
+
+  --bone: #ece6d9;
+  --bone-dim: #93a0b6;    /* tintado do ground, nunca cinza neutro */
+
+  --wire: rgba(255, 201, 80, 0.16);
+
+  /* A malha de bronze. 3px de passo: fina o bastante pra virar textura,
+     grossa o bastante pra sobreviver ao downscale do celular. */
+  --gauze:
+    repeating-linear-gradient(0deg, rgba(255, 201, 80, 0.055) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 201, 80, 0.055) 0 1px, transparent 1px 3px);
+  /* A mesma malha em negativo, pra morder por DENTRO das letras acesas. */
+  --gauze-bite:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.42) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0 1px, transparent 1px 3px);
+
+  --display: "Big Shoulders Display", "Big Shoulders", "Oswald", sans-serif;
+  --mono: "Chivo Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --wrap: 1280px;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+
+  /* Uma curva só no site inteiro: saída exponencial, entrando de um estado
+     que já era visível. */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Superfícies que o navegador desenha por padrão (seleção, anel de foco, barra
-   de rolagem, cursor de texto). Sem isto elas vêm no cinza do Chrome e destoam
-   do resto — é o detalhe mais barato que separa uma página construída de uma
-   montada. */
-::selection { background: rgba(255, 201, 80, 0.3); color: #fff; text-shadow: none; }
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 6px;
-}
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
 html {
-  scrollbar-width: thin;
-  scrollbar-color: #2f3341 var(--bg);
-  caret-color: var(--accent);
-  accent-color: var(--accent);
+  scroll-behavior: smooth;
+  /* O scroll-driven do hero mede a partir do topo real. */
+  scroll-padding-top: 6rem;
 }
-::-webkit-scrollbar { width: 11px; height: 11px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb {
-  background: #2f3341;
-  border-radius: 99px;
-  border: 3px solid var(--bg);
-}
-::-webkit-scrollbar-thumb:hover { background: #414658; }
-
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  background: var(--ground);
+  color: var(--bone);
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  position: relative;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, .logo, .stat-num, .step-num {
-  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* As superfícies que o navegador desenha por mim também são do mundo. */
+::selection { background: var(--glow); color: var(--ground-deep); }
+:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 3px;
 }
+html { scrollbar-color: var(--glow-decay) var(--ground-deep); scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--ground-deep); }
+::-webkit-scrollbar-thumb { background: var(--glow-decay); }
+::-webkit-scrollbar-thumb:hover { background: var(--glow); }
 
-.stat-num, .step-num, .btn-shine {
-  font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
-}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
 
-/* Textura sutil no fundo inteiro — o mesmo truque que dá aquele acabamento
-   "tech" sem pesar a página (SVG inline em base64, sem requisição extra). */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+PGZpbHRlciBpZD0ibiI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOSIgbnVtT2N0YXZlcz0iMiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIvPjwvc3ZnPg==");
-}
+/* Todo número do site é medição: alinha em coluna. */
+.num, .stat-num, .price, time, .lote-val { font-variant-numeric: tabular-nums; }
 
 .wrap {
+  width: 100%;
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: 0 24px;
+  padding-inline: var(--gutter);
 }
 
-a { color: inherit; text-decoration: none; }
+/* A prosa sai de cima da malha — essa é a regra do mundo, e também a única
+   forma de ela permanecer legível. */
+.prosa {
+  max-width: 68ch;
+  color: var(--bone-dim);
+  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.075rem);
+  line-height: 1.75;
+}
 
-h1, h2, h3 { line-height: 1.15; margin: 0; }
+/* ---------- o plano de malha: corre além de toda borda, sem moldura ---------- */
+
+.gauze-plane {
+  position: fixed;
+  inset: -10vh -10vw;
+  background-image: var(--gauze);
+  pointer-events: none;
+  z-index: 0;
+  /* mais densa embaixo, como a tela do anodo perto do vidro */
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.9) 45%, rgba(0,0,0,.55) 100%);
+}
+
+/* O calor da válvula acesa, ancorado onde o valor ativo está. */
+.tube-heat {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(46vw 46vw at var(--heat-x, 72%) var(--heat-y, 32%),
+      rgba(255, 201, 80, 0.10) 0%, rgba(255, 201, 80, 0.03) 38%, transparent 70%);
+  transition: background-position 1.2s var(--ease);
+}
+
+main, .nav, .footer { position: relative; z-index: 1; }
+
+/* ---------- tipografia do mundo ---------- */
+
+h1, h2, h3, .display {
+  font-family: var(--display);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.86;
+  letter-spacing: -0.005em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(3.1rem, 6vw, 4.9rem);
+  color: var(--bone);
+}
+
+h2 {
+  font-size: clamp(2.15rem, 4.4vw, 3.6rem);
+  color: var(--bone);
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 2rem);
+  color: var(--bone);
+  line-height: 0.95;
+}
+
+/* O tratamento "struck": a letra acesa com a malha mordendo por dentro e o
+   bloom do fósforo em volta. Só em escala grande — abaixo de ~2rem a malha
+   come a legibilidade. */
+.struck {
+  color: transparent;
+  background-color: var(--glow);
+  background-image: var(--gauze-bite);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(255, 201, 80, 0.42))
+          drop-shadow(0 0 4px rgba(255, 201, 80, 0.55));
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .struck { color: var(--glow); background: none; }
+}
+
+/* Rótulo de instrumento: caixa alta, espaçado, pequeno. */
+.rotulo {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+.rotulo-aceso { color: var(--glow); }
+
+/* ---------- o campo de fantasmas ---------- */
+/* Todos os valores existem, escalonados em profundidade. Largura maior
+   acrescenta PROFUNDIDADE de fantasmas, nunca colunas novas. */
+
+.ghost-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  font-family: var(--display);
+  font-weight: 900;
+  line-height: 0.8;
+  user-select: none;
+}
+.ghost-row {
+  position: absolute;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ghost);
+  font-size: clamp(7rem, 17vw, 15rem);
+}
+.ghost-row[data-depth="1"] { -webkit-text-stroke-color: var(--ghost-lit); opacity: 0.85; }
+.ghost-row[data-depth="2"] { -webkit-text-stroke-color: var(--ghost); opacity: 0.6; filter: blur(0.6px); }
+.ghost-row[data-depth="3"] { -webkit-text-stroke-color: var(--ghost); opacity: 0.35; filter: blur(1.4px); }
 
 /* ---------- nav ---------- */
 
 .nav {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(8, 9, 13, 0.6);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid transparent;
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.nav.nav-scrolled {
-  background: rgba(8, 9, 13, 0.88);
-  border-bottom-color: var(--border);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-}
-
-/* Barra fina no topo mostrando o quanto já rolou da página. */
-.scroll-progress {
   position: fixed;
   top: 0;
   left: 0;
-  height: 2px;
-  width: 100%;
-  z-index: 30;
-  background: linear-gradient(90deg, var(--accent), #ffe29a);
-  /* `scaleX` em vez de `width`: largura força layout a cada frame de scroll —
-     numa barra que atualiza no scroll inteiro isso é o caminho mais curto pra
-     travar. Transform roda no compositor. */
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  will-change: transform;
+  right: 0;
+  z-index: 60;
+  /* Solida de verdade: com gradiente o titulo de secao passava POR TRAS e as
+     duas letras se misturavam na rolagem. */
+  background: var(--ground-deep);
+  border-bottom: 1px solid rgba(147, 160, 182, 0.1);
 }
-
-/* Sublinhado que desliza da esquerda no hover dos links do menu. */
-.nav-links a {
-  position: relative;
-  padding-bottom: 2px;
-}
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.2s ease;
-}
-.nav-links a:hover::after { transform: scaleX(1); }
-
 .nav-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 64px;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  height: 4.5rem;
 }
-
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 1.15rem;
-  letter-spacing: -0.01em;
+  gap: 0.6rem;
+  text-decoration: none;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--bone);
+  flex: none;
 }
-.logo-accent { color: var(--accent); }
-.logo-mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  display: block;
-}
+.logo-mark { width: 1.9rem; height: 1.9rem; }
+.logo-accent { color: var(--glow); }
 
 .nav-links {
   display: flex;
-  gap: 28px;
+  gap: clamp(0.75rem, 1.6vw, 1.6rem);
+  margin-inline-start: auto;
+  white-space: nowrap;
 }
 .nav-links a {
-  color: var(--text-dim);
-  font-size: 0.92rem;
-  transition: color 0.15s ease;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--bone-dim);
+  padding-block: 0.4rem;
+  white-space: nowrap;
+  transition: color 0.18s var(--ease);
 }
-.nav-links a:hover { color: var(--text); }
+.nav-links a:hover { color: var(--glow); }
 
-/* ---------- buttons ---------- */
+.nav-acoes { display: flex; align-items: center; gap: 0.7rem; flex: none; }
+.nav-estado {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  margin-inline-start: 1.5rem;
+}
+.nav-estado .rotulo { white-space: nowrap; }
+.nav-estado .ponto {
+  width: 6px;
+  height: 6px;
+  background: var(--glow);
+  box-shadow: 0 0 8px var(--glow);
+  animation: pulso 2.4s steps(2, jump-none) infinite;
+}
+@keyframes pulso { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.25; } }
+
+/* ---------- controles ---------- */
+/* O botão é o único retângulo com borda do site: é controle, não moldura de
+   agrupamento. Inativo desenhado a fio; ativo preenchido com a malha e aceso,
+   como o dígito. */
 
 .btn {
+  --btn-cor: var(--glow);
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 13px 24px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border: 1px solid transparent;
+  gap: 0.7rem;
+  padding: 0.95rem 1.7rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--btn-cor);
+  border: 1px solid var(--btn-cor);
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-  white-space: nowrap;
+  transition: color 0.16s var(--ease), background-color 0.16s var(--ease),
+              box-shadow 0.16s var(--ease);
 }
-.btn:hover { transform: translateY(-1px); }
-
+.btn:hover {
+  background-color: color-mix(in srgb, var(--btn-cor) 14%, transparent);
+  box-shadow: 0 0 0 1px var(--btn-cor), 0 0 26px rgba(255, 201, 80, 0.28);
+}
 .btn-primary {
-  background: var(--accent);
-  color: #0a0b0f;
-  box-shadow: 0 0 0 0 rgba(255, 201, 80, 0.5);
+  color: var(--ground-deep);
+  background-color: var(--glow);
+  box-shadow: 0 0 34px rgba(255, 201, 80, 0.3);
 }
 .btn-primary:hover {
-  background: #ffd670;
-  box-shadow: 0 8px 28px -6px rgba(255, 201, 80, 0.65);
+  background-color: var(--glow-core);
+  box-shadow: 0 0 48px rgba(255, 201, 80, 0.45);
 }
-
-.btn-ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--text);
-}
-.btn-ghost:hover { border-color: var(--accent); }
-
-.btn-small {
-  padding: 9px 18px;
-  font-size: 0.88rem;
-}
-
-.btn-block {
-  width: 100%;
-  margin-top: 22px;
-}
-
-/* Brilho que atravessa o botão no hover — efeito "shine sweep". */
-.btn-shine {
-  position: relative;
-  overflow: hidden;
-}
-.btn-shine::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -60%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.55s ease;
-}
-.btn-shine:hover::after { left: 130%; }
-
-.btn-arrow {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-.btn-shine:hover .btn-arrow { transform: translateX(3px); }
-
-/* Anel que respira em volta do CTA primário — chama o olho pro único botão
-   que importa de verdade, sem competir com o shine sweep (fica num ::before
-   do WRAPPER, não do próprio botão, porque .btn-shine tem overflow:hidden). */
-.cta-halo {
-  position: relative;
-  display: inline-flex;
-}
-.cta-halo::before {
-  content: "";
-  position: absolute;
-  inset: -5px;
-  border-radius: 999px;
-  border: 1.5px solid var(--accent);
-  opacity: 0;
-  pointer-events: none;
-  animation: cta-ring 2.8s ease-out infinite;
-}
-.cta-halo:hover::before { animation-play-state: paused; opacity: 0; }
-@keyframes cta-ring {
-  0% { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.3); opacity: 0; }
-}
+.btn-ghost { --btn-cor: var(--bone-dim); }
+.btn-ghost:hover { --btn-cor: var(--bone); }
+.btn-small { padding: 0.6rem 1.05rem; font-size: 0.68rem; }
+.btn-seta { transition: transform 0.2s var(--ease); }
+.btn:hover .btn-seta { transform: translateX(4px); }
+.icone-discord { width: 1rem; height: 0.76rem; }
 
 /* ---------- hero ---------- */
 
 .hero {
   position: relative;
-  padding: 112px 0 68px;
-  background:
-    radial-gradient(720px 380px at 50% -10%, var(--accent-soft), transparent 70%);
-  border-bottom: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: 6rem 3rem;
   overflow: hidden;
 }
-
-/* Grade sutil de fundo, tipo blueprint — desvanece pras bordas pra não competir com o texto. */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image:
-    linear-gradient(rgba(233, 234, 238, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(233, 234, 238, 0.05) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: radial-gradient(600px 340px at 50% 0%, #000 40%, transparent 85%);
-  -webkit-mask-image: radial-gradient(600px 340px at 50% 0%, #000 40%, transparent 85%);
-}
-
-/* Dois blobs desfocados, flutuando bem devagar — dão profundidade sem virar distração. */
-.hero-glow {
-  position: absolute;
-  z-index: 0;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.35;
-  pointer-events: none;
-}
-.hero-glow-a {
-  width: 420px;
-  height: 420px;
-  top: -180px;
-  left: 8%;
-  background: var(--accent);
-  animation: float-a 14s ease-in-out infinite;
-}
-.hero-glow-b {
-  width: 360px;
-  height: 360px;
-  top: -120px;
-  right: 6%;
-  background: #ffe29a;
-  animation: float-b 17s ease-in-out infinite;
-}
-
-@keyframes float-a {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, 40px); }
-}
-@keyframes float-b {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-25px, 30px); }
-}
-
-.hero-inner { position: relative; z-index: 1; text-align: center; }
-
-.text-accent {
-  color: var(--accent);
-}
-
-.hero h1 {
-  font-size: clamp(2.3rem, 5.4vw, 3.7rem);
-  letter-spacing: -0.025em;
-  margin-bottom: 24px;
-}
-
-.hero-sub {
-  max-width: 600px;
-  margin: 0 auto 38px;
-  color: var(--text-dim);
-  font-size: 1.08rem;
-  line-height: 1.6;
-}
-
-.hero-cta {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 64px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  max-width: 820px;
-  margin: 0 auto;
-}
-
-.stat {
-  background: var(--bg-soft);
-  padding: 22px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-num {
-  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.stat-label {
-  font-size: 0.78rem;
-  color: var(--text-dim);
-}
-
-/* ---------- shared section chrome ---------- */
-
-section { padding: 88px 0; }
-
-section h2 {
-  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
-  text-align: center;
-  letter-spacing: -0.01em;
-}
-
-.section-sub {
-  text-align: center;
-  color: var(--text-dim);
-  max-width: 560px;
-  margin: 14px auto 56px;
-}
-
-/* ---------- how it works ---------- */
-
-.how { border-bottom: 1px solid var(--border); }
-
-.steps {
+.hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  padding-top: 30px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  width: 100%;
 }
+.hero-esq { position: relative; z-index: 2; }
+.hero h1 { margin-bottom: 1.5rem; }
+.hero h1 .linha { display: block; }
+/* A tese e "first message"; o resto da frase e o contexto dela. */
+.hero h1 .linha-menor { font-size: 0.56em; letter-spacing: 0.005em; }
+.hero-prosa { margin-bottom: 2rem; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 0.9rem; }
 
-/* Linha "pipeline" acima dos 4 passos, com um brilho que percorre da esquerda
-   pra direita — reforça visualmente que é uma sequência (01 -> 02 -> 03 -> 04).
-   Só faz sentido no layout de 4 colunas; escondida quando empilha (ver media
-   query no fim do arquivo). */
-.steps::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 2%;
-  right: 2%;
-  height: 1px;
-  background: var(--border);
-}
-/* O pulso percorre a linha UMA vez, quando a seção entra na tela, e cada passo
-   acende conforme ele passa (classe `is-lit`, disparada pelo observer no
-   index.html). Antes isto era um loop infinito de 5s que rodava até fora da
-   tela: bonito, mas decorativo — não dizia nada e gastava frame à toa. Agora é
-   a mesma coisa que o produto faz: um sinal entra no 01 e sai no 04. */
-.steps::after {
-  content: "";
-  position: absolute;
-  top: -1.5px;
-  left: -90px;
-  width: 90px;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  filter: blur(1px);
-  opacity: 0;
-}
-.steps.is-running::after {
-  animation: pipeline-sweep 1.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes pipeline-sweep {
-  0% { left: -90px; opacity: 0; }
-  10% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
-}
-
-/* Estado "o pulso ainda não chegou aqui" — só sob `html.js`, pra página sem
-   script continuar legível com os números já dourados. */
-html.js .step-num { color: var(--text-dim); transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-html.js .step.is-lit .step-num { color: var(--accent); }
-html.js .step.is-lit { animation: step-ignite 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-@keyframes step-ignite {
-  0% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0), 0 0 0 0 rgba(255, 201, 80, 0); }
-  35% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.9), 0 12px 30px -16px rgba(255, 201, 80, 0.5); }
-  100% { box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.4), 0 0 0 0 rgba(255, 201, 80, 0); }
-}
-
-/* Spotlight que segue o cursor — compartilhado entre .step/.game-card/.why-card.
-   `--x`/`--y` são setados via JS (pointermove); sem JS ou em touch, o
-   ::before some (opacity 0 -> nunca fica um brilho preso no canto). */
-.step, .game-card, .why-card, .review-card {
+/* O aparelho: o pedido que chega e o valor que acende. */
+.tubo {
   position: relative;
-  overflow: hidden;
-}
-.step::before, .game-card::before, .why-card::before, .review-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0;
-  background: radial-gradient(220px circle at var(--x, 50%) var(--y, 50%), rgba(255, 201, 80, 0.14), transparent 70%);
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.step:hover::before, .game-card:hover::before, .why-card:hover::before, .review-card:hover::before { opacity: 1; }
-.step > *, .game-card > *, .why-card > *, .review-card > * { position: relative; z-index: 1; }
-
-.step {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 26px 22px;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.step:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
-}
-
-.step-num {
-  display: block;
-  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
-  color: var(--accent);
-  font-weight: 700;
-  margin-bottom: 14px;
-}
-
-.step h3 {
-  font-size: 1.02rem;
-  margin-bottom: 8px;
-}
-
-.step p {
-  color: var(--text-dim);
-  font-size: 0.92rem;
-  margin: 0;
-}
-
-/* ---------- games ---------- */
-
-.games { border-bottom: 1px solid var(--border); }
-
-.game-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.game-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 30px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-/* Glow que "sangra" pra fora do card no hover — igual ao efeito do
-   eldobot.xyz (conferido ao vivo: é hover por card, colorido por jogo, não é
-   um spotlight seguindo o mouse pela tela toda — isso lá é só decoração fixa
-   de fundo). Cor por jogo via `--game-color` (custom property setada inline
-   no card, ex.: o vermelho oficial do Valorant) — sem ela, cai na cor de
-   marca (amarelo) igual sempre foi com só o Fortnite. */
-.game-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--game-color, var(--accent));
-  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset,
-    0 22px 50px -18px color-mix(in srgb, var(--game-color, var(--accent)) 50%, transparent);
-}
-
-.game-live {
-  border-color: var(--game-color, var(--accent));
-  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset;
-}
-.game-live:hover {
-  box-shadow: 0 0 0 1px var(--game-color, var(--accent)) inset,
-    0 26px 60px -16px color-mix(in srgb, var(--game-color, var(--accent)) 65%, transparent);
-}
-
-/* Setinha no canto, escondida por padrão, entra com fade + slide no hover.
-   Canto INFERIOR direito de propósito (não o superior) — o superior já tem o
-   badge "Live"/"Coming soon" ali, colidindo. */
-.card-arrow {
-  position: absolute;
-  bottom: 22px;
-  right: 22px;
   z-index: 2;
-  width: 30px;
-  height: 30px;
+  min-height: min(62vh, 34rem);
+  display: grid;
+  align-content: center;
+  gap: 1.1rem;
+}
+.tubo-topo {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.9rem;
-  opacity: 0;
-  transform: translate(-6px, 6px);
-  transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-.game-card:hover .card-arrow {
-  opacity: 1;
-  transform: translate(0, 0);
-  border-color: var(--game-color, var(--accent));
-  color: var(--game-color, var(--accent));
-}
-
-.pulse-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  margin-right: 6px;
-  box-shadow: 0 0 0 0 rgba(55, 214, 122, 0.6);
-  animation: pulse 2s ease-out infinite;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(55, 214, 122, 0.55); }
-  70% { box-shadow: 0 0 0 7px rgba(55, 214, 122, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(55, 214, 122, 0); }
-}
-
-.game-card-head {
-  display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 18px;
+  gap: 1rem;
 }
-
-.game-card-head h3 { font-size: 1.3rem; }
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.tubo-pedido {
+  display: grid;
+  gap: 0.35rem;
+}
+.tubo-pedido dt {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  padding: 5px 11px;
-  border-radius: 999px;
+  color: var(--bone-dim);
 }
-.badge-live { background: rgba(55, 214, 122, 0.14); color: var(--green); }
-.badge-soon { background: var(--border); color: var(--text-dim); }
+.tubo-pedido dd {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  text-transform: uppercase;
+  color: var(--bone);
+  line-height: 1;
+}
 
-.game-features {
+/* O valor aceso: o número que o pedido escolheu. */
+.valor {
+  position: relative;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(5.5rem, 17vw, 13rem);
+  line-height: 0.78;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.06em;
+}
+.valor-cifra { font-size: 0.42em; margin-top: 0.16em; }
+
+/* A pilha atrás do valor: os outros preços da matriz, apagados. */
+.valor-pilha {
+  position: absolute;
+  inset: -22% -8% -22% -4%;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: -1;
+}
+.valor-pilha span {
+  grid-area: 1 / 1;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(5.5rem, 17vw, 13rem);
+  line-height: 0.78;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ghost-lit);
+}
+.valor-pilha span:nth-child(1) { transform: translate(-14%, -9%) scale(0.93); opacity: 0.5; }
+.valor-pilha span:nth-child(2) { transform: translate(12%, 7%) scale(0.88); opacity: 0.36; filter: blur(1px); }
+.valor-pilha span:nth-child(3) { transform: translate(-6%, 15%) scale(0.82); opacity: 0.22; filter: blur(2px); }
+.valor-pilha span:nth-child(4) { transform: translate(18%, -14%) scale(0.78); opacity: 0.14; filter: blur(3px); }
+
+.tubo-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1.6rem;
+}
+.tubo-tempo {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--glow);
+  line-height: 1;
+}
+
+/* ---------- o pipeline preso na tela ---------- */
+/* Quatro estados: um struck forward por vez, os outros presentes e apagados.
+   A câmera desliza; os estados fazem snap. */
+
+.pipeline { position: relative; }
+.pipeline-trilho { height: 400svh; }
+.pipeline-cena {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  align-content: center;
+  /* A nav e fixa e opaca: sem esta folga ela come o titulo da cena. */
+  padding-top: 4.5rem;
+  overflow: hidden;
+}
+.pipeline-lista {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.game-features li {
-  color: var(--text-dim);
-  font-size: 0.93rem;
-  padding-left: 22px;
-  position: relative;
-}
-.game-features li::before {
-  content: "";
-  position: absolute;
-  left: 1px;
-  top: 7px;
-  width: 9px;
-  height: 5px;
-  border-left: 2px solid var(--game-color, var(--accent));
-  border-bottom: 2px solid var(--game-color, var(--accent));
-  transform: rotate(-45deg);
-}
-
-.game-soon { display: flex; flex-direction: column; justify-content: center; }
-.soon-text {
-  color: var(--text-dim);
-  font-size: 0.93rem;
-  margin: 0;
-}
-
-/* ---------- why ---------- */
-
-.why h2 {
-  margin-bottom: 56px;
-}
-
-.why-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: clamp(0.5rem, 1.2vw, 1rem);
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(1.25rem, 3vh, 2.25rem);
 }
+.passo {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1rem, 3vw, 2.5rem);
+}
+.passo-num {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 0.8;
+  color: var(--ghost-lit);
+}
+.passo-txt h3 {
+  color: var(--ghost-lit);
+  font-size: clamp(1.5rem, 3.4vw, 2.9rem);
+  transition: none; /* snap, nunca tween */
+}
+.passo-txt p {
+  margin: 0.5rem 0 0;
+  max-width: 54ch;
+  color: transparent;
+  font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.05rem);
+  line-height: 1.7;
+  height: 0;
+  overflow: hidden;
+}
+/* O struck: acende sem transição — o valor anterior deixa rastro por um tempo. */
+.passo[data-estado="ativo"] .passo-num { color: var(--glow); }
+.passo[data-estado="ativo"] .passo-txt h3 {
+  color: transparent;
+  background-color: var(--glow);
+  background-image: var(--gauze-bite);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(255, 201, 80, 0.4));
+}
+.passo[data-estado="ativo"] .passo-txt p {
+  color: var(--bone-dim);
+  height: auto;
+}
+.passo[data-estado="rastro"] .passo-num,
+.passo[data-estado="rastro"] .passo-txt h3 { color: var(--glow-decay); }
 
-.why-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 26px 22px;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.why-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
-}
+/* ---------- a matriz ---------- */
 
-.why-icon {
+.matriz-cena { position: relative; padding-block: clamp(5rem, 12vh, 9rem); }
+/* A matriz e UM instrumento, nao um mosaico de blocos: densa o bastante pra
+   ser lida de relance como a tabela que o vendedor preencheu. O eixo precisa de
+   rotulo, senao vira padrao decorativo em vez de mecanismo. */
+.matriz-quadro {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.5rem 0.75rem;
+  align-items: stretch;
+  max-width: 38rem;
+  margin-top: clamp(1.75rem, 4vw, 2.75rem);
+  position: relative;
+  z-index: 2;
+}
+.matriz-canto { grid-area: 1 / 1; }
+.matriz-eixo-x {
+  grid-area: 1 / 2;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+}
+.matriz-eixo-y {
+  grid-area: 2 / 1;
+  display: grid;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+  text-align: right;
+}
+.matriz-eixo-x span,
+.matriz-eixo-y span {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  display: grid;
+  place-items: center;
+}
+.matriz-eixo-y span { place-items: center end; }
+.matriz-canto { font-size: 0.58rem; letter-spacing: 0.14em; color: var(--bone-dim); text-transform: uppercase; white-space: nowrap; }
+
+.matriz-grade {
+  grid-area: 2 / 2;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+  position: relative;
+  z-index: 2;
+}
+.celula {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 1.4vw, 1.15rem);
+  color: var(--ghost-lit);
+  background: transparent;
+  cursor: crosshair;
+  transition: none;
+}
+.celula:hover,
+.celula[data-estado="ativo"] {
+  color: var(--ground-deep);
+  background-color: var(--glow);
+  background-image: var(--gauze-bite);
+  box-shadow: 0 0 30px rgba(255, 201, 80, 0.4);
+}
+.celula[data-estado="rastro"] { color: var(--glow-decay); }
+.celula[data-estado="fora"] { color: var(--ghost); }
+
+.matriz-leitura {
+  margin-top: 1.75rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  align-items: baseline;
+  position: relative;
+  z-index: 2;
 }
-.why-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.why-card h3 {
-  font-size: 1rem;
-  margin-bottom: 8px;
+.matriz-leitura .valor-linha {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+  color: var(--glow);
 }
 
-.why-card p {
-  color: var(--text-dim);
-  font-size: 0.9rem;
-  margin: 0;
+/* ---------- jogos ---------- */
+
+.jogos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  position: relative;
+  z-index: 2;
 }
+.jogo {
+  display: grid;
+  justify-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 0.5rem;
+  text-decoration: none;
+  /* Silhueta BONE, nao a arte original — a mesma solucao ja usada nas abas da
+     pagina de preco, e pela mesma razao medida: a maioria destes wordmarks vem
+     em PRETO (Fortnite e Valorant sao literalmente #000) e sobre o fundo escuro
+     eles somem. `brightness(0)` achata em preto e `invert(1)` vira branco, com
+     qualquer PNG transparente, sem editar arquivo.
+     Cai redondo neste mundo: em repouso o jogo e um valor apagado; sob o
+     ponteiro ele e puxado a frente com a cor de verdade.
+     A silhueta achata emblema preenchido (a da Brawl Stars vira um borrao),
+     mas aqui o NOME do jogo fica logo abaixo — identidade nunca se perde. */
+  filter: brightness(0) invert(1);
+  opacity: 0.62;
+  transition: opacity 0.18s var(--ease), filter 0.18s var(--ease),
+              transform 0.18s var(--ease);
+}
+/* Sem hover (celular) nada acende sozinho: o repouso JA e o estado final, e
+   apagado demais deixaria a prova dos onze jogos parecendo secao vazia. */
+@media (hover: none) {
+  .jogo { opacity: 0.92; }
+}
+.jogo:hover,
+.jogo:focus-visible {
+  filter: none;
+  opacity: 1;
+  transform: translateY(-4px);
+}
+.jogo:hover .jogo-nome,
+.jogo:focus-visible .jogo-nome { color: var(--glow); }
+/* A altura vem inline de `marcaDoJogo`, que normaliza por AREA — sem isso o
+   wordmark largo ocupa varias vezes a area do quadrado e o olho le "esse jogo
+   e mais importante". Aqui so garanto que nada estoura a celula. */
+.jogo img { width: auto; max-width: 100%; }
+.jogo-nome {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  text-align: center;
+}
+
+/* ---------- por que (pilha de valores, não cartões) ---------- */
+
+.razoes {
+  display: grid;
+  gap: clamp(2.5rem, 6vh, 4.5rem);
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  counter-reset: razao;
+}
+.razao {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1rem, 4vw, 3.5rem);
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+.razao h3 {
+  font-size: clamp(1.6rem, 4.2vw, 3rem);
+  color: var(--bone);
+}
+.razao-corpo { color: var(--bone-dim); max-width: 60ch; }
+.razao-corpo p { margin: 0; }
+.razao-marca {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--glow);
+}
+.razao-marca svg { width: 100%; height: 100%; }
 
 /* ---------- reviews ---------- */
 
-.reviews { border-bottom: 1px solid var(--border); }
-
-.review-grid {
+.reviews-grade {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.review-card:only-child {
-  grid-column: 1 / -1;
-  width: min(100%, 560px);
-  justify-self: center;
-}
-
-.review-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 26px 22px;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.review-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 16px 34px -18px rgba(255, 201, 80, 0.5);
-}
-
-.review-stars {
-  color: var(--accent);
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
-
-.review-text {
-  color: var(--text);
-  font-size: 0.95rem;
-  margin: 0 0 14px;
-}
-
-.review-author {
-  color: var(--text-dim);
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin: 0;
-}
-.review-role { font-weight: 400; }
-
-/* ---------- cta band ---------- */
-
-.cta-band {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: clamp(2rem, 4vw, 3rem);
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
   position: relative;
-  background: linear-gradient(180deg, var(--bg-soft), var(--bg));
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  z-index: 2;
+}
+.review { display: grid; gap: 0.75rem; align-content: start; }
+.review-estrelas { color: var(--glow); letter-spacing: 0.18em; font-size: 0.85rem; }
+.review-texto { margin: 0; color: var(--bone); font-size: 1.02rem; line-height: 1.7; }
+.review-autor {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+/* ---------- fecho ---------- */
+
+.fecho {
+  position: relative;
+  padding-block: clamp(6rem, 18vh, 12rem);
+  text-align: center;
   overflow: hidden;
 }
+.fecho h2 { font-size: clamp(2.6rem, 9vw, 7rem); }
+.fecho .prosa { margin-inline: auto; margin-block: 1.75rem 2.5rem; }
 
-.cta-glow {
-  position: absolute;
-  top: -220px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 560px;
-  height: 320px;
-  background: radial-gradient(closest-side, var(--accent-soft), transparent 75%);
-  pointer-events: none;
+/* ---------- rodapé ---------- */
+
+.footer {
+  padding-block: 3rem 2.5rem;
+  border-top: 1px solid rgba(147, 160, 182, 0.14);
 }
-
-.cta-band-inner {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 26px;
-}
-
-.cta-band h2 {
-  max-width: 520px;
-}
-
-/* ---------- footer ---------- */
-
-.footer { padding: 48px 0 32px; }
-
 .footer-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  gap: 1rem;
 }
-
+.footer-inner a {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--bone-dim);
+}
+.footer-inner a:hover { color: var(--glow); }
 .footer-legal {
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 0.4rem;
+  color: var(--bone-dim);
+  font-size: 0.72rem;
+  line-height: 1.6;
 }
+.footer-legal p { margin: 0; }
 
-/* ---------- scroll reveal ---------- */
+/* ---------- seções ---------- */
 
-/* Escondido só quando o JS confirmou que roda (`html.js`, setado inline no
-   <head>). Sem essa trava, um script que falhe deixa a PÁGINA INTEIRA em
-   opacity 0 — o conteúdo tem que sobreviver à ausência de JS.
-   Distância curta e ease-out exponencial de propósito: a entrada das seções
-   acompanha, quem conduz é o pulso do pipeline. */
-html.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-html.js [data-reveal].is-visible {
+.secao { position: relative; padding-block: clamp(4rem, 10vh, 7.5rem); overflow: hidden; }
+.secao[id], .hero[id] { scroll-margin-top: 4.5rem; }
+.secao > .wrap { position: relative; z-index: 2; }
+.secao-cabeca { max-width: 62rem; }
+.secao-cabeca .prosa { margin-top: 1.25rem; }
+
+/* ---------- entrada ---------- */
+/* Um momento autoral só: o conteúdo já está visível e o valor é puxado à
+   frente. Nada some da página se o JS falhar. */
+
+.js [data-strike] { opacity: 0.001; transform: translateY(14px); }
+.js [data-strike].acendeu {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+  transition: opacity 0.5s var(--ease), transform 0.7s var(--ease);
 }
-[data-reveal-delay="1"] { transition-delay: 0.08s; }
-[data-reveal-delay="2"] { transition-delay: 0.16s; }
-[data-reveal-delay="3"] { transition-delay: 0.24s; }
+.js [data-strike][data-strike-delay="1"].acendeu { transition-delay: 0.07s; }
+.js [data-strike][data-strike-delay="2"].acendeu { transition-delay: 0.14s; }
+.js [data-strike][data-strike-delay="3"].acendeu { transition-delay: 0.21s; }
 
-@media (prefers-reduced-motion: reduce) {
-  html.js [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .hero-glow-a, .hero-glow-b, .pulse-dot, .cta-halo::before { animation: none; }
-  .cta-halo::before { opacity: 0; }
-  html { scroll-behavior: auto; }
+/* ---------- responsivo ---------- */
+/* Largura acrescenta profundidade de fantasmas; estreitar não cria colunas
+   novas nem molduras, só reordena a mesma cena. */
 
-  /* Sem o pulso viajando: os passos já chegam acesos, então a sequência
-     continua LEGÍVEL (os números dourados seguem contando 01->04) — só não
-     tem movimento. Esconder o pulso e deixar os números apagados apagaria
-     informação, não só animação. */
-  .steps.is-running::after { animation: none; opacity: 0; }
-  html.js .step-num { color: var(--accent); transition: none; }
-  html.js .step.is-lit { animation: none; box-shadow: inset 0 1px 0 rgba(255, 201, 80, 0.4); }
-}
-
-/* ---------- responsive ---------- */
-
-@media (max-width: 860px) {
-  .steps { grid-template-columns: repeat(2, 1fr); padding-top: 0; }
-  .steps::before, .steps::after { display: none; }
-  .why-grid { grid-template-columns: repeat(2, 1fr); }
-  .game-grid { grid-template-columns: 1fr; }
-  .review-grid { grid-template-columns: repeat(2, 1fr); }
-  .stats { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 1080px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .tubo { min-height: auto; }
+  .razao { grid-template-columns: 1fr; gap: 1rem; }
   .nav-links { display: none; }
 }
 
-@media (max-width: 520px) {
-  .steps { grid-template-columns: 1fr; }
-  .why-grid { grid-template-columns: 1fr; }
-  .review-grid { grid-template-columns: 1fr; }
-  .footer-inner { flex-direction: column; gap: 16px; align-items: flex-start; }
+@media (max-width: 720px) {
+  :root {
+    --gauze-bite:
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.34) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.34) 0 1px, transparent 1px 4px);
+  }
+  /* Oito colunas em 340px nao cabem com rotulo de 4 letras: vira duas. */
+  .matriz-eixo-x span, .matriz-eixo-y span { font-size: 0.5rem; letter-spacing: 0.04em; }
+  .matriz-canto { font-size: 0.5rem; letter-spacing: 0.06em; }
+  .jogos-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .passo { grid-template-columns: 2.6rem minmax(0, 1fr); gap: 1rem; }
+  .valor-pilha span:nth-child(4) { display: none; }
+  .footer-inner { justify-content: flex-start; }
 }
 
-/* ============================================================
-   PRICING — jogo × duração
-   ------------------------------------------------------------
-   A compra acontece AQUI, não no Discord. Cada botão vai direto
-   pro checkout da SellAuth (`/checkout-link?cart[0][...]`), com a
-   variante do jogo escolhido na aba de cima e da duração do card.
-   O Discord continua existindo pra comunidade e suporte — mas
-   nenhum caminho de compra passa por lá.
-   ============================================================ */
-
-.pricing { border-bottom: 1px solid var(--border); position: relative; }
-
-/* Brilho frio atrás dos cards, no mesmo espírito dos .hero-glow, só que
-   contido: a seção de preço tem que parecer o ponto quente da página sem
-   competir com o herói. */
-.pricing::before {
-  content: "";
-  position: absolute;
-  top: 12%;
-  left: 50%;
-  width: min(780px, 92%);
-  height: 420px;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(255, 201, 80, 0.09), transparent 68%);
-  filter: blur(46px);
-  pointer-events: none;
-  z-index: 0;
+@media (min-width: 1081px) {
+  .nav-estado { display: flex; }
 }
-.pricing > .wrap { position: relative; z-index: 1; }
 
-/* --- abas de jogo --- */
+/* Movimento reduzido: tudo estático, tudo legível, nada escondido. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .js [data-strike] { opacity: 1; transform: none; }
+  .pipeline-trilho { height: auto; }
+  .pipeline-cena { position: static; height: auto; padding-block: 4rem; }
+  .passo .passo-txt p { color: var(--bone-dim); height: auto; }
+  .passo .passo-num,
+  .passo .passo-txt h3 { color: var(--bone); }
+  .passo[data-estado="ativo"] .passo-txt h3 { filter: none; }
+}
+
+/* =========================================================================
+   /pricing e /download — o mesmo mundo.
+
+   O `styles.css` e compartilhado pelas tres paginas, entao o redesenho da home
+   so esta terminado quando estas duas falam a mesma lingua. E a de preco e a
+   que mais importa: os onze botoes WEBSITE publicados no Discord caem nela.
+
+   A gramatica se traduz direto: os tres planos sao tres valores da mesma
+   pilha. Dois presentes e apagados, UM puxado a frente e aceso — e o que a
+   pagina ja chamava de "Best value" deixa de ser um selo colado e passa a ser
+   o estado do proprio valor.
+   ========================================================================= */
+
+.pricing-pagina { padding-block: 7rem 5rem; position: relative; }
+.pricing-pagina h1 { margin-bottom: 1.25rem; }
+
+/* `section-sub` e o subtitulo herdado das duas paginas: mesma prosa da home. */
+.section-sub {
+  max-width: 68ch;
+  color: var(--bone-dim);
+  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.075rem);
+  line-height: 1.75;
+  margin: 0 0 2.5rem;
+}
+
+/* ---------- as abas de jogo ---------- */
+/* Onze marcas presentes; a escolhida e a unica acesa. Sem pilula, sem caixa:
+   o que marca a selecao e a luz, como em todo o resto do site. */
 
 .plan-tabs {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin: 28px auto 40px;
-  max-width: 900px;
+  gap: 0.35rem 1.5rem;
+  margin-bottom: 2rem;
 }
-
 .plan-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 16px;
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  background: var(--bg-soft);
-  color: var(--text-dim);
-  font-size: 0.88rem;
-  font-weight: 600;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.4rem 0.55rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: var(--bone-dim);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.18s;
-  white-space: nowrap;
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease);
 }
-.plan-tab:hover { color: var(--text); border-color: #33374a; transform: translateY(-1px); }
-
-.plan-tab[aria-selected="true"] {
-  color: var(--accent);
-  border-color: rgba(255, 201, 80, 0.55);
-  background: var(--accent-soft);
-}
-
-/* Marca do jogo. O slot tem tamanho FIXO mesmo antes de a imagem carregar —
-   sem isso as abas mudam de largura quando as 11 marcas chegam e a fileira
-   inteira se reorganiza na frente do visitante. */
-.plan-tab-marca {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  font-size: 1rem;
-  line-height: 1;
-}
-/* A marca É a etiqueta: altura fixa, largura pelo aspecto do próprio wordmark.
-   `max-width` protege contra um arquivo muito largo (Call of Duty é 5,7:1)
-   esticar a aba e quebrar a fileira. */
-/* A altura real é calculada no JS por normalização de área (ver index.html).
-   O valor aqui é só o ponto de partida antes de a imagem carregar, pra aba
-   já nascer com a altura certa e não pular quando a marca chega. */
+/* Mesma razao medida da home: a maioria dos wordmarks vem em preto e some no
+   fundo escuro. Silhueta em repouso, arte de verdade quando acende. */
 .plan-tab-logo {
-  height: 17px;
   width: auto;
-  max-width: 96px;
+  max-width: 100%;
   object-fit: contain;
   display: block;
-  /* Silhueta BRANCA, não a arte original. Duas razões, nesta ordem:
-     1. A maioria destes wordmarks vem em preto. Sobre o #08090d da página eles
-        simplesmente somem — medido na tela: só Brawl Stars e a aba ativa
-        apareciam.
-     2. A 17px a cor não é legível de qualquer jeito, e onze paletas de jogos
-        diferentes brigariam entre si e com o dourado da aba escolhida.
-     `brightness(0)` achata tudo em preto e `invert(1)` vira branco — funciona
-     com qualquer PNG transparente, colorido ou não, sem editar arquivo. */
   filter: brightness(0) invert(1);
   opacity: 0.5;
-  transition: opacity 0.18s;
+  transition: opacity 0.16s var(--ease), filter 0.16s var(--ease);
 }
-/* Passar o mouse já revela a arte original — dá pra reconhecer o jogo antes de
-   clicar, sem precisar escolher pra descobrir. A pílula dourada NÃO vem junto:
-   ela é só da aba escolhida, senão o hover fingiria seleção.
-   A aba ESCOLHIDA usa a mesma cor original, e o dourado em volta é o que
-   separa "estou olhando" de "escolhi".
-   Silhueta funciona para marca feita de letras (FORTNITE, VALORANT continuam
-   legíveis), mas achata emblema preenchido — a Brawl Stars virava um borrão
-   sólido e não dava pra saber que jogo era. Cor original resolve os dois. */
+.plan-tab-marca { font-size: 1.1rem; line-height: 1; opacity: 0.5; }
+.plan-tab:hover { color: var(--bone); }
 .plan-tab:hover .plan-tab-logo,
-.plan-tab[aria-selected="true"] .plan-tab-logo { opacity: 1; filter: none; }
+.plan-tab:hover .plan-tab-marca { opacity: 0.85; }
+.plan-tab[aria-selected="true"] {
+  color: var(--glow);
+  border-bottom-color: var(--glow);
+}
+.plan-tab[aria-selected="true"] .plan-tab-logo {
+  filter: none;
+  opacity: 1;
+}
+.plan-tab[aria-selected="true"] .plan-tab-marca { opacity: 1; }
 
-/* O nome do jogo escolhido, entre a fileira de marcas e os planos. Marca de
-   17px é pequena demais para ser prova de identidade sozinha — ainda mais
-   emblema sem texto, como a da Brawl Stars. Aqui, e não dentro da aba, porque
-   dentro dela o nome alargava a pílula e a fileira inteira se reorganizava a
-   cada clique. */
 .plan-jogo {
-  margin: -18px 0 30px;
-  text-align: center;
-  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--accent);
-  min-height: 1.5em;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--bone);
+  margin: 0 0 0.75rem;
 }
-
-/* Some da tela, continua para leitor de tela. */
-.visualmente-oculto {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+.plan-detalhes {
+  list-style: none;
+  margin: 0 0 3rem;
   padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.75rem;
+  color: var(--bone-dim);
+  font-size: 0.8rem;
+}
+.plan-detalhes li::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+  background: var(--glow);
 }
 
-/* --- os três cards --- */
+/* ---------- os tres planos ---------- */
 
 .plan-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1px;
+  margin-bottom: 3.5rem;
 }
-
+/* Sem borda e sem cartao: o que separa uma coluna da outra e a densidade da
+   malha, igual ao resto do mundo. */
 .plan-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 30px 26px 26px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
-  overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s;
+  gap: 0.6rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background-image: var(--gauze);
+  background-color: rgba(11, 17, 29, 0.5);
 }
-.plan-card:hover { border-color: #33374a; transform: translateY(-3px); }
-
-/* O mensal é o plano que a página recomenda: borda dourada, brilho próprio e
-   o único botão cheio. Os outros dois existem pra dar contraste de preço. */
 .plan-card-featured {
-  border-color: rgba(255, 201, 80, 0.5);
-  background: linear-gradient(180deg, rgba(255, 201, 80, 0.05), var(--card) 42%);
+  background-color: rgba(255, 201, 80, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.32),
+              0 0 46px rgba(255, 201, 80, 0.12);
 }
-.plan-card-featured:hover { border-color: rgba(255, 201, 80, 0.75); }
-
 .plan-badge {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 5px 14px 6px;
-  border-radius: 0 0 9px 9px;
-  background: var(--accent);
-  color: #171307;
-  font-size: 0.68rem;
+  justify-self: start;
+  font-family: var(--mono);
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  color: var(--ground-deep);
+  background: var(--glow);
+  padding: 0.25rem 0.6rem;
+  margin-bottom: 0.35rem;
 }
-
 .plan-term {
-  margin: 8px 0 14px;
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 700;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+.plan-price {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.05em;
+  font-family: var(--display);
+  font-weight: 900;
+  line-height: 0.82;
+  color: var(--ghost-lit);
+}
+.plan-amount { font-size: clamp(3.4rem, 7vw, 5rem); }
+.plan-currency { font-size: clamp(1.4rem, 2.8vw, 2rem); margin-top: 0.2em; }
+/* O plano em destaque e o valor STRUCK: aceso, com a malha mordendo por
+   dentro. Os outros dois continuam presentes, apagados. */
+.plan-card-featured .plan-price {
+  color: transparent;
+  background-color: var(--glow);
+  background-image: var(--gauze-bite);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(255, 201, 80, 0.4));
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .plan-card-featured .plan-price { color: var(--glow); background: none; }
+}
+.plan-access {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--glow);
 }
-.plan-card-featured .plan-term { color: var(--accent); }
-
-.plan-price {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 3px;
-  font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
-  line-height: 1;
-}
-.plan-currency { font-size: 1.5rem; font-weight: 700; color: var(--text-dim); }
-.plan-amount { font-size: 3.1rem; font-weight: 700; letter-spacing: -0.02em; }
-.plan-card-featured .plan-amount { color: var(--accent); }
-
-.plan-access {
-  margin: 12px 0 0;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-dim);
-}
-.plan-pitch {
-  margin: 6px 0 22px;
-  text-align: center;
-  font-size: 0.88rem;
-  color: var(--text-dim);
-  min-height: 2.6em;
-}
-
+.plan-pitch { margin: 0.4rem 0 0; color: var(--bone); font-size: 0.95rem; line-height: 1.6; }
 .plan-features {
   list-style: none;
-  margin: 0 0 24px;
-  padding: 22px 0 0;
-  border-top: 1px solid var(--border);
+  margin: 0.5rem 0 1.5rem;
+  padding: 0;
   display: grid;
-  gap: 11px;
-  font-size: 0.9rem;
+  gap: 0.5rem;
+  color: var(--bone-dim);
+  font-size: 0.85rem;
+  line-height: 1.55;
 }
-/* Marcador por ::before ABSOLUTO, não por grid/flex no <li>.
-   Num container de grade o `<strong>` de dentro do texto vira um item de grade
-   por conta própria e sai da linha — foi exatamente o que aconteceu com
-   "$10/month", que colidiu com a palavra seguinte. Com posicionamento
-   absoluto o conteúdo do item continua sendo texto corrido normal. */
-.plan-features li {
-  position: relative;
-  padding-left: 27px;
-  color: var(--text);
-}
+.plan-features li { position: relative; padding-left: 1.1rem; }
 .plan-features li::before {
-  content: "✓";
+  content: "+";
   position: absolute;
   left: 0;
-  top: 0;
-  color: var(--accent);
+  color: var(--glow);
   font-weight: 700;
 }
-.plan-features li strong { color: var(--accent); font-weight: 700; }
-
-/* O botão fica colado no fim do card mesmo quando um card tem menos itens
-   que o outro — sem isso os três CTAs ficam em alturas diferentes. */
+.plan-features strong { color: var(--bone); font-weight: 700; }
 .plan-cta { margin-top: auto; }
-
-/* Estado de variante ainda não cadastrada na SellAuth. Nunca deixa um botão
-   levar pra um checkout que não existe: ele fica inerte e diz por quê. */
-.plan-cta[aria-disabled="true"] {
-  pointer-events: none;
-  opacity: 0.45;
-  border-color: var(--border);
-  background: var(--bg-soft);
-  color: var(--text-dim);
-  box-shadow: none;
-}
+.btn-block { width: 100%; }
 
 .plan-note {
-  margin: 26px auto 0;
-  max-width: 620px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-.plan-note strong { color: var(--text); }
-
-@media (max-width: 900px) {
-  .plan-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
-  /* No empilhado, o recomendado sobe pro topo: é o primeiro que o polegar
-     alcança, em vez de ficar escondido embaixo de dois planos mais caros
-     por dia. */
-  .plan-card-featured { order: -1; }
-  .plan-pitch { min-height: 0; }
-}
-
-@media (max-width: 560px) {
-  .plan-tabs { gap: 6px; margin-bottom: 32px; }
-  .plan-tab { padding: 8px 13px; font-size: 0.82rem; }
-  .plan-amount { font-size: 2.7rem; }
-}
-
-/* ============================================================
-   GRADE DE JOGOS (home) e peças da PÁGINA DE PREÇO
-   ------------------------------------------------------------
-   A seção Games tinha 11 cartões de ~170px cada, dois por linha:
-   quase mil pixels de rolagem repetindo os MESMOS dois pontos em
-   todos ("solo e duo", "custom messages"). Isso subiu uma vez pro
-   subtítulo, e o que cada jogo tem de próprio foi pra página de
-   preço — onde só interessa depois de escolher o jogo.
-   ============================================================ */
-
-.grade-jogos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-  gap: 12px;
-  margin-top: 34px;
-}
-
-.jogo-celula {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 104px;
-  padding: 20px 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
-  overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s, background 0.2s;
-}
-.jogo-celula:hover {
-  border-color: rgba(255, 201, 80, 0.45);
-  transform: translateY(-2px);
-  background: #151822;
-}
-
-/* Marca maior aqui do que na aba (a grade tem espaço), mas com a MESMA
-   normalização por área — só com outro alvo, definido no pricing.js.
-   Aqui a cor é SEMPRE a original: esta grade é vitrine dos jogos atendidos,
-   não seletor. A silhueta cinza da página de preço existe pra separar "não
-   escolhido" de "escolhido"; sem essa distinção ela só apagaria a vitrine. */
-.jogo-logo {
-  width: auto;
-  max-width: 108px;
-  height: 30px;
-  object-fit: contain;
-  display: block;
-}
-
-/* Suporte claro atrás da marca. Sem ele a cor original nao funciona nesta
-   grade: seis das onze (Fortnite, Valorant, Siege X, Apex, Call of Duty,
-   Overwatch) sao pretas e desapareciam no #08090d — dava pra ver o cartao e
-   nao a marca. Um painel claro e como fileira de logo de parceiro e resolvida
-   em qualquer site: as coloridas continuam coloridas e as pretas aparecem. */
-.jogo-marca {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 54px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #eceef3;
-}
-
-.jogo-nome {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  text-align: center;
-  line-height: 1.25;
-  transition: color 0.2s;
-}
-.jogo-celula:hover .jogo-nome { color: var(--text); }
-
-.grade-nota {
-  margin: 26px 0 0;
-  text-align: center;
+  max-width: 68ch;
+  margin: 0 0 1.25rem;
+  color: var(--bone-dim);
   font-size: 0.88rem;
-  color: var(--text-dim);
+  line-height: 1.7;
+}
+.plan-note strong { color: var(--bone); font-weight: 700; }
+.link-acento { color: var(--glow); text-decoration: underline; text-underline-offset: 0.2em; }
+.link-acento:hover { color: var(--glow-core); }
+
+/* ---------- /download ---------- */
+
+.install-wrap {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: 7rem var(--gutter) 5rem;
+}
+.install-wrap h1 { margin-bottom: 1.25rem; }
+.install-wrap h2 {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  margin: 2.5rem 0 1rem;
+}
+.install-wrap p { color: var(--bone-dim); line-height: 1.75; }
+.install-wrap ol, .install-wrap ul { color: var(--bone-dim); line-height: 1.75; padding-left: 1.2rem; }
+.install-wrap strong { color: var(--bone); }
+.download-cta { margin: 2rem 0 0.75rem; }
+.download-hint {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--bone-dim);
+}
+/* O aviso do Windows: informacao de estado, entao carrega a luz do mundo em
+   vez de virar mais um cartao. */
+.notice {
+  margin: 0 0 1.75rem;
+  padding: 1.35rem 1.5rem;
+  background-image: var(--gauze);
+  background-color: rgba(255, 201, 80, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.22);
+  color: var(--bone);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+.notice h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
+.notice p { color: var(--bone-dim); margin: 0 0 0.85rem; }
+.notice p:last-child { margin-bottom: 0; }
+.notice ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--bone);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+/* O passo que a pessoa tem que CLICAR e o valor aceso do aviso. */
+.notice ol li b { color: var(--glow); font-weight: 700; }
+.download-hint { text-align: center; }
+@media (max-width: 520px) {
+  /* O nome do .exe e longo e nao pode empurrar o botao pra fora da tela. */
+  .download-cta .btn { white-space: normal; overflow-wrap: anywhere; text-align: center; }
 }
 
-/* Botão do Discord no cabeçalho, ao lado do Buy now. */
-.nav-acoes { display: flex; align-items: center; gap: 10px; }
-.btn-discord { display: inline-flex; align-items: center; gap: 7px; }
-.icone-discord { width: 16px; height: 16px; flex: 0 0 16px; }
-.btn-discord:hover { border-color: #5865f2; color: #fff; }
+/* ---------- pecas herdadas que continuam no markup ---------- */
 
-@media (max-width: 720px) {
-  /* No celular o cabeçalho não comporta os dois: fica só o "Buy now", que é
-     o que a página existe pra fazer. O Discord segue no rodapé. */
-  .nav-acoes .btn-discord { display: none; }
+.logo-text { display: inline; }
+/* A barra de progresso do scroll: um fio de catodo no topo. */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--glow);
+  box-shadow: 0 0 10px var(--glow);
+  z-index: 70;
 }
+.noise-overlay { display: none; }
 
-/* --- página de preço --- */
-
-.pricing-pagina { padding-top: 132px; }
-.pricing-pagina h1 {
-  margin: 0 0 14px;
-  text-align: center;
-  font-size: clamp(2.2rem, 5vw, 3rem);
-  letter-spacing: -0.02em;
+/* O reveal destas duas paginas usa `data-reveal`/`is-visible` (o mecanismo
+   que elas ja tinham). Mesmo comportamento do `data-strike` da home: entra de
+   um estado que ja era legivel, e o JS so acrescenta. */
+.js [data-reveal] { opacity: 0.001; transform: translateY(14px); }
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.5s var(--ease), transform 0.7s var(--ease);
 }
+.js [data-reveal][data-reveal-delay="1"].is-visible { transition-delay: 0.07s; }
+.js [data-reveal][data-reveal-delay="2"].is-visible { transition-delay: 0.14s; }
+.js [data-reveal][data-reveal-delay="3"].is-visible { transition-delay: 0.21s; }
 
-/* O que este jogo tem de diferente. Some quando não há nada a dizer. */
-.plan-detalhes {
-  list-style: none;
-  margin: 0 auto 34px;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 10px;
-  max-width: 780px;
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] { opacity: 1; transform: none; }
 }
-.plan-detalhes li {
-  padding: 6px 13px;
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  background: var(--bg-soft);
-  font-size: 0.84rem;
-  color: var(--text-dim);
-}
-.plan-detalhes:empty { display: none; }
-
-.link-acento { color: var(--accent); border-bottom: 1px solid rgba(255, 201, 80, 0.35); }
-.link-acento:hover { border-bottom-color: var(--accent); }
