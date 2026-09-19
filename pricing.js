@@ -8,7 +8,8 @@
 //
 // FONTE ÚNICA dos ids. `variants` é {dias: variantId da SellAuth}.
 //
-// Os 33 ids são reais e conferidos contra a API da loja em 2026-08-23:
+// Os 42 ids são reais e conferidos contra a API da loja (33 em 2026-08-23,
+// mais 9 em 2026-09-19):
 // todos com preço certo, URL de entrega preenchida, quantidade travada em
 // 1 e estoque infinito. Cada um também está no `productMap` do webhook na
 // VM com a duração correspondente — sem isso o comprador pagaria e não
@@ -16,8 +17,8 @@
 //
 // `rank` e `escopo` são o que cada jogo tem de DIFERENTE. Os outros dois
 // pontos que a home mostrava por jogo ("Solo and Duo, priced separately" e
-// "Custom messages, even per target rank") eram idênticos nos 11 — repetir
-// 11 vezes é o que fazia a seção inchar. Agora aparecem uma vez só.
+// "Custom messages, even per target rank") eram idênticos em todos — repetir
+// por jogo é o que fazia a seção inchar. Agora aparecem uma vez só.
 //
 // O formato do link é o MESMO que `checkoutLink()` monta em
 // FirstBid-Discord/lib.js — se um dia mudar lá, muda aqui também.
@@ -66,13 +67,28 @@ const CATALOGO = [
   { nome: "Overwatch", emoji: "🦾", logo: true,
     rank: "Rank boost, Bronze V to Top 500", escopo: "Priced per platform (PC, PlayStation, Xbox)",
     variants: { 3: 1515790, 7: 1515791, 30: 1473358 } },
+  // Os três de 19/09 vivem em OUTRO produto da SellAuth (884775). O plano
+  // gratuito trava em 10 variantes por produto e o 832908 já tem 33 — não é
+  // escolha de organização, é teto de terceiro. Por isso eles carregam
+  // `productId` próprio; quem não carrega segue no `SELLAUTH.productId`.
+  // `logo: false` por enquanto: sem `logos/<slug>.png` a marca cai no emoji,
+  // que é o mesmo caminho do `onerror` e não quebra a página.
+  { nome: "Counter-Strike 2", emoji: "🔪", logo: false, productId: 884775,
+    rank: "Premier rating boost", escopo: "Priced per region — 7 regions supported",
+    variants: { 3: 1716176, 7: 1716177, 30: 1716178 } },
+  { nome: "Dota 2", emoji: "🛡", logo: false, productId: 884775,
+    rank: "Rank boost, Herald I to Immortal", escopo: "Priced per region (NA, EU, SA, SEA)",
+    variants: { 3: 1716179, 7: 1716180, 30: 1716181 } },
+  { nome: "Dead by Daylight", emoji: "🔦", logo: false, productId: 884775,
+    rank: "Rank boost, killer or survivor", escopo: "Priced per platform (PC, PlayStation, Xbox)",
+    variants: { 3: 1716182, 7: 1716183, 30: 1716184 } },
 ];
 
 const slugDoJogo = (nome) => nome.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-function linkDeCheckout(variantId) {
+function linkDeCheckout(variantId, productId = SELLAUTH.productId) {
   const params = new URLSearchParams();
-  params.set("cart[0][productId]", String(SELLAUTH.productId));
+  params.set("cart[0][productId]", String(productId));
   params.set("cart[0][variantId]", String(variantId));
   params.set("cart[0][quantity]", "1");
   params.set("currency", SELLAUTH.currency);

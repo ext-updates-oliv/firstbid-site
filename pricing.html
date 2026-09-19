@@ -193,11 +193,16 @@
           // Com o script carregado o embed intercepta e o href nunca é usado;
           // sem ele, o clique navega normalmente. É a diferença entre um botão
           // mais bonito e um botão que pode morrer.
-          cta.href = linkDeCheckout(variantId);
+          // O jogo pode viver em outro produto da SellAuth (ver o comentario
+          // do CATALOGO em pricing.js). As DUAS rotas precisam do mesmo
+          // productId: se so uma soubesse, o modal e o link levariam a
+          // carrinhos diferentes.
+          const productId = jogo.productId ?? SELLAUTH.productId;
+          cta.href = linkDeCheckout(variantId, productId);
           cta.dataset.sellauthShop = String(SELLAUTH.shopId);
           cta.dataset.sellauthShopUrl = SELLAUTH.base;
           cta.dataset.sellauthCart = JSON.stringify([
-            { productId: SELLAUTH.productId, variantId, quantity: 1 },
+            { productId, variantId, quantity: 1 },
           ]);
           cta.dataset.sellauthTheme = "dark";
           cta.removeAttribute("aria-disabled");
