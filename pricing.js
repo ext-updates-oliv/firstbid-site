@@ -71,15 +71,18 @@ const CATALOGO = [
   // gratuito trava em 10 variantes por produto e o 832908 já tem 33 — não é
   // escolha de organização, é teto de terceiro. Por isso eles carregam
   // `productId` próprio; quem não carrega segue no `SELLAUTH.productId`.
-  // `logo: false` por enquanto: sem `logos/<slug>.png` a marca cai no emoji,
-  // que é o mesmo caminho do `onerror` e não quebra a página.
-  { nome: "Counter-Strike 2", emoji: "🔪", logo: false, productId: 884775,
+  // Logos adicionados em 19/09, todos de DOMÍNIO PÚBLICO na Wikimedia Commons
+  // (Valve, Behaviour Interactive, Valve Wiki Network) e gerados por
+  // `FirstBid app/scripts/gerarIconeDeJogo.mjs`. Saem transparentes de
+  // propósito: é o que o `brightness(0) invert(1)` do styles.css exige para
+  // virar silhueta — um PNG com fundo sólido viraria um retângulo branco.
+  { nome: "Counter-Strike 2", emoji: "🔪", logo: true, productId: 884775,
     rank: "Premier rating boost", escopo: "Priced per region — 7 regions supported",
     variants: { 3: 1716176, 7: 1716177, 30: 1716178 } },
-  { nome: "Dota 2", emoji: "🛡", logo: false, productId: 884775,
+  { nome: "Dota 2", emoji: "🛡", logo: true, productId: 884775,
     rank: "Rank boost, Herald I to Immortal", escopo: "Priced per region (NA, EU, SA, SEA)",
     variants: { 3: 1716179, 7: 1716180, 30: 1716181 } },
-  { nome: "Dead by Daylight", emoji: "🔦", logo: false, productId: 884775,
+  { nome: "Dead by Daylight", emoji: "🔦", logo: true, productId: 884775,
     rank: "Rank boost, killer or survivor", escopo: "Priced per platform (PC, PlayStation, Xbox)",
     variants: { 3: 1716182, 7: 1716183, 30: 1716184 } },
 ];
