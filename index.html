@@ -578,9 +578,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
                 r.name.trim() &&
                 typeof r.text === "string" &&
                 r.text.trim() &&
-                Number.isFinite(r.rating) &&
-                r.rating >= 1 &&
-                r.rating <= 5 &&
+                // Nota é opcional: vouch do Discord vem sem nota, e dar 5
+                // estrelas por conta própria seria inventar avaliação.
+                (r.rating == null || (Number.isFinite(r.rating) && r.rating >= 1 && r.rating <= 5)) &&
                 (r.role == null || typeof r.role === "string")
             )
           : [];
@@ -598,7 +598,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           .map(
             (r, i) => `
           <article class="review" data-strike ${i % 3 ? `data-strike-delay="${Math.min(i % 3, 3)}"` : ""}>
-            <div class="review-estrelas" role="img" aria-label="${r.rating} out of 5 stars"><span aria-hidden="true">${estrelas(r.rating)}</span></div>
+            ${r.rating == null ? "" : `<div class="review-estrelas" role="img" aria-label="${r.rating} out of 5 stars"><span aria-hidden="true">${estrelas(r.rating)}</span></div>`}
             <p class="review-texto">"${esc(r.text)}"</p>
             <p class="review-autor">${esc(r.name)}${r.role ? ` — ${esc(r.role)}` : ""}</p>
           </article>`
