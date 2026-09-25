@@ -5,3 +5,5 @@ reports/
 .impeccable/
 logos-original/
 DESIGN.md
+package.json
+test/

@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=Chivo+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script>document.documentElement.classList.add("js");</script>
+  <script src="origem.js"></script>
 </head>
 <body>
 
@@ -205,13 +206,22 @@
             { productId, variantId, quantity: 1 },
           ]);
           cta.dataset.sellauthTheme = "dark";
+          const origem = window.fbOrigem?.();
+          if (origem) {
+            cta.dataset.sellauthMetadata = JSON.stringify({
+              fb_source: origem.utm_source,
+              fb_campaign: origem.utm_campaign,
+            });
+          } else {
+            delete cta.dataset.sellauthMetadata;
+          }
           cta.removeAttribute("aria-disabled");
           cta.textContent = "Get started";
         } else {
           // Sem variante cadastrada: nunca deixar o botão navegar. Remover o
           // href tira o link do foco do teclado também, não só do clique.
           cta.removeAttribute("href");
-          for (const k of ["sellauthShop", "sellauthShopUrl", "sellauthCart", "sellauthTheme"]) {
+          for (const k of ["sellauthShop", "sellauthShopUrl", "sellauthCart", "sellauthTheme", "sellauthMetadata"]) {
             delete cta.dataset[k];
           }
           cta.setAttribute("aria-disabled", "true");

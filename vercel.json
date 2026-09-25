@@ -1,5 +1,22 @@
 {
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/e",
+      "destination": "/?utm_source=eldorado&utm_campaign=custom",
+      "permanent": false
+    },
+    {
+      "source": "/r",
+      "destination": "/?utm_source=eldorado&utm_campaign=rank",
+      "permanent": false
+    },
+    {
+      "source": "/d",
+      "destination": "/pricing?utm_source=discord",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/download",
