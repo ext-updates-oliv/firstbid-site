@@ -1155,3 +1155,23 @@ h3 {
   .plan-passe { grid-template-columns: 1fr; margin-top: -2rem; }
   .plan-passe-compra { min-width: 0; }
 }
+
+/* Destaque do mensal (25/09): a conta que o comprador faria de cabeca, pronta.
+   4 semanais a $5 = $20 por 28 dias; o mensal = $18 por 30. Numeros da tabela,
+   nada estimado: se o preco mudar, mudar aqui tambem. */
+.plan-compara {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0.2rem 0 0;
+  padding: 0.6rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  background: rgba(255, 201, 80, 0.08);
+  box-shadow: inset 2px 0 0 var(--glow);
+}
+.plan-compara-velho { color: var(--bone); opacity: 0.62; }
+.plan-compara-velho s { text-decoration-thickness: 1px; }
+.plan-compara-novo { color: var(--bone); }
+.plan-compara-novo strong { color: var(--glow); font-weight: 700; }
