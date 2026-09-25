@@ -1132,3 +1132,26 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* Passe de todos os jogos: um card largo sob os tres planos, texto de um lado e
+   compra do outro. Mesma malha e mesmo acento dos planos; so o formato muda. */
+.plan-passe {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1.5rem 3rem;
+  margin: -2.5rem 0 3.5rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.18);
+}
+.plan-passe-texto { display: flex; flex-direction: column; gap: 0.6rem; }
+.plan-passe-compra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 13rem;
+}
+.plan-passe-compra .plan-cta { margin-top: 0.6rem; }
+@media (max-width: 720px) {
+  .plan-passe { grid-template-columns: 1fr; margin-top: -2rem; }
+  .plan-passe-compra { min-width: 0; }
+}

@@ -33,6 +33,12 @@ const SELLAUTH = {
   currency: "USD",
 };
 
+// Passe de todos os jogos (25/09): produto proprio na SellAuth, porque o 884775
+// ja esta com 9 das 10 variantes que o plano gratis permite. A VM entrega a key
+// `ALL-` (productMap 892913:1749928 -> ALL, 7 dias), que o app trata como
+// prefixo desconhecido e por isso destrava todos os jogos.
+const PASSE = { productId: 892913, variantId: 1749928 };
+
 const CATALOGO = [
   { nome: "Fortnite", emoji: "🔫", logo: true,
     rank: "Battle Royale &amp; Reload rank boost", escopo: "Full price matrix by rank pair",

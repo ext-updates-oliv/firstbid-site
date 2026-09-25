@@ -41,8 +41,9 @@
       <div class="wrap">
         <h1 data-reveal>Pricing</h1>
         <p class="section-sub" data-reveal>
-          One key unlocks one game on one machine. Pick the game, pick how long you
-          want it — checkout is instant and the key lands on screen the moment you pay.
+          One key unlocks one game on one machine — or every game, with the all-games
+          pass below. Pick the game, pick how long you want it — checkout is instant and
+          the key lands on screen the moment you pay.
         </p>
 
         <div class="plan-tabs" role="tablist" aria-label="Choose your game" id="planTabs" data-reveal></div>
@@ -90,6 +91,21 @@
           </div>
         </div>
 
+        <div class="plan-card plan-passe" data-reveal>
+          <div class="plan-passe-texto">
+            <p class="plan-term">All-games pass</p>
+            <p class="plan-pitch">One key that unlocks every game FirstBid supports, on one machine. Built for sellers who boost more than one game.</p>
+            <ul class="plan-features">
+              <li>All <strong>14 games</strong> with a single key</li>
+              <li>7 days of access</li>
+            </ul>
+          </div>
+          <div class="plan-passe-compra">
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">12</span></p>
+            <p class="plan-access">per week</p>
+            <a class="btn btn-ghost btn-block plan-cta" id="ctaPasse" target="_blank" rel="noopener">Get the pass</a>
+          </div>
+        </div>
         <p class="plan-note" data-reveal>
           <strong>3-day guarantee.</strong> If the bot does not run on your machine, or does not do what
           this page says it does, open a ticket within 3 days and we fix it — or you get your money back.
@@ -227,6 +243,26 @@
           cta.setAttribute("aria-disabled", "true");
           cta.textContent = "Coming soon";
         }
+      }
+    }
+
+    // O passe nao muda com a aba de jogo: um botao so, montado uma vez, pelas
+    // mesmas duas rotas dos outros planos (href que nunca falha + modal).
+    const ctaPasse = document.getElementById("ctaPasse");
+    if (ctaPasse) {
+      ctaPasse.href = linkDeCheckout(PASSE.variantId, PASSE.productId);
+      ctaPasse.dataset.sellauthShop = String(SELLAUTH.shopId);
+      ctaPasse.dataset.sellauthShopUrl = SELLAUTH.base;
+      ctaPasse.dataset.sellauthCart = JSON.stringify([
+        { productId: PASSE.productId, variantId: PASSE.variantId, quantity: 1 },
+      ]);
+      ctaPasse.dataset.sellauthTheme = "dark";
+      const origemPasse = window.fbOrigem?.();
+      if (origemPasse) {
+        ctaPasse.dataset.sellauthMetadata = JSON.stringify({
+          fb_source: origemPasse.utm_source,
+          fb_campaign: origemPasse.utm_campaign,
+        });
       }
     }
 
