@@ -754,11 +754,23 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     injectStyle();
     const lang = (html.lang || 'en').slice(0, 2);
     const label = { pt: 'Espaço · Pular', es: 'Espacio · Saltar', fr: 'Espace · Passer', ru: 'Пробел · Пропустить' }[lang] || 'Space · Skip';
+    // Enquanto a abertura roda, a dashboard por baixo NÃO rola (o dono viu a roda
+    // do mouse mexer a página atrás e bagunçar a abertura). Espaço pula e libera.
+    // Não usa overflow:hidden de propósito: tirar a barra de rolagem muda a
+    // largura da página e refaz o layout da abertura no meio.
+    const SCROLL_KEYS = /^(ArrowDown|ArrowUp|ArrowLeft|ArrowRight|PageDown|PageUp|Home|End)$/;
+    const block = e => e.preventDefault();
+    const onKey = e => {
+      if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); leave(); }
+      else if (SCROLL_KEYS.test(e.key)) e.preventDefault();
+    };
     let leaving = false;
     const leave = () => {
       if (leaving) return;
       leaving = true;
-      removeEventListener('keydown', onKey);
+      removeEventListener('keydown', onKey, true);
+      removeEventListener('wheel', block, { capture: true });
+      removeEventListener('touchmove', block, { capture: true });
       intro.el.removeEventListener('pointerdown', leave);
       intro.el.classList.add('fbi--out');
       setTimeout(() => intro.destroy(), 420);
@@ -767,9 +779,9 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
       mode: 'short', theme: 'app', placement: 'fixed', parent: document.body,
       skipLabel: label, onSkip: leave, onDone: leave
     });
-    // O espaço não pode rolar a dashboard por baixo enquanto pula.
-    const onKey = e => { if (e.key === ' ') e.preventDefault(); leave(); };
-    addEventListener('keydown', onKey);
+    addEventListener('keydown', onKey, true);
+    addEventListener('wheel', block, { passive: false, capture: true });
+    addEventListener('touchmove', block, { passive: false, capture: true });
     intro.el.addEventListener('pointerdown', leave);
   }
 
