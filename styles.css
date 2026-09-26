@@ -1145,8 +1145,80 @@ h3 {
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 1.5rem 3rem;
-  margin: -2.5rem 0 3.5rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.18);
+  margin: 0 0 3.5rem;
+  /* Aceso como o plano em destaque: é outro produto, não uma linha a mais. */
+  background-color: rgba(255, 201, 80, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.45),
+              0 0 60px rgba(255, 201, 80, 0.10);
+}
+.plan-passe > .plan-passe-texto > .plan-term {
+  color: var(--glow);
+  font-size: 0.8rem;
+}
+
+/* ---------- o passe como seção própria (26/09) ---------- */
+/* Antes ele colava nos três planos e era lido como parte do jogo escolhido.
+   Agora tem respiro, título e os 14 logos acesos — o oposto das abas, onde só
+   um acende. */
+.passe-cabeca {
+  margin: 1rem 0 1.75rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(147, 160, 182, 0.14);
+  display: grid;
+  gap: 0.9rem;
+}
+.passe-eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+.passe-titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: var(--bone);
+  text-wrap: balance;
+}
+.passe-titulo span { color: var(--glow); }
+.passe-logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem 1.15rem;
+  margin-top: 0.4rem;
+}
+.passe-logo {
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  /* Silhueta clara e inteira: vários wordmarks vêm em preto e sumiriam no fundo
+     (mesma razão medida das abas). Aqui ficam TODOS acesos, a 90%. */
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+.passe-logos .plan-tab-marca { opacity: 1; font-size: 1.2rem; }
+
+/* O nome do jogo escolhido ganha o selo: aqueles três preços são SÓ dele. */
+.plan-escopo {
+  display: inline-block;
+  margin-left: 0.6rem;
+  padding: 0.3rem 0.55rem;
+  vertical-align: middle;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone);
+  box-shadow: inset 0 0 0 1px rgba(147, 160, 182, 0.4);
 }
 .plan-passe-texto { display: flex; flex-direction: column; gap: 0.6rem; }
 .plan-passe-compra {
@@ -1157,7 +1229,7 @@ h3 {
 }
 .plan-passe-compra .plan-cta { margin-top: 0.6rem; }
 @media (max-width: 720px) {
-  .plan-passe { grid-template-columns: 1fr; margin-top: -2rem; }
+  .plan-passe { grid-template-columns: 1fr; }
   .plan-passe-compra { min-width: 0; }
 }
 

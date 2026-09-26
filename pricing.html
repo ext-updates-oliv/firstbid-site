@@ -56,7 +56,7 @@
         </p>
 
         <div class="plan-tabs" role="tablist" aria-label="Choose your game" id="planTabs" data-reveal></div>
-        <p class="plan-jogo" id="planJogo" aria-live="polite" data-reveal></p>
+        <p class="plan-jogo" data-reveal><span id="planJogo" aria-live="polite"></span> <span class="plan-escopo">this game only</span></p>
         <ul class="plan-detalhes" id="planDetalhes" data-reveal></ul>
 
         <div class="plan-grid">
@@ -105,6 +105,15 @@
             </ul>
             <a class="btn btn-primary btn-block btn-shine plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
           </div>
+        </div>
+
+        <!-- 26/09: o passe virou uma seção própria. Colado embaixo dos três planos
+             (margem negativa, mesmo cartão), gente lia ele como mais uma linha do
+             jogo escolhido e se confundia — relato do dono. -->
+        <div class="passe-cabeca" data-reveal>
+          <p class="passe-eyebrow">Boost more than one game?</p>
+          <h2 class="passe-titulo">Every game. <span>One key.</span></h2>
+          <div class="passe-logos" id="passeLogos" aria-label="All 14 games are included in the pass"></div>
         </div>
 
         <div class="plan-card plan-passe" data-reveal>
@@ -297,6 +306,11 @@
         });
       }
     }
+
+    // A fileira de logos do passe: TODOS os jogos, acesos juntos. É o contraste
+    // com as abas lá em cima, onde só o jogo escolhido acende.
+    const passeLogos = document.getElementById("passeLogos");
+    if (passeLogos) for (const jogo of CATALOGO) passeLogos.appendChild(marcaDoJogo(jogo, "passe-logo"));
 
     CATALOGO.forEach((jogo, i) => {
       const botao = document.createElement("button");

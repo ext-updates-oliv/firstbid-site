@@ -135,8 +135,8 @@ function marcaDoJogo(jogo, classe) {
     // A normalizacao por AREA e a mesma nos tres contextos; muda so a area
     // disponivel. `jogo-logo-grande` e a grade da home, que ficou bem maior
     // no redesenho — sem uma area propria os logos boiavam na celula.
-    const AREAS = { "plan-tab-logo": 950, "jogo-logo-grande": 4200 };
-    const TETOS = { "plan-tab-logo": 22, "jogo-logo-grande": 56 };
+    const AREAS = { "plan-tab-logo": 950, "jogo-logo-grande": 4200, "passe-logo": 1100 };
+    const TETOS = { "plan-tab-logo": 22, "jogo-logo-grande": 56, "passe-logo": 26 };
     const AREA = AREAS[classe] ?? 2600;
     const teto = TETOS[classe] ?? 40;
     img.style.height = `${Math.min(teto, Math.max(12, Math.sqrt(AREA / r)))}px`;
