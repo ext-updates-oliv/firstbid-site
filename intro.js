@@ -24,7 +24,6 @@
     get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { sessionStorage.setItem(k, v); } catch { /* sem storage: toca de novo, e tudo bem */ } }
   };
-  const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ------------------------------------------------------------------ paleta
   const THEMES = {
@@ -663,13 +662,27 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
   // -------------------------------------------------------------------- site
   // Versão longa, como um bloco no topo da página. No fim a página rola sozinha
   // até o site, e a abertura é REMOVIDA: rolar pra cima não traz ela de volta.
+  // Regra do dono (26/09): toca em TODO carregamento de quem CHEGA no site — pela
+  // home ou direto no /pricing (link do Discord) — e em todo F5. Não toca em
+  // navegação por dentro do site (home → pricing, pricing → home, voltar/avançar).
+  // Ignora "reduzir movimento" do sistema de propósito, também por decisão dele.
+  function shouldPlaySite() {
+    const qs = location.search;
+    if (/[?&]intro\b/.test(qs)) return true;
+    if (/[?&]nointro\b/.test(qs) || navigator.webdriver || location.hash) return false;
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    const type = nav ? nav.type : 'navigate';
+    if (type === 'reload') return true;
+    if (type === 'back_forward') return false;
+    let ref = null;
+    try { ref = document.referrer ? new URL(document.referrer) : null; } catch { ref = null; }
+    // Veio de outra página do PRÓPRIO site: é navegação interna.
+    if (ref && ref.origin === location.origin && ref.pathname !== location.pathname) return false;
+    return true;
+  }
+
   function bootSite() {
-    const KEY = 'fb-intro';
-    // `?intro` força (ignora a sessão e o "reduzir movimento" do sistema): é como
-    // se vê a abertura num PC com as animações do Windows desligadas.
-    const force = /[?&]intro\b/.test(location.search);
-    if (!force && (reduced || navigator.webdriver || location.hash || /[?&]nointro\b/.test(location.search) || store.get(KEY))) return;
-    store.set(KEY, '1');
+    if (!shouldPlaySite()) return;
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     injectStyle();
@@ -732,19 +745,20 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
   // --------------------------------------------------------------------- app
   // Versão curta, por cima da dashboard, uma vez por abertura da janela
   // (sessionStorage do Electron vive enquanto a janela vive; recarregar a
-  // dashboard depois de salvar não toca de novo).
+  // dashboard depois de salvar não toca de novo). Espaço (ou qualquer tecla,
+  // clique) pula — pedido do dono: "uma hr pode cansar".
   function bootApp() {
     const KEY = 'fb-intro-app';
-    if (reduced || store.get(KEY)) return;
+    if (store.get(KEY)) return;
     store.set(KEY, '1');
     injectStyle();
     const lang = (html.lang || 'en').slice(0, 2);
-    const label = { pt: 'Pular', es: 'Saltar', fr: 'Passer', ru: 'Пропустить' }[lang] || 'Skip';
+    const label = { pt: 'Espaço · Pular', es: 'Espacio · Saltar', fr: 'Espace · Passer', ru: 'Пробел · Пропустить' }[lang] || 'Space · Skip';
     let leaving = false;
     const leave = () => {
       if (leaving) return;
       leaving = true;
-      removeEventListener('keydown', leave);
+      removeEventListener('keydown', onKey);
       intro.el.removeEventListener('pointerdown', leave);
       intro.el.classList.add('fbi--out');
       setTimeout(() => intro.destroy(), 420);
@@ -753,7 +767,9 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
       mode: 'short', theme: 'app', placement: 'fixed', parent: document.body,
       skipLabel: label, onSkip: leave, onDone: leave
     });
-    addEventListener('keydown', leave);
+    // O espaço não pode rolar a dashboard por baixo enquanto pula.
+    const onKey = e => { if (e.key === ' ') e.preventDefault(); leave(); };
+    addEventListener('keydown', onKey);
     intro.el.addEventListener('pointerdown', leave);
   }
 
