@@ -1051,6 +1051,21 @@ h3 {
   line-height: 1.7;
 }
 .plan-note strong { color: var(--bone); font-weight: 700; }
+
+/* Onde fica o cupom (26/09): o campo da SellAuth é escondido na segunda tela.
+   Mesmo recurso do .plan-compara — faixa dourada à esquerda, sem cartão. */
+.plan-cupom {
+  margin: -1.75rem 0 2.5rem;
+  padding: 0.75rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--bone);
+  background: rgba(255, 201, 80, 0.07);
+  box-shadow: inset 2px 0 0 var(--glow);
+}
+.plan-cupom strong { color: var(--glow); font-weight: 700; }
+.plan-cupom b { color: var(--bone); font-weight: 700; }
 .link-acento { color: var(--glow); text-decoration: underline; text-underline-offset: 0.2em; }
 .link-acento:hover { color: var(--glow-core); }
 
