@@ -1175,3 +1175,27 @@ h3 {
 .plan-compara-velho s { text-decoration-thickness: 1px; }
 .plan-compara-novo { color: var(--bone); }
 .plan-compara-novo strong { color: var(--glow); font-weight: 700; }
+
+/* Custo por dia em cada plano (25/09, pedido do dono): a escada de preco tem que
+   ser legivel sem fazer conta. Numeros = preco / dias, arredondados em centavos:
+   2.50/3, 5/7, 18/30 e 12/7. Mudou um preco? Muda aqui tambem. */
+.plan-dia {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  opacity: 0.8;
+}
+.plan-dia strong { font-weight: 700; opacity: 1; }
+.plan-card-featured .plan-dia strong { color: var(--glow); }
+.plan-dia-tag {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ground-deep);
+  background: var(--glow);
+}
