@@ -1199,3 +1199,31 @@ h3 {
   color: var(--ground-deep);
   background: var(--glow);
 }
+
+/* Passe com tres prazos (25/09): o lado de compra vira tres colunas pequenas. */
+.plan-passe { grid-template-columns: minmax(14rem, 1fr) 2fr; }
+.plan-passe-opcoes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+}
+.plan-passe-opcao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1rem;
+  background-color: rgba(11, 17, 29, 0.45);
+}
+.plan-passe-opcao .plan-amount { font-size: clamp(2.4rem, 4vw, 3.2rem); }
+.plan-passe-opcao .plan-cta { margin-top: auto; }
+.plan-passe-opcao-destaque {
+  background-color: rgba(255, 201, 80, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.32);
+}
+.plan-passe-opcao-destaque .plan-price { color: var(--glow); }
+@media (max-width: 900px) {
+  .plan-passe { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .plan-passe-opcoes { grid-template-columns: 1fr; }
+}

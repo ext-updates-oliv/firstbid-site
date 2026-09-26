@@ -104,14 +104,28 @@
             <p class="plan-pitch">One key that unlocks every game FirstBid supports, on one machine. Built for sellers who boost more than one game.</p>
             <ul class="plan-features">
               <li>All <strong>14 games</strong> with a single key</li>
-              <li>7 days of access</li>
+              <li>3 days, 1 week or 1 month</li>
             </ul>
           </div>
-          <div class="plan-passe-compra">
-            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">12</span></p>
-            <p class="plan-access">per week</p>
-            <p class="plan-dia"><strong>$1.71</strong> per day, all 14 games</p>
-            <a class="btn btn-ghost btn-block plan-cta" id="ctaPasse" target="_blank" rel="noopener">Get the pass</a>
+          <div class="plan-passe-opcoes">
+            <div class="plan-passe-opcao">
+              <p class="plan-term">3 days</p>
+              <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">6</span></p>
+              <p class="plan-dia"><strong>$2.00</strong> per day</p>
+              <a class="btn btn-ghost btn-block plan-cta" data-passe-cta="3" target="_blank" rel="noopener">Get the pass</a>
+            </div>
+            <div class="plan-passe-opcao">
+              <p class="plan-term">1 week</p>
+              <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">12</span></p>
+              <p class="plan-dia"><strong>$1.71</strong> per day</p>
+              <a class="btn btn-ghost btn-block plan-cta" data-passe-cta="7" target="_blank" rel="noopener">Get the pass</a>
+            </div>
+            <div class="plan-passe-opcao plan-passe-opcao-destaque">
+              <p class="plan-term">1 month</p>
+              <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">43</span></p>
+              <p class="plan-dia"><strong>$1.43</strong> per day <span class="plan-dia-tag">lowest</span></p>
+              <a class="btn btn-primary btn-block plan-cta" data-passe-cta="30" target="_blank" rel="noopener">Get the pass</a>
+            </div>
           </div>
         </div>
         <p class="plan-note" data-reveal>
@@ -256,16 +270,17 @@
 
     // O passe nao muda com a aba de jogo: um botao so, montado uma vez, pelas
     // mesmas duas rotas dos outros planos (href que nunca falha + modal).
-    const ctaPasse = document.getElementById("ctaPasse");
-    if (ctaPasse) {
-      ctaPasse.href = linkDeCheckout(PASSE.variantId, PASSE.productId);
+    const origemPasse = window.fbOrigem?.();
+    for (const ctaPasse of document.querySelectorAll("[data-passe-cta]")) {
+      const variantId = PASSE.variants[ctaPasse.dataset.passeCta];
+      if (!variantId) continue;
+      ctaPasse.href = linkDeCheckout(variantId, PASSE.productId);
       ctaPasse.dataset.sellauthShop = String(SELLAUTH.shopId);
       ctaPasse.dataset.sellauthShopUrl = SELLAUTH.base;
       ctaPasse.dataset.sellauthCart = JSON.stringify([
-        { productId: PASSE.productId, variantId: PASSE.variantId, quantity: 1 },
+        { productId: PASSE.productId, variantId, quantity: 1 },
       ]);
       ctaPasse.dataset.sellauthTheme = "dark";
-      const origemPasse = window.fbOrigem?.();
       if (origemPasse) {
         ctaPasse.dataset.sellauthMetadata = JSON.stringify({
           fb_source: origemPasse.utm_source,

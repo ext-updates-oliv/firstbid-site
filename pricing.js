@@ -37,7 +37,9 @@ const SELLAUTH = {
 // ja esta com 9 das 10 variantes que o plano gratis permite. A VM entrega a key
 // `ALL-` (productMap 892913:1749928 -> ALL, 7 dias), que o app trata como
 // prefixo desconhecido e por isso destrava todos os jogos.
-const PASSE = { productId: 892913, variantId: 1749928 };
+// 3 e 30 dias entraram na mesma noite (productMap 892913:1749990 -> ALL 3d e
+// 892913:1749991 -> ALL 30d).
+const PASSE = { productId: 892913, variants: { 3: 1749990, 7: 1749928, 30: 1749991 } };
 
 const CATALOGO = [
   { nome: "Fortnite", emoji: "🔫", logo: true,
