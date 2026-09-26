@@ -128,6 +128,8 @@
 .fbi-skip.on{opacity:1}
 .fbi-skip:hover{color:#ece6d9;box-shadow:inset 0 0 0 1px ${DECAY}}
 .fbi-skip:focus-visible{outline:1px solid ${GLOW};outline-offset:3px}
+.fbi-sound{right:auto;left:16px}
+.fbi [hidden]{display:none!important}
 html.fbi-lock{overflow:hidden}
 html.fbi-hidenav .nav{transform:translateY(-100%)}
 html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
@@ -135,8 +137,124 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     (document.head || html).appendChild(st);
   }
 
+  // -------------------------------------------------------------------- som
+  // Tudo sintetizado na hora (Web Audio), sem arquivo. BEM baixo de propósito —
+  // pedido do dono: "bem baixo apenas para não ficar sem nada".
+  // O navegador só deixa tocar depois de um gesto da pessoa: no site isso é o
+  // botão "Sound on" (medido em 26/09: sem gesto o contexto fica `suspended`, e o
+  // `resume()` NUNCA resolve — não fazer await nele). No app o Electron libera
+  // (`autoplayPolicy` em electron/main.js) e toca sozinho.
+  const SOUND_LEVEL = 0.055;
+  function createSound(T, mode) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    let ac;
+    try { ac = new AC(); } catch { return null; }
+    const master = ac.createGain();
+    master.gain.value = SOUND_LEVEL;
+    master.connect(ac.destination);
+    const noise = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    const nd = noise.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    let hum = null, stopped = false;
+
+    function tone(freq, { type = 'sine', vol = .3, a = .005, dec = .25, to = null, delay = 0 } = {}) {
+      const t0 = ac.currentTime + delay;
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t0);
+      if (to) o.frequency.exponentialRampToValueAtTime(to, t0 + a + dec);
+      g.gain.setValueAtTime(.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + a);
+      g.gain.exponentialRampToValueAtTime(.0001, t0 + a + dec);
+      o.connect(g).connect(master);
+      o.start(t0); o.stop(t0 + a + dec + .05);
+    }
+    function whoosh(dur, f0, f1, vol, q = 1.2) {
+      const t0 = ac.currentTime;
+      const s = ac.createBufferSource(); s.buffer = noise; s.loop = true;
+      const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = q;
+      f.frequency.setValueAtTime(f0, t0);
+      f.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + dur * .6);
+      g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+      s.connect(f).connect(g).connect(master);
+      s.start(t0); s.stop(t0 + dur + .05);
+    }
+    // O zumbido de fundo: a matriz ligada, esperando pedido.
+    function startHum() {
+      if (hum) return;
+      const t0 = ac.currentTime;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(.0001, t0);
+      g.gain.exponentialRampToValueAtTime(.35, t0 + 1.2);
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
+      const oscs = [55, 82.4, 110.3].map((f, i) => {
+        const o = ac.createOscillator();
+        o.type = i ? 'sine' : 'triangle'; o.frequency.value = f;
+        o.connect(lp); o.start(t0);
+        return o;
+      });
+      lp.connect(g).connect(master);
+      hum = { g, oscs };
+    }
+    function stopHum(fade) {
+      if (!hum) return;
+      const t0 = ac.currentTime, h = hum;
+      hum = null;
+      h.g.gain.cancelScheduledValues(t0);
+      h.g.gain.setValueAtTime(Math.max(h.g.gain.value, .0001), t0);
+      h.g.gain.exponentialRampToValueAtTime(.0001, t0 + fade);
+      h.oscs.forEach(o => o.stop(t0 + fade + .05));
+    }
+    const letters = [...'FIRSTBID'].map((_, i) => T.word0 + i * T.lstep + T.lflick);
+    let humDone = false;
+
+    // Chamado a cada quadro com o t anterior e o atual: dispara o que foi cruzado.
+    function frame(p, t) {
+      if (stopped || ac.state !== 'running') return;
+      if (t - p > .25) return; // salto (pular, seek): não dispara tudo de uma vez
+      const hit = x => x != null && p < x && t >= x;
+      if (!humDone && t < T.end) startHum();
+      if (hit(T.scan0)) whoosh(T.scan1 - T.scan0, 500, 1800, .08, .7);
+      if (hit(T.match)) {
+        tone(1568, { vol: .22, dec: .12 });
+        tone(2349, { vol: .12, dec: .18, delay: .03 });
+      }
+      if (hit(T.burst)) whoosh(mode === 'full' ? 1.1 : .7, 300, 3200, .22);
+      if (hit(T.stroke0)) tone(220, { type: 'triangle', vol: .1, a: .3, dec: T.stroke1 - T.stroke0, to: 440 });
+      if (hit(T.impact)) {
+        tone(90, { vol: .9, a: .004, dec: .5, to: 38 });
+        [659.3, 987.8, 1318.5].forEach((f, i) => tone(f, { type: i ? 'sine' : 'triangle', vol: .16 / (i + 1), a: .004, dec: 1.8 }));
+        whoosh(.35, 4000, 900, .1, .6);
+      }
+      for (const x of letters) if (hit(x)) tone(2600, { type: 'square', vol: .05, dec: .03 });
+      if (hit(T.end)) { humDone = true; stopHum(1.6); }
+    }
+
+    return {
+      get running() { return ac.state === 'running'; },
+      // No site, só adianta dentro de um clique. Nunca esperar o retorno.
+      unlock() { try { ac.resume(); } catch { /* sem som, segue */ } },
+      onRunning(fn) { ac.addEventListener('statechange', () => { if (ac.state === 'running') fn(); }); },
+      frame,
+      fadeOut() { humDone = true; if (ac.state === 'running') stopHum(.5); },
+      close() {
+        if (stopped) return;
+        stopped = true;
+        const t0 = ac.currentTime;
+        master.gain.cancelScheduledValues(t0);
+        master.gain.setValueAtTime(master.gain.value, t0);
+        master.gain.linearRampToValueAtTime(0, t0 + .35);
+        setTimeout(() => { try { ac.close(); } catch { /* já fechado */ } }, 500);
+      }
+    };
+  }
+
   // ------------------------------------------------------------------ motor
-  function createIntro({ mode, theme, placement, parent, skipLabel, onSkip, onDone }) {
+  function createIntro({ mode, theme, placement, parent, skipLabel, soundLabel, onSkip, onDone }) {
     const C = THEMES[theme];
     const T = TIMELINES[mode];
     const full = mode === 'full';
@@ -155,7 +273,8 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
         <div data-h="1">› new order · valorant · duo · gold 2 → platinum 1</div>
         <div data-h="2"></div>
         <div data-h="3" class="hot">› offer sent</div></div>` : '') +
-      `<button class="fbi-skip" type="button">${skipLabel}</button>`;
+      `<button class="fbi-skip" type="button">${skipLabel}</button>` +
+      (soundLabel ? `<button class="fbi-skip fbi-sound" type="button" hidden>${soundLabel}</button>` : '');
     parent.insertBefore(sec, parent.firstChild);
 
     const cv = sec.querySelector('canvas');
@@ -163,6 +282,22 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     const wc = document.createElement('canvas');
     const wctx = wc.getContext('2d');
     const skipBtn = sec.querySelector('.fbi-skip');
+    const soundBtn = sec.querySelector('.fbi-sound');
+
+    // Som: no app já nasce tocando; no site fica suspenso até o botão.
+    const sound = createSound(T, mode);
+    if (sound) sound.unlock();
+    if (sound && soundBtn) {
+      soundBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        sound.unlock();
+        soundBtn.hidden = true;
+      });
+      sound.onRunning(() => { soundBtn.hidden = true; });
+      setTimeout(() => {
+        if (!sound.running) { soundBtn.hidden = false; requestAnimationFrame(() => soundBtn.classList.add('on')); }
+      }, 400);
+    }
     const hudLines = [...sec.querySelectorAll('[data-h]')];
 
     // Sorteio desta abertura: o valor ($20–$90, de 50 em 50 centavos) e o lugar.
@@ -603,7 +738,9 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
       ptr.sx += (ptr.x - ptr.sx) * Math.min(1, dt * 3);
       ptr.sy += (ptr.y - ptr.sy) * Math.min(1, dt * 3);
       // Janela escondida (o app abre na bandeja) não gasta a abertura.
+      const prevT = t;
       if (document.visibilityState === 'visible') t += dt;
+      if (sound) sound.frame(prevT, t);
       render(t);
       hudLines.forEach((el, i) => el.classList.toggle('on', t >= [T.scan0, T.match, T.impact][i]));
       if (t > .8) skipBtn.classList.add('on');
@@ -646,14 +783,16 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     return {
       el: sec,
       // Pular: o valor faz snap direto pro logo pronto.
-      jumpToEnd() { t = Math.max(t, T.end); },
+      jumpToEnd() { t = Math.max(t, T.end); if (sound) sound.fadeOut(); },
       // Pra conferir um quadro exato (a timeline é determinística a partir de t).
       seek(v) { t = v; },
+      get soundRunning() { return !!(sound && sound.running); },
       destroy() {
         alive = false;
         cancelAnimationFrame(raf);
         removeEventListener('resize', onResize);
         removeEventListener('pointermove', onMove);
+        if (sound) sound.close();
         sec.remove();
       }
     };
@@ -692,9 +831,11 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     const intro = createIntro({
       mode: 'full', theme: 'site', placement: 'block', parent: document.body,
       skipLabel: 'Skip intro',
+      soundLabel: '♪ Sound on',
       onSkip: () => { intro.jumpToEnd(); handoff(); },
       onDone: () => handoff()
     });
+    window.FirstBidIntro.current = intro; // pra conferir pelo console
 
     const skipKeys = /^( |Enter|Escape|ArrowDown|ArrowUp|PageDown|PageUp|End|Home)$/;
     const onWheel = e => { e.preventDefault(); intro.jumpToEnd(); handoff(); };
@@ -779,6 +920,7 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
       mode: 'short', theme: 'app', placement: 'fixed', parent: document.body,
       skipLabel: label, onSkip: leave, onDone: leave
     });
+    window.FirstBidIntro.current = intro; // pra conferir pelo console
     addEventListener('keydown', onKey, true);
     addEventListener('wheel', block, { passive: false, capture: true });
     addEventListener('touchmove', block, { passive: false, capture: true });
