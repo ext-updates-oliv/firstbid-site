@@ -17,8 +17,8 @@
 
 /* Declarado nos dois jeitos: o Chromium lê `color-scheme`; o Samsung Internet
    também olha se o site responde a prefers-color-scheme. Ver o meta no <head>. */
-:root { color-scheme: dark; }
-@media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+:root { color-scheme: only dark; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: only dark; } }
 
 :root {
   /* Os dois únicos matizes do mundo: tinta-azul e o cátodo aceso.
