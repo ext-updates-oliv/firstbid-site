@@ -787,6 +787,10 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
       // Pra conferir um quadro exato (a timeline é determinística a partir de t).
       seek(v) { t = v; },
       get soundRunning() { return !!(sound && sound.running); },
+      // Chamar DENTRO de um gesto real (toque, clique, tecla). Clique disparado por
+      // código não serve: medido em 26/09, o handler roda mas o navegador não
+      // libera o áudio (userActivation segue false). Não existe "auto clicker".
+      unlockSound() { if (sound && !sound.running) sound.unlock(); },
       destroy() {
         alive = false;
         cancelAnimationFrame(raf);
@@ -837,6 +841,12 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     });
     window.FirstBidIntro.current = intro; // pra conferir pelo console
 
+    // Qualquer gesto real durante a abertura liga o som — não só o botão. Toque na
+    // tela, clique em qualquer lugar, tecla. É o máximo que o navegador permite.
+    const unlockEvents = ['pointerdown', 'pointerup', 'touchend', 'mousedown', 'keydown'];
+    const unlock = () => intro.unlockSound();
+    unlockEvents.forEach(ev => addEventListener(ev, unlock, { capture: true, passive: true }));
+
     const skipKeys = /^( |Enter|Escape|ArrowDown|ArrowUp|PageDown|PageUp|End|Home)$/;
     const onWheel = e => { e.preventDefault(); intro.jumpToEnd(); handoff(); };
     const onTouch = e => { e.preventDefault(); intro.jumpToEnd(); handoff(); };
@@ -871,6 +881,7 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
         if (k < 1) { requestAnimationFrame(step); return; }
         // Mesmo quadro: tira a abertura e volta o scroll pra 0. O site não se mexe na tela.
         intro.destroy();
+        unlockEvents.forEach(ev => removeEventListener(ev, unlock, { capture: true }));
         window.scrollTo(0, 0);
         html.classList.remove('fbi-lock');
         html.style.scrollBehavior = prevBehavior;
