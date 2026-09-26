@@ -130,7 +130,6 @@
 .fbi-skip:focus-visible{outline:1px solid ${GLOW};outline-offset:3px}
 .fbi-sound{right:auto;left:16px}
 .fbi [hidden]{display:none!important}
-html.fbi-lock{overflow:hidden}
 html.fbi-hidenav .nav{transform:translateY(-100%)}
 html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
 @media (max-width:480px){.fbi-hud{font-size:10px}}`;
@@ -829,7 +828,10 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     injectStyle();
-    html.classList.add('fbi-lock', 'fbi-hidenav');
+    // Sem overflow:hidden de propósito: esconder a barra de rolagem e devolvê-la no
+    // fim estreitava a página 10 px e o site "dava uma ajustada" de 5 px pro lado
+    // (medido em 26/09, o dono viu). A rolagem é travada por evento, abaixo.
+    html.classList.add('fbi-hidenav');
     let handing = false;
 
     const intro = createIntro({
@@ -847,24 +849,28 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
     const unlock = () => intro.unlockSound();
     unlockEvents.forEach(ev => addEventListener(ev, unlock, { capture: true, passive: true }));
 
-    const skipKeys = /^( |Enter|Escape|ArrowDown|ArrowUp|PageDown|PageUp|End|Home)$/;
-    const onWheel = e => { e.preventDefault(); intro.jumpToEnd(); handoff(); };
-    const onTouch = e => { e.preventDefault(); intro.jumpToEnd(); handoff(); };
-    const onKey = e => { if (skipKeys.test(e.key)) { e.preventDefault(); intro.jumpToEnd(); handoff(); } };
-    addEventListener('wheel', onWheel, { passive: false });
-    addEventListener('touchmove', onTouch, { passive: false });
+    // Durante a abertura a página NÃO rola (pedido do dono: rolar "bugava" a
+    // animação). Roda, dedo e teclas de rolagem são engolidos; pula só com Espaço,
+    // Enter, Esc ou o botão — igual ao app.
+    const SCROLL_KEYS = /^(ArrowDown|ArrowUp|ArrowLeft|ArrowRight|PageDown|PageUp|Home|End)$/;
+    const block = e => e.preventDefault();
+    const onKey = e => {
+      if (e.key === ' ' || e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); intro.jumpToEnd(); handoff(); }
+      else if (SCROLL_KEYS.test(e.key)) e.preventDefault();
+    };
+    // Arrastar a barra de rolagem não passa por evento cancelável: devolve pro topo.
+    const onScroll = () => { if (!handing && window.scrollY !== 0) window.scrollTo(0, 0); };
+    addEventListener('wheel', block, { passive: false });
+    addEventListener('touchmove', block, { passive: false });
     addEventListener('keydown', onKey);
+    addEventListener('scroll', onScroll, { passive: true });
 
     function handoff() {
       if (handing) return;
       handing = true;
-      removeEventListener('wheel', onWheel);
-      removeEventListener('touchmove', onTouch);
       removeEventListener('keydown', onKey);
-      // Durante a rolagem automática, qualquer gesto do visitante é engolido.
-      const swallow = e => e.preventDefault();
-      addEventListener('wheel', swallow, { passive: false });
-      addEventListener('touchmove', swallow, { passive: false });
+      removeEventListener('scroll', onScroll);
+      // Durante a rolagem automática, roda e dedo seguem engolidos (o `block` fica).
 
       const prevBehavior = html.style.scrollBehavior;
       html.style.scrollBehavior = 'auto'; // o CSS do site tem scroll-behavior: smooth
@@ -883,10 +889,9 @@ html.fbi-nav .nav{transition:transform .8s cubic-bezier(.16,1,.3,1)}
         intro.destroy();
         unlockEvents.forEach(ev => removeEventListener(ev, unlock, { capture: true }));
         window.scrollTo(0, 0);
-        html.classList.remove('fbi-lock');
         html.style.scrollBehavior = prevBehavior;
-        removeEventListener('wheel', swallow);
-        removeEventListener('touchmove', swallow);
+        removeEventListener('wheel', block);
+        removeEventListener('touchmove', block);
         setTimeout(() => html.classList.remove('fbi-nav'), 900);
         window.dispatchEvent(new Event('scroll'));
       };
