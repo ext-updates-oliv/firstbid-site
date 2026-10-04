@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="only dark" />
+  <meta name="theme-color" content="#04070e" />
+  <meta name="darkreader-lock" />
+  <title>Manage your subscription — FirstBid</title>
+  <meta name="description" content="How FirstBid subscriptions renew, how renewal invoices work, and where to cancel, resume or update payment." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=Chivo+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>document.documentElement.classList.add("js");</script>
+  <script src="origem.js"></script>
+</head>
+<body>
+  <script src="intro.js" data-boot="site"></script>
+  <div class="gauze-plane" aria-hidden="true"></div>
+
+  <header class="nav nav-scrolled" id="siteNav">
+    <div class="wrap nav-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <nav class="nav-links">
+        <a href="/#how">How it works</a>
+        <a href="/#games">Games</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/subscription" aria-current="page">Subscription</a>
+      </nav>
+      <div class="nav-acoes">
+        <a class="btn btn-primary btn-small" href="https://firstbid.mysellauth.com/customer/subscriptions" target="_blank" rel="noopener">Manage</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="subscription-page">
+    <div class="wrap">
+      <section class="subscription-hero">
+        <p class="subscription-kicker" data-reveal>Subscription control</p>
+        <h1 data-reveal>Keep the bot active. <span>Keep control.</span></h1>
+        <p class="section-sub" data-reveal>
+          Every FirstBid plan is a subscription for the billing period you choose. Card and
+          PayPal renew automatically. Crypto and other payment methods receive a renewal invoice
+          by email. You can cancel anytime and keep access until the paid period ends.
+        </p>
+        <div class="subscription-actions" data-reveal>
+          <a class="btn btn-primary" href="https://firstbid.mysellauth.com/customer/subscriptions" target="_blank" rel="noopener">Manage my subscription</a>
+          <a class="btn btn-ghost" href="/pricing">See plans</a>
+        </div>
+      </section>
+
+      <ol class="subscription-flow" aria-label="How a FirstBid subscription works">
+        <li class="subscription-step" data-reveal>
+          <p class="subscription-step-num">01 · Choose</p>
+          <h2>3, 7 or 30 days</h2>
+          <p>Choose one game or the all-games pass. The same billing period repeats until you cancel.</p>
+        </li>
+        <li class="subscription-step" data-reveal data-reveal-delay="1">
+          <p class="subscription-step-num">02 · Renew</p>
+          <h2>Automatic or by invoice</h2>
+          <p>Stripe and PayPal Checkout charge automatically. Other methods, including crypto, send a renewal invoice to your purchase email.</p>
+        </li>
+        <li class="subscription-step" data-reveal data-reveal-delay="2">
+          <p class="subscription-step-num">03 · Control</p>
+          <h2>Cancel when you want</h2>
+          <p>Cancellation is scheduled for the end of the paid period. You keep the time you already paid for.</p>
+        </li>
+      </ol>
+
+      <section class="subscription-faq" data-reveal>
+        <p class="subscription-kicker">Short answers</p>
+        <h2>Subscription FAQ</h2>
+        <details>
+          <summary>Where do I cancel or resume?</summary>
+          <p>Use the SellAuth customer panel. It lets you cancel, resume, and see your subscriptions in one place.</p>
+        </details>
+        <details>
+          <summary>Where do I change my card?</summary>
+          <p>Open the same customer panel and use the payment-management option for your subscription.</p>
+        </details>
+        <details>
+          <summary>What happens when I pay with crypto?</summary>
+          <p>Crypto is not charged automatically. SellAuth sends a renewal invoice by email before the next period; pay that invoice to continue.</p>
+        </details>
+        <details>
+          <summary>Do I lose access as soon as I cancel?</summary>
+          <p>No. Cancellation happens at the end of the period you already paid for.</p>
+        </details>
+        <details>
+          <summary>What about an older one-time license?</summary>
+          <p>It keeps its existing access period. The next plan purchased for that game is a subscription.</p>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="/pricing">Pricing</a>
+      <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
+    </div>
+    <div class="wrap footer-legal">
+      <p>FirstBid is an independent tool and is not affiliated with, endorsed by, or sponsored by Eldorado.gg.</p>
+      <p>© <span id="year"></span> FirstBid. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    const reveal = (element) => element.classList.add("is-visible");
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.filter((entry) => entry.isIntersecting).forEach((entry) => {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
+    } else {
+      document.querySelectorAll("[data-reveal]").forEach(reveal);
+    }
+  </script>
+</body>
+</html>

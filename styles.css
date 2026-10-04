@@ -1020,6 +1020,14 @@ h3 {
   text-transform: uppercase;
   color: var(--glow);
 }
+.plan-renewal {
+  margin: -0.2rem 0 0;
+  color: var(--bone-dim);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .plan-pitch { margin: 0.4rem 0 0; color: var(--bone); font-size: 0.95rem; line-height: 1.6; }
 .plan-features {
   list-style: none;
@@ -1135,6 +1143,61 @@ h3 {
   z-index: 70;
 }
 .noise-overlay { display: none; }
+
+/* ---------- /subscription ---------- */
+.subscription-page {
+  padding-block: 8rem 5rem;
+  min-height: 100vh;
+}
+.subscription-hero { max-width: 62rem; }
+.subscription-kicker,
+.subscription-step-num {
+  margin: 0 0 0.8rem;
+  color: var(--glow);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.subscription-hero h1 { margin: 0 0 1.4rem; max-width: 11ch; }
+.subscription-hero h1 span { color: var(--glow); }
+.subscription-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+.subscription-flow {
+  list-style: none;
+  margin: 5rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(147, 160, 182, 0.12);
+}
+.subscription-step {
+  min-width: 0;
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  background-color: var(--ground);
+  background-image: var(--gauze);
+}
+.subscription-step h2 { margin: 0 0 0.8rem; font-size: clamp(1.7rem, 3vw, 2.5rem); }
+.subscription-step p { margin: 0; color: var(--bone-dim); line-height: 1.7; }
+.subscription-step .subscription-step-num { color: var(--glow); margin-bottom: 0.8rem; }
+.subscription-faq { max-width: 56rem; margin-top: 4rem; }
+.subscription-faq h2 { margin-bottom: 1.5rem; }
+.subscription-faq details {
+  border-top: 1px solid rgba(147, 160, 182, 0.2);
+  padding: 1.15rem 0;
+}
+.subscription-faq details:last-of-type { border-bottom: 1px solid rgba(147, 160, 182, 0.2); }
+.subscription-faq summary {
+  color: var(--bone);
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.subscription-faq details p { color: var(--bone-dim); line-height: 1.75; margin: 0.9rem 0 0; }
+@media (max-width: 760px) {
+  .subscription-flow { grid-template-columns: 1fr; }
+}
 
 /* O reveal destas duas paginas usa `data-reveal`/`is-visible` (o mecanismo
    que elas ja tinham). Mesmo comportamento do `data-strike` da home: entra de
