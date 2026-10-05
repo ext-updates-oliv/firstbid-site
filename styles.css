@@ -1309,7 +1309,8 @@ h3 {
   font-size: 0.76rem;
   line-height: 1.6;
 }
-.subscription-account-item > .btn { grid-column: 3; grid-row: 1 / span 2; }
+.subscription-account-actions { grid-column: 3; grid-row: 1 / span 4; display: flex; flex-direction: column; gap: 0.55rem; align-items: stretch; }
+.subscription-account-actions .btn { justify-content: center; }
 .subscription-account-item-legacy .subscription-account-state { color: var(--bone-dim); }
 .subscription-empty { margin: 0; padding: 1.5rem; color: var(--bone-dim); background: var(--ground); }
 .subscription-portal {
@@ -1359,7 +1360,7 @@ h3 {
   .subscription-input-row { flex-direction: column; }
   .subscription-account-item { grid-template-columns: 1fr; }
   .subscription-account-details,
-  .subscription-account-item > .btn { grid-column: 1; grid-row: auto; }
+  .subscription-account-actions { grid-column: 1; grid-row: auto; align-items: flex-start; }
 }
 
 /* O reveal destas duas paginas usa `data-reveal`/`is-visible` (o mecanismo

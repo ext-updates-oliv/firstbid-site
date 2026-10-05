@@ -50,6 +50,12 @@
     if (item.price == null) return "Price unavailable";
     return `${item.currency || "USD"} ${item.price} every ${item.intervalCount || item.durationDays || "?"} ${item.interval || "days"}`;
   }
+  function amount(value, currency = "USD") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? new Intl.NumberFormat(undefined, {
+      style: "currency", currency, minimumFractionDigits: 2,
+    }).format(parsed) : `${currency} ${value}`;
+  }
   function statusText(item) {
     if (item.cancelAtPeriodEnd) return `Cancels at the end of the paid period · ${date(item.currentPeriodEnd || item.nextRenewalAt)}`;
     if (item.status === "past_due") return "Payment pending";
@@ -77,6 +83,46 @@
     details.className = "subscription-account-details";
     details.textContent = `${item.variantName || `${item.durationDays || "?"} days`} · ${money(item)} · ${item.renewalMethod === "automatic" ? "automatic renewal" : "renewal invoice by email"}`;
     card.append(heading, state, details);
+    const actions = document.createElement("div");
+    actions.className = "subscription-account-actions";
+    if (item.aiActive && item.aiUntil) {
+      const entitlement = document.createElement("p");
+      entitlement.className = "subscription-account-details";
+      entitlement.textContent = `AI paid through ${date(item.aiUntil)}.`;
+      card.append(entitlement);
+    }
+    if (item.aiActive && item.aiPlan !== true) {
+      const renewal = document.createElement("p");
+      renewal.className = "subscription-account-details";
+      renewal.textContent = `Your current renewal returns to without AI on ${date(item.aiRenewalReturnsToBaseAt)}.`;
+      const changeRenewal = document.createElement("a");
+      changeRenewal.className = "btn btn-ghost btn-small";
+      changeRenewal.href = "/pricing";
+      changeRenewal.textContent = "Change the next renewal to an AI plan";
+      actions.append(changeRenewal);
+      card.append(renewal);
+    }
+    if (item.upgrade) {
+      const renewal = document.createElement("p");
+      renewal.className = "subscription-account-details";
+      renewal.textContent = `This upgrade covers the current remaining days. Your renewal stays without AI from ${date(item.aiRenewalReturnsToBaseAt)}; subscribing to the AI plan cancels the plan without AI at the end of its period.`;
+      card.append(renewal);
+      const upgrade = button(`Add AI to ${item.upgrade.days} remaining days — ${amount(item.upgrade.amount, item.upgrade.currency)}`);
+      upgrade.addEventListener("click", async () => {
+        upgrade.disabled = true;
+        showMessage("Creating your exact AI upgrade checkout…");
+        try {
+          const payload = await call("/upgrade-ai", {
+            method: "POST", body: { gamePrefix: item.gamePrefix }, authenticated: true,
+          });
+          window.location.assign(payload.checkoutUrl);
+        } catch (error) {
+          upgrade.disabled = false;
+          showMessage(error.message, true);
+        }
+      });
+      actions.append(upgrade);
+    }
     if (["active", "trialing"].includes(item.status) && !item.cancelAtPeriodEnd) {
       const cancel = button("Cancel at period end");
       cancel.addEventListener("click", async () => {
@@ -91,7 +137,7 @@
           showMessage(error.message, true);
         }
       });
-      card.append(cancel);
+      actions.append(cancel);
     }
     if (item.paymentUrl) {
       const payment = document.createElement("a");
@@ -100,8 +146,31 @@
       payment.target = "_blank";
       payment.rel = "noopener";
       payment.textContent = "Pay renewal invoice";
-      card.append(payment);
+      actions.append(payment);
     }
+    if (item.canDowngradeAi) {
+      const downgrade = button("Go back to without AI");
+      downgrade.addEventListener("click", async () => {
+        if (!window.confirm("Open the checkout for the plan without AI? Once it is paid, the AI renewal is cancelled at the end of its period. Your already-paid AI stays active until its paid date.")) return;
+        downgrade.disabled = true;
+        showMessage("Preparing the without-AI subscription…");
+        try {
+          const payload = await call("/downgrade-ai", {
+            method: "POST", body: { subscriptionId: item.id }, authenticated: true,
+          });
+          window.location.assign(payload.checkoutUrl);
+        } catch (error) {
+          downgrade.disabled = false;
+          showMessage(error.message, true);
+        }
+      });
+      actions.append(downgrade);
+      const explanation = document.createElement("p");
+      explanation.className = "subscription-account-details";
+      explanation.textContent = `Your paid AI remains available through ${date(item.aiUntil)}. The without-AI period is added after it.`;
+      card.append(explanation);
+    }
+    if (actions.children.length) card.append(actions);
     return card;
   }
   function legacyCard(item) {

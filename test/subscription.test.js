@@ -30,6 +30,12 @@ test("cliente do site usa a sessao autenticada, sem enviar email nas rotas de st
   assert.match(script, /Authorization:\s*`Bearer \$\{token\(\)\}`/);
   assert.doesNotMatch(script, /status[^\n]+email/i);
   assert.match(script, /body:\s*\{ subscriptionId: item\.id \}/);
+  assert.match(script, /call\("\/upgrade-ai"/);
+  assert.match(script, /body:\s*\{ gamePrefix: item\.gamePrefix \}/);
+  assert.match(script, /call\("\/downgrade-ai"/);
+  assert.doesNotMatch(script, /body:\s*\{[^}]*price/i);
+  assert.match(script, /item\.aiActive && item\.aiPlan !== true/);
+  assert.match(script, /Change the next renewal to an AI plan/);
 });
 
 test("pricing declara recorrencia e cancelamento em todos os planos", () => {
@@ -50,6 +56,9 @@ test("pricing separa os tres planos com IA e deixa o passe sem IA", () => {
   assert.match(html, /maximum discount/i);
   assert.match(html, /agreed price, image, bot question or keyword/i);
   assert.match(html, /all-games pass below does not include AI negotiation/i);
+  assert.match(html, /paying only the per-day difference/i);
+  assert.match(html, /AI time already paid stays active/i);
+  assert.match(read("index.html"), /Adding AI charges only the per-day price difference/i);
 });
 
 test("termos declaram retencao das conversas de IA por ate 90 dias", () => {
