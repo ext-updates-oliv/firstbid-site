@@ -41,6 +41,12 @@ const SELLAUTH = {
 // 892913:1749991 -> ALL 30d).
 const PASSE = { productId: 892913, variants: { 3: 1749990, 7: 1749928, 30: 1749991 } };
 
+// Preenchido somente DEPOIS de `scripts/iaSellauth.mjs --aplicar` criar as
+// variantes e imprimir os ids conferidos. Enquanto estiver vazio, os tres
+// botoes com IA aparecem como Coming soon e nunca montam um carrinho errado.
+// Formato: { "fortnite": { 3: ID, 7: ID, 30: ID }, ... }.
+const AI_VARIANTS = Object.freeze({});
+
 const CATALOGO = [
   { nome: "Fortnite", emoji: "🔫", logo: true,
     rank: "Battle Royale &amp; Reload rank boost", escopo: "Full price matrix by rank pair",

@@ -6,15 +6,30 @@ import test from "node:test";
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
-test("pagina de assinatura explica renovacao, cancelamento e gerenciamento sem metricas", () => {
+test("pagina de assinatura gerencia a conta no FirstBid e limita o portal externo", () => {
   const html = read("subscription.html");
-  assert.match(html, /Card and\s+PayPal renew automatically/i);
+  assert.match(html, /Card and\s+PayPal Checkout charge automatically/i);
   assert.match(html, /renewal invoice\s+by email/i);
-  assert.match(html, /keep access until the paid period ends/i);
-  assert.match(html, /firstbid\.mysellauth\.com\/customer\/subscriptions/g);
-  assert.match(html, />Manage my subscription</);
+  assert.match(html, /id="emailForm"/);
+  assert.match(html, /id="codeForm"/);
+  assert.match(html, /id="subscriptionList"/);
+  assert.match(html, /Resume or change card/);
+  assert.equal((html.match(/firstbid\.mysellauth\.com\/customer\/subscriptions/g) || []).length, 1);
+  assert.match(html, /src="subscription\.js"/);
   assert.doesNotMatch(html, /\b\d+\s*(users|customers|sellers|clients)\b/i);
   assert.doesNotMatch(html, /testimonial|review/i);
+});
+
+test("cliente do site usa a sessao autenticada, sem enviar email nas rotas de status e cancelamento", () => {
+  const script = read("subscription.js");
+  assert.match(script, /https:\/\/pay\.firstbid\.xyz\/subscription\/site/);
+  assert.match(script, /call\("\/request-code"/);
+  assert.match(script, /call\("\/verify-code"/);
+  assert.match(script, /call\("\/status"/);
+  assert.match(script, /call\("\/cancel"/);
+  assert.match(script, /Authorization:\s*`Bearer \$\{token\(\)\}`/);
+  assert.doesNotMatch(script, /status[^\n]+email/i);
+  assert.match(script, /body:\s*\{ subscriptionId: item\.id \}/);
 });
 
 test("pricing declara recorrencia e cancelamento em todos os planos", () => {
@@ -25,10 +40,29 @@ test("pricing declara recorrencia e cancelamento em todos os planos", () => {
   assert.ok((html.match(/Cancel anytime/g) || []).length >= 6);
 });
 
-test("menus e rewrite expoem Subscription sem publicar nada", () => {
+test("pricing separa os tres planos com IA e deixa o passe sem IA", () => {
+  const html = read("pricing.html");
+  for (const price of ["3.50", "7", "24"]) {
+    assert.match(html, new RegExp(`plan-amount">${price.replace(".", "\\.")}<`));
+  }
+  assert.equal((html.match(/<a[^>]+data-ai-plan-cta/g) || []).length, 3);
+  assert.match(html, /only after the buyer's first reply/i);
+  assert.match(html, /maximum discount/i);
+  assert.match(html, /agreed price, image, bot question or keyword/i);
+  assert.match(html, /all-games pass below does not include AI negotiation/i);
+});
+
+test("termos declaram retencao das conversas de IA por ate 90 dias", () => {
+  const html = read("terms.html");
+  assert.match(html, /Messages from conversations handled by the AI are stored for up to 90 days and may be used to improve the AI\./);
+  assert.match(html, /#ffc950|styles\.css/);
+});
+
+test("menus e rewrites expoem Subscription e Terms sem publicar nada", () => {
   for (const file of ["index.html", "pricing.html", "install.html"]) {
     assert.match(read(file), /href="\/subscription"[^>]*>Subscription</, file);
   }
   const config = JSON.parse(read("vercel.json"));
   assert.ok(config.rewrites.some((item) => item.source === "/subscription" && item.destination === "/subscription.html"));
+  assert.ok(config.rewrites.some((item) => item.source === "/terms" && item.destination === "/terms.html"));
 });

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="only dark" />
+  <meta name="theme-color" content="#04070e" />
+  <meta name="darkreader-lock" />
+  <title>Terms — FirstBid</title>
+  <meta name="description" content="FirstBid subscription, AI and data terms." />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=Chivo+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <header class="nav" id="siteNav">
+    <div class="wrap nav-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/subscription">Subscription</a>
+        <a href="/terms" aria-current="page">Terms</a>
+      </nav>
+      <a class="btn btn-primary btn-small" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Support</a>
+    </div>
+  </header>
+
+  <main class="terms-page">
+    <article class="wrap terms-document">
+      <p class="subscription-kicker">FirstBid terms</p>
+      <h1>Terms of service</h1>
+      <p class="section-sub">Last updated October 4, 2026</p>
+
+      <section>
+        <h2>1. The service</h2>
+        <p>FirstBid is an independent tool for Eldorado.gg sellers. It is not affiliated with, endorsed by, or sponsored by Eldorado.gg. You are responsible for your seller account, prices, messages, compliance with marketplace rules, and every deal you close.</p>
+      </section>
+      <section>
+        <h2>2. Billing and cancellation</h2>
+        <p>Plans renew for the interval shown at checkout until cancelled. Card and PayPal Checkout may renew automatically; other payment methods may require paying a renewal invoice. Cancelling stops the next renewal and keeps access through the period already paid. Refund requests remain subject to the guarantee shown on the pricing page.</p>
+      </section>
+      <section>
+        <h2>3. Optional AI negotiation</h2>
+        <p>AI negotiation is included only in a per-game plan explicitly marked “+ AI”; it is not included in standard plans or the all-games pass. The AI does not start buyer conversations. It can answer only after the buyer's first reply, follows the seller's configured maximum discount, and hands control to the seller at the stop conditions described in the app and on the pricing page. The seller remains responsible for reviewing and closing the transaction.</p>
+      </section>
+      <section>
+        <h2>4. AI conversation data</h2>
+        <p>Messages from conversations handled by the AI are stored for up to 90 days and may be used to improve the AI.</p>
+      </section>
+      <section>
+        <h2>5. Account and configuration</h2>
+        <p>Your purchase email identifies your FirstBid account. Access is limited by the game, plan and machine rules shown at checkout. Keep email codes and license keys private. Settings backups do not include your Eldorado login or notification credentials.</p>
+      </section>
+      <section>
+        <h2>6. Availability and support</h2>
+        <p>Marketplace, payment, email and AI providers may occasionally be unavailable. FirstBid does not guarantee that every order will be won or that a buyer will accept an offer. For billing, access or technical help, open a private support ticket in the FirstBid Discord.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="/pricing">Pricing</a>
+      <a href="/subscription">Subscription</a>
+      <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
+    </div>
+    <div class="wrap footer-legal"><p>© <span id="year"></span> FirstBid. All rights reserved.</p></div>
+  </footer>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -29,6 +29,10 @@
     {
       "source": "/subscription",
       "destination": "/subscription.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
     }
   ]
 }

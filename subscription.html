@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#04070e" />
   <meta name="darkreader-lock" />
   <title>Manage your subscription — FirstBid</title>
-  <meta name="description" content="How FirstBid subscriptions renew, how renewal invoices work, and where to cancel, resume or update payment." />
+  <meta name="description" content="Sign in with your purchase email to see and cancel FirstBid subscriptions without leaving our site." />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css" />
   <script>document.documentElement.classList.add("js");</script>
   <script src="origem.js"></script>
+  <script src="subscription.js" defer></script>
 </head>
 <body>
   <script src="intro.js" data-boot="site"></script>
@@ -29,9 +30,7 @@
         <a href="/pricing">Pricing</a>
         <a href="/subscription" aria-current="page">Subscription</a>
       </nav>
-      <div class="nav-acoes">
-        <a class="btn btn-primary btn-small" href="https://firstbid.mysellauth.com/customer/subscriptions" target="_blank" rel="noopener">Manage</a>
-      </div>
+      <div class="nav-acoes"><a class="btn btn-primary btn-small" href="#manage">Manage here</a></div>
     </div>
   </header>
 
@@ -41,13 +40,57 @@
         <p class="subscription-kicker" data-reveal>Subscription control</p>
         <h1 data-reveal>Keep the bot active. <span>Keep control.</span></h1>
         <p class="section-sub" data-reveal>
-          Every FirstBid plan is a subscription for the billing period you choose. Card and
-          PayPal renew automatically. Crypto and other payment methods receive a renewal invoice
-          by email. You can cancel anytime and keep access until the paid period ends.
+          Sign in here with the email used at checkout. You can see every subscription on
+          that account and schedule cancellation for the end of the paid period without
+          leaving FirstBid.
         </p>
         <div class="subscription-actions" data-reveal>
-          <a class="btn btn-primary" href="https://firstbid.mysellauth.com/customer/subscriptions" target="_blank" rel="noopener">Manage my subscription</a>
+          <a class="btn btn-primary" href="#manage">Manage my subscriptions</a>
           <a class="btn btn-ghost" href="/pricing">See plans</a>
+        </div>
+      </section>
+
+      <section class="subscription-manager" id="manage" data-reveal aria-labelledby="manageTitle">
+        <div class="subscription-manager-head">
+          <div>
+            <p class="subscription-kicker">Your account</p>
+            <h2 id="manageTitle">Manage subscriptions</h2>
+          </div>
+          <p class="subscription-security">No password. We send a one-time 6-digit code to your purchase email.</p>
+        </div>
+        <p class="subscription-alert" id="subscriptionAlert" role="status" aria-live="polite" hidden></p>
+
+        <form class="subscription-login" id="emailForm">
+          <label for="subscriptionEmail">Purchase email</label>
+          <div class="subscription-input-row">
+            <input id="subscriptionEmail" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            <button class="btn btn-primary" type="submit">Send code</button>
+          </div>
+        </form>
+
+        <form class="subscription-login" id="codeForm" hidden>
+          <label for="subscriptionCode">6-digit code</label>
+          <p class="subscription-form-note">Sent to <strong id="codeEmail"></strong>. Check spam if it is not in your inbox.</p>
+          <div class="subscription-input-row">
+            <input id="subscriptionCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="000000" />
+            <button class="btn btn-primary" type="submit">Sign in</button>
+          </div>
+          <button class="subscription-text-button" id="changeEmail" type="button">Use another email</button>
+        </form>
+
+        <div id="subscriptionAccount" hidden>
+          <div class="subscription-account-bar">
+            <p>Signed in as <strong id="accountEmail"></strong></p>
+            <button class="subscription-text-button" id="signOut" type="button">Sign out</button>
+          </div>
+          <div class="subscription-list" id="subscriptionList" aria-live="polite"></div>
+          <div class="subscription-portal">
+            <div>
+              <h3>Resume or change card</h3>
+              <p>SellAuth's payment portal is required only for resuming a cancelled subscription or changing the card. Status and cancellation stay here on FirstBid.</p>
+            </div>
+            <a class="btn btn-ghost" href="https://firstbid.mysellauth.com/customer/subscriptions" target="_blank" rel="noopener">Open payment portal</a>
+          </div>
         </div>
       </section>
 
@@ -60,7 +103,7 @@
         <li class="subscription-step" data-reveal data-reveal-delay="1">
           <p class="subscription-step-num">02 · Renew</p>
           <h2>Automatic or by invoice</h2>
-          <p>Stripe and PayPal Checkout charge automatically. Other methods, including crypto, send a renewal invoice to your purchase email.</p>
+          <p>Card and PayPal Checkout charge automatically. Other methods, including crypto, send a renewal invoice to your purchase email.</p>
         </li>
         <li class="subscription-step" data-reveal data-reveal-delay="2">
           <p class="subscription-step-num">03 · Control</p>
@@ -72,26 +115,10 @@
       <section class="subscription-faq" data-reveal>
         <p class="subscription-kicker">Short answers</p>
         <h2>Subscription FAQ</h2>
-        <details>
-          <summary>Where do I cancel or resume?</summary>
-          <p>Use the SellAuth customer panel. It lets you cancel, resume, and see your subscriptions in one place.</p>
-        </details>
-        <details>
-          <summary>Where do I change my card?</summary>
-          <p>Open the same customer panel and use the payment-management option for your subscription.</p>
-        </details>
-        <details>
-          <summary>What happens when I pay with crypto?</summary>
-          <p>Crypto is not charged automatically. SellAuth sends a renewal invoice by email before the next period; pay that invoice to continue.</p>
-        </details>
-        <details>
-          <summary>Do I lose access as soon as I cancel?</summary>
-          <p>No. Cancellation happens at the end of the period you already paid for.</p>
-        </details>
-        <details>
-          <summary>What about an older one-time license?</summary>
-          <p>It keeps its existing access period. The next plan purchased for that game is a subscription.</p>
-        </details>
+        <details><summary>Where do I cancel?</summary><p>Sign in above, choose the subscription and confirm cancellation. Access remains active through the paid period.</p></details>
+        <details><summary>Where do I resume or change my card?</summary><p>Those two actions use the SellAuth payment portal because its admin API does not provide them to FirstBid.</p></details>
+        <details><summary>What happens when I pay with crypto?</summary><p>Crypto is not charged automatically. SellAuth sends a renewal invoice by email; pay that invoice to continue.</p></details>
+        <details><summary>What about an older one-time license?</summary><p>It keeps its existing access period and appears with your account. The next plan purchased for that game is a subscription.</p></details>
       </section>
     </div>
   </main>
@@ -100,6 +127,7 @@
     <div class="wrap footer-inner">
       <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <a href="/pricing">Pricing</a>
+      <a href="/terms">Terms</a>
       <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
     </div>
     <div class="wrap footer-legal">
@@ -119,9 +147,7 @@
         });
       }, { threshold: 0.12 });
       document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
-    } else {
-      document.querySelectorAll("[data-reveal]").forEach(reveal);
-    }
+    } else document.querySelectorAll("[data-reveal]").forEach(reveal);
   </script>
 </body>
 </html>

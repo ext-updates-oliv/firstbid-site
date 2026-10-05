@@ -20,18 +20,19 @@ FirstBid watches a seller's Eldorado.gg account for new boosting orders and send
 first price offer automatically, in seconds: it reads the mode, group size (solo/duo),
 current rank, and desired rank, matches them against a price table and rank ranges the
 seller configured themselves, and sends the offer plus a personalized opening message.
-It does not negotiate — once the first message is sent, the seller takes the
-conversation over manually. Success = winning more orders by being the fastest seller to
-respond, without the seller having to watch the marketplace constantly.
+The standard plan stops there. The optional + AI plan can negotiate only after the
+buyer's first reply, within the maximum discount configured by the seller, then hands
+control back at defined stop points. Success = winning more orders by being the fastest
+seller to respond, without giving the product permission to invent prices or terms.
 
 ## Positioning
 
 The bot other sellers can't copy-paste: 100% dynamic configuration (ranks, modes, group
 sizes, price matrix — nothing hardcoded) built multi-game from day one. That claim is no
 longer structural only: fourteen games run on the same architecture, each one added by
-configuration rather than a rewrite. No AI pretends to be the seller past the opening
-message — that's a deliberate constraint, not a missing feature, aimed at sellers who
-don't trust "AI negotiators" with their buyer relationships.
+configuration rather than a rewrite. Buyers can choose the standard first-offer-only
+plan or an explicit + AI plan. Both keep the opening offer in the seller's own price
+matrix; AI never opens a conversation and remains bounded by seller configuration.
 
 ## Operating Context
 
@@ -42,16 +43,19 @@ install starts at zero ranges/prices = AUTO-SKIP on everything until configured)
 runs via Eldorado's official Seller API when the seller's account has it enabled,
 falling back to browser automation (Playwright) otherwise — invisible to the seller
 either way. firstbid.xyz is the pre-purchase marketing surface; the dashboard (a
-separate project) is the post-purchase operating surface. Sale and support happen in the
-Discord server (discord.gg/UwD3a7ccG5): a buy panel there builds a SellAuth checkout link,
-payment goes through Stripe, and the license key is delivered automatically by webhook.
-The site itself still has no checkout flow — every button points to the server.
+separate project) is the post-purchase operating surface. Checkout starts on the site
+and is fulfilled by SellAuth; payment confirmation is delivered automatically by
+webhook to the account identified by the purchase email. Subscription status and
+cancellation are managed on the FirstBid site after email-code login. SellAuth's portal
+remains only for resuming and changing the payment card. Support happens in the Discord
+server (discord.gg/UwD3a7ccG5).
 
 ## Capabilities and Constraints
 
-- No AI negotiation of any kind, at any point after the opening message — this is a
-  trust commitment, not a current-version limitation. The bot may *alert* the seller on
-  Telegram when a buyer replies, but it never answers for them.
+- Standard plans never negotiate after the opening message. + AI plans start only after
+  the buyer's first reply, cannot exceed the configured maximum discount, and hand off
+  on agreed price, image, bot question, or configured keyword. The all-games pass has no
+  AI negotiation.
 - Fully dynamic: ranks, modes, party sizes, price matrix, and message templates are all
   seller-configured, nothing hardcoded per game.
 - Fourteen games live: Fortnite, Valorant, Rocket League, Brawl Stars, Rainbow Six Siege X,
@@ -64,7 +68,9 @@ The site itself still has no checkout flow — every button points to the server
   bot has no price for — sending only text, never an offer.
 - License-locked per machine and per game; licenses revalidate periodically and need
   internet.
-- Undecided/not yet public: pricing of the bot itself, a self-serve checkout flow.
+- Public per-game prices: standard US$2.50/3 days, US$5/7 days, US$18/30 days;
+  + AI total US$3.50/3 days, US$7/7 days, US$24/30 days. The separate all-games pass
+  remains US$6/3 days, US$12/7 days, US$43/30 days and has no AI.
 
 ## Brand Commitments
 
@@ -92,8 +98,9 @@ not invent numbers or customer counts.
 
 1. Prove speed and dynamism through the mechanism itself (show the pipeline: detect →
    read → price → send), not through invented stats or testimonials.
-2. No AI-negotiator framing anywhere — the product's trust pitch is explicitly "you stay
-   in control after the first message."
+2. Make the boundary legible: the standard plan stops after the first message; + AI
+   begins only after the buyer replies, obeys the maximum discount, and hands control
+   back at the declared stop points.
 3. Keep the Eldorado-gold link legible even in a bolder execution — it's doing real
    trust work, not decoration.
 4. Name the games that actually run today (fourteen of them) and never a game that doesn't.

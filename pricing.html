@@ -61,14 +61,18 @@
         <p class="plan-jogo" data-reveal><span id="planJogo" aria-live="polite"></span> <span class="plan-escopo">this game only</span></p>
         <ul class="plan-detalhes" id="planDetalhes" data-reveal></ul>
 
-        <div class="plan-grid">
+        <div class="plan-choice-head" data-reveal>
+          <span>Duration</span><span>Without AI</span><span>With AI negotiation</span>
+        </div>
+        <div class="plan-choice-grid">
+          <p class="plan-choice-duration" data-reveal>3 days</p>
           <div class="plan-card" data-plan="3" data-reveal>
             <p class="plan-term">3 days</p>
             <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">2.50</span></p>
             <p class="plan-access">Billed every 3 days</p>
             <p class="plan-renewal">Cancel anytime</p>
             <p class="plan-dia"><strong>$0.83</strong> per day</p>
-            <p class="plan-pitch">Run it on real orders before you commit to anything.</p>
+            <p class="plan-pitch">The opening offer is automatic. You take over when the buyer replies.</p>
             <ul class="plan-features">
               <li>The complete bot — nothing held back</li>
               <li>Your own price matrix, every rank pair</li>
@@ -76,7 +80,22 @@
             </ul>
             <a class="btn btn-ghost btn-block plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
           </div>
+          <div class="plan-card plan-card-ai" data-plan="3" data-reveal>
+            <p class="plan-term">3 days + AI</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">3.50</span></p>
+            <p class="plan-access">Billed every 3 days · total price</p>
+            <p class="plan-renewal">Cancel anytime</p>
+            <p class="plan-dia"><strong>$1.17</strong> per day</p>
+            <p class="plan-pitch">AI takes over only after the buyer's first reply.</p>
+            <ul class="plan-features">
+              <li>Never starts the conversation</li>
+              <li>Cannot go below your maximum discount</li>
+              <li>Calls you on an agreed price, image, bot question or keyword</li>
+            </ul>
+            <a class="btn btn-primary btn-block plan-cta" data-ai-plan-cta aria-disabled="true" target="_blank" rel="noopener">Coming soon</a>
+          </div>
 
+          <p class="plan-choice-duration" data-reveal>1 week</p>
           <div class="plan-card" data-plan="7" data-reveal data-reveal-delay="1">
             <p class="plan-term">1 week</p>
             <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">5</span></p>
@@ -90,7 +109,22 @@
             </ul>
             <a class="btn btn-ghost btn-block plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
           </div>
+          <div class="plan-card plan-card-ai" data-plan="7" data-reveal data-reveal-delay="1">
+            <p class="plan-term">1 week + AI</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">7</span></p>
+            <p class="plan-access">Billed every 7 days · total price</p>
+            <p class="plan-renewal">Cancel anytime</p>
+            <p class="plan-dia"><strong>$1.00</strong> per day</p>
+            <p class="plan-pitch">The same bot, plus negotiation after the buyer replies.</p>
+            <ul class="plan-features">
+              <li>Respects the maximum discount you configure</li>
+              <li>Hands the conversation back when the price is agreed</li>
+              <li>Stops for images, bot questions and your keywords</li>
+            </ul>
+            <a class="btn btn-primary btn-block plan-cta" data-ai-plan-cta aria-disabled="true" target="_blank" rel="noopener">Coming soon</a>
+          </div>
 
+          <p class="plan-choice-duration" data-reveal>1 month</p>
           <div class="plan-card plan-card-featured" data-plan="30" data-reveal data-reveal-delay="2">
             <span class="plan-badge">Best value</span>
             <p class="plan-term">1 month</p>
@@ -110,7 +144,26 @@
             </ul>
             <a class="btn btn-primary btn-block btn-shine plan-cta" data-plan-cta target="_blank" rel="noopener">Get started</a>
           </div>
+          <div class="plan-card plan-card-ai plan-card-featured" data-plan="30" data-reveal data-reveal-delay="2">
+            <span class="plan-badge">AI best value</span>
+            <p class="plan-term">1 month + AI</p>
+            <p class="plan-price"><span class="plan-currency">$</span><span class="plan-amount">24</span></p>
+            <p class="plan-access">Billed every 30 days · total price</p>
+            <p class="plan-renewal">Cancel anytime</p>
+            <p class="plan-dia"><strong>$0.80</strong> per day</p>
+            <p class="plan-pitch">A full month with AI negotiation after the first buyer reply.</p>
+            <ul class="plan-features">
+              <li>Your configured maximum discount is enforced in code</li>
+              <li>You are called in to close once price is agreed</li>
+              <li>AI stops on images, bot questions and your keywords</li>
+            </ul>
+            <a class="btn btn-primary btn-block btn-shine plan-cta" data-ai-plan-cta aria-disabled="true" target="_blank" rel="noopener">Coming soon</a>
+          </div>
         </div>
+
+        <p class="plan-note" data-reveal>
+          <strong>AI is available only on the three per-game plans.</strong> The all-games pass below does not include AI negotiation. With or without AI, the opening offer still comes from your price table.
+        </p>
 
         <!-- 26/09: o campo de cupom da SellAuth fica na SEGUNDA tela do checkout,
              fechado, embaixo do e-mail. O dono testou e não achou. A tela é deles;
@@ -136,6 +189,7 @@
             <ul class="plan-features">
               <li>All <strong>14 games</strong> in a single subscription</li>
               <li>3 days, 1 week or 1 month</li>
+              <li>AI negotiation is not included</li>
             </ul>
           </div>
           <div class="plan-passe-opcoes">
@@ -189,6 +243,7 @@
     <div class="wrap footer-inner">
       <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <a href="/subscription">Subscription</a>
+      <a href="/terms">Terms</a>
       <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
     </div>
     <div class="wrap footer-legal">
@@ -238,7 +293,7 @@
     window.addEventListener("resize", onProgress);
 
     const abas = document.getElementById("planTabs");
-    const botoesCta = [...document.querySelectorAll("[data-plan-cta]")];
+    const botoesCta = [...document.querySelectorAll("[data-plan-cta], [data-ai-plan-cta]")];
     const rotulo = document.getElementById("planJogo");
     const detalhes = document.getElementById("planDetalhes");
 
@@ -262,7 +317,8 @@
 
       for (const cta of botoesCta) {
         const dias = cta.closest("[data-plan]")?.dataset.plan;
-        const variantId = jogo.variants[dias];
+        const comIa = cta.hasAttribute("data-ai-plan-cta");
+        const variantId = comIa ? AI_VARIANTS[slugDoJogo(jogo.nome)]?.[dias] : jogo.variants[dias];
         if (variantId) {
           // Duas rotas para o MESMO variantId, de propósito:
           //  - `href` é a rota que nunca falha (leva pra loja da SellAuth);

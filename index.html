@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#04070e" />
   <meta name="darkreader-lock" />
   <title>FirstBid — First-message bot for Eldorado.gg</title>
-  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends a personalized price offer in seconds — dynamic pricing by rank, mode, and group size, across 14 games. It pings your Telegram when the buyer replies; you take the conversation from there." />
+  <meta name="description" content="FirstBid detects new Eldorado.gg boosting orders and sends your configured offer. Choose direct handoff after the first reply or a per-game AI plan that negotiates inside your maximum discount." />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,6 +66,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         <a href="#games">Games</a>
         <a href="/pricing">Pricing</a>
         <a href="/subscription">Subscription</a>
+        <a href="#faq">FAQ</a>
         <a href="#why">Why FirstBid</a>
         <a href="#reviews" id="navReviews" hidden>Reviews</a>
       </nav>
@@ -99,7 +100,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           <p class="prosa hero-prosa" data-strike data-strike-delay="1">
             The moment a new boosting order lands, FirstBid reads the mode, group size,
             current rank, and desired rank — then sends the right price and a personalized
-            message before anyone else does. You take the conversation from there.
+            message before anyone else does. Then you take over — or, on a per-game AI plan,
+            the AI negotiates after the buyer's first reply within the discount limit you set.
           </p>
           <div class="hero-cta" data-strike data-strike-delay="2">
             <a class="btn btn-primary" href="/pricing">
@@ -161,7 +163,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           <div class="wrap">
             <h2 class="secao-cabeca" data-strike>How it works</h2>
             <p class="prosa" data-strike data-strike-delay="1">
-              No AI negotiation, no black box — just the fastest possible first contact.
+              Your price table always sends the opening move. What happens after the buyer replies is your plan choice.
             </p>
 
             <ol class="pipeline-lista" id="pipelineLista">
@@ -189,8 +191,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
               <li class="passo" data-estado="apagado">
                 <span class="passo-num" aria-hidden="true">04</span>
                 <div class="passo-txt">
-                  <h3>You take it from there</h3>
-                  <p>FirstBid doesn't negotiate for you. Once the first message is out, the conversation is 100% yours — no AI pretending to be you. It just pings your Telegram when the buyer replies.</p>
+                  <h3>You choose who takes it from there</h3>
+                  <p>Without AI, the conversation is yours and Telegram pings you. With AI, negotiation starts only after the buyer's first reply, stays above your configured minimum, and hands back to you when it is time to close.</p>
                 </div>
               </li>
             </ol>
@@ -294,14 +296,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           </article>
 
           <article class="razao" data-strike>
-            <h3>You stay in control</h3>
+              <h3>You set the negotiation boundary</h3>
             <div class="razao-corpo">
               <span class="razao-marca" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4.5 3.5l6.2 16.4 1.9-6.5 6.5-1.9z" />
                 </svg>
               </span>
-              <p>No AI negotiating on your behalf. FirstBid sends the opening move — every conversation after that is genuinely you.</p>
+              <p>The plan without AI never negotiates. The AI plan cannot start the conversation or cross your maximum discount, and it calls you in when a price is agreed.</p>
             </div>
           </article>
 
@@ -356,6 +358,30 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       </div>
     </section>
 
+    <!-- ================= FAQ ================= -->
+    <section id="faq" class="secao">
+      <div class="wrap subscription-faq">
+        <p class="subscription-kicker" data-strike>AI plan, clearly bounded</p>
+        <h2 data-strike>What the AI does — and does not do</h2>
+        <details data-strike>
+          <summary>Does FirstBid start the conversation with AI?</summary>
+          <p>No. The opening offer and message still come from your configured price table. AI can act only after the buyer sends the first reply.</p>
+        </details>
+        <details data-strike>
+          <summary>Can the AI discount as much as it wants?</summary>
+          <p>No. You configure the maximum discount or minimum price. The code blocks any answer below that boundary.</p>
+        </details>
+        <details data-strike>
+          <summary>When does it call me?</summary>
+          <p>When a price is agreed, when the buyer asks whether it is a bot, when an image arrives, or when one of your handoff keywords appears.</p>
+        </details>
+        <details data-strike>
+          <summary>Can I buy FirstBid without AI?</summary>
+          <p>Yes. Every per-game duration has a lower-priced plan without AI. The all-games pass also stays without AI.</p>
+        </details>
+      </div>
+    </section>
+
     <!-- ================= REVIEWS ================= -->
     <section id="reviews" class="secao" hidden>
       <div class="wrap">
@@ -393,6 +419,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <div class="wrap footer-inner">
       <a href="#top" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span>First<span class="logo-accent">Bid</span></span></a>
       <a href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
+      <a href="/terms">Terms</a>
     </div>
     <div class="wrap footer-legal">
       <p>FirstBid is an independent tool and is not affiliated with, endorsed by, or sponsored by Eldorado.gg.</p>

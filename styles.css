@@ -950,6 +950,49 @@ h3 {
   gap: 1px;
   margin-bottom: 3.5rem;
 }
+.plan-choice-head,
+.plan-choice-grid {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 0.34fr) repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+.plan-choice-head {
+  margin-top: 2rem;
+  color: var(--bone-dim);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.plan-choice-head span { padding: 0.8rem 1rem; }
+.plan-choice-head span:last-child { color: var(--glow); }
+.plan-choice-grid { margin-bottom: 2rem; background: rgba(147, 160, 182, 0.1); }
+.plan-choice-duration {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 1.5rem 1rem;
+  color: var(--bone);
+  background: var(--ground-deep);
+  font-family: var(--display);
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-weight: 900;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+.plan-choice-grid .plan-card { min-width: 0; }
+.plan-card-ai {
+  background-color: rgba(255, 201, 80, 0.035);
+  box-shadow: inset 2px 0 0 rgba(255, 201, 80, 0.38);
+}
+.plan-card-ai .plan-term { color: var(--glow); }
+.plan-card-ai:not(.plan-card-featured) .plan-price { color: var(--bone); }
+@media (max-width: 760px) {
+  .plan-choice-head { display: none; }
+  .plan-choice-grid { grid-template-columns: 1fr; }
+  .plan-choice-duration { padding: 1.2rem; }
+}
 /* Sem borda e sem cartao: o que separa uma coluna da outra e a densidade da
    malha, igual ao resto do mundo. */
 .plan-card {
@@ -1163,6 +1206,119 @@ h3 {
 .subscription-hero h1 { margin: 0 0 1.4rem; max-width: 11ch; }
 .subscription-hero h1 span { color: var(--glow); }
 .subscription-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2rem; }
+.subscription-manager {
+  margin: 5rem 0;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  background-color: rgba(11, 17, 29, 0.72);
+  background-image: var(--gauze);
+  box-shadow: inset 0 0 0 1px rgba(255, 201, 80, 0.28),
+              0 0 70px rgba(255, 201, 80, 0.08);
+}
+.subscription-manager-head,
+.subscription-account-bar,
+.subscription-portal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+.subscription-manager h2 { margin: 0; }
+.subscription-security {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--bone-dim);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+.subscription-alert {
+  margin: 1.5rem 0 0;
+  padding: 0.8rem 1rem;
+  color: var(--bone);
+  background: rgba(255, 201, 80, 0.07);
+  box-shadow: inset 2px 0 0 var(--glow);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.subscription-alert[data-state="error"] {
+  background: rgba(226, 92, 92, 0.08);
+  box-shadow: inset 2px 0 0 #e25c5c;
+}
+.subscription-login { margin-top: 1.5rem; max-width: 48rem; }
+.subscription-login label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--bone);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.subscription-input-row { display: flex; gap: 0.75rem; align-items: stretch; }
+.subscription-input-row input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(147, 160, 182, 0.35);
+  border-radius: 0;
+  color: var(--bone);
+  background: var(--ground-deep);
+  font: inherit;
+  outline: none;
+}
+.subscription-input-row input:focus {
+  border-color: var(--glow);
+  box-shadow: 0 0 0 2px rgba(255, 201, 80, 0.12);
+}
+.subscription-form-note { color: var(--bone-dim); font-size: 0.8rem; line-height: 1.6; }
+.subscription-form-note strong { color: var(--bone); }
+.subscription-text-button {
+  margin-top: 0.9rem;
+  padding: 0;
+  border: 0;
+  color: var(--glow);
+  background: none;
+  font: inherit;
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.subscription-account-bar {
+  margin-top: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(147, 160, 182, 0.2);
+}
+.subscription-account-bar p { margin: 0; color: var(--bone-dim); }
+.subscription-account-bar strong { color: var(--bone); }
+.subscription-account-bar .subscription-text-button { margin-top: 0; }
+.subscription-list { display: grid; gap: 1px; margin-top: 1px; background: rgba(147, 160, 182, 0.14); }
+.subscription-account-item {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.8fr) minmax(14rem, 1.2fr) auto;
+  align-items: center;
+  gap: 0.65rem 1.5rem;
+  padding: 1.25rem;
+  background: var(--ground);
+}
+.subscription-account-item h3 { margin: 0; font-size: clamp(1.35rem, 2vw, 1.8rem); }
+.subscription-account-state { margin: 0; color: var(--glow); font-size: 0.78rem; line-height: 1.5; }
+.subscription-account-details {
+  grid-column: 1 / 3;
+  margin: 0;
+  color: var(--bone-dim);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+.subscription-account-item > .btn { grid-column: 3; grid-row: 1 / span 2; }
+.subscription-account-item-legacy .subscription-account-state { color: var(--bone-dim); }
+.subscription-empty { margin: 0; padding: 1.5rem; color: var(--bone-dim); background: var(--ground); }
+.subscription-portal {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(147, 160, 182, 0.2);
+}
+.subscription-portal h3 { margin: 0 0 0.4rem; }
+.subscription-portal p { max-width: 60ch; margin: 0; color: var(--bone-dim); font-size: 0.8rem; line-height: 1.65; }
 .subscription-flow {
   list-style: none;
   margin: 5rem 0;
@@ -1197,6 +1353,13 @@ h3 {
 .subscription-faq details p { color: var(--bone-dim); line-height: 1.75; margin: 0.9rem 0 0; }
 @media (max-width: 760px) {
   .subscription-flow { grid-template-columns: 1fr; }
+  .subscription-manager-head,
+  .subscription-account-bar,
+  .subscription-portal { align-items: flex-start; flex-direction: column; }
+  .subscription-input-row { flex-direction: column; }
+  .subscription-account-item { grid-template-columns: 1fr; }
+  .subscription-account-details,
+  .subscription-account-item > .btn { grid-column: 1; grid-row: auto; }
 }
 
 /* O reveal destas duas paginas usa `data-reveal`/`is-visible` (o mecanismo
@@ -1381,4 +1544,35 @@ h3 {
 }
 @media (max-width: 560px) {
   .plan-passe-opcoes { grid-template-columns: 1fr; }
+}
+
+/* ---------- termos ---------- */
+.terms-page { padding: 9rem 0 5rem; }
+.terms-document { max-width: 58rem; }
+.terms-document > h1 {
+  margin: 0.35rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(3.4rem, 9vw, 7rem);
+  font-weight: 900;
+  line-height: 0.86;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+.terms-document > .section-sub { margin: 1rem 0 3rem; }
+.terms-document section {
+  padding: 1.7rem 0;
+  border-top: 1px solid rgba(147, 160, 182, 0.18);
+}
+.terms-document h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--display);
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  color: var(--glow);
+}
+.terms-document section p {
+  max-width: 72ch;
+  margin: 0;
+  line-height: 1.8;
+  color: var(--bone-dim);
 }
