@@ -123,7 +123,8 @@
       });
       actions.append(upgrade);
     }
-    if (["active", "trialing"].includes(item.status) && !item.cancelAtPeriodEnd) {
+    // A VM decide a janela de cancelamento (dono, 05/10).
+    if (item.canCancel === true) {
       const cancel = button("Cancel at period end");
       cancel.addEventListener("click", async () => {
         if (!window.confirm(`Cancel ${heading.textContent} at the end of the paid period? You keep access until then.`)) return;
