@@ -1577,3 +1577,16 @@ h3 {
   line-height: 1.8;
   color: var(--bone-dim);
 }
+
+/* Celular (05/10, print do dono): logo + Discord + Buy now passavam da largura e o
+   "Buy now" saia cortado. O Discord vira so o icone; a palavra continua para leitor
+   de tela (escondida visualmente, nao com display:none). */
+@media (max-width: 520px) {
+  .nav-acoes { gap: 0.45rem; }
+  .nav-acoes .btn-ghost { padding: 0.6rem 0.7rem; }
+  .nav-acoes .btn-ghost span {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .nav-acoes .btn-small { padding: 0.6rem 0.85rem; letter-spacing: 0.14em; }
+}
