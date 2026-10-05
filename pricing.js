@@ -45,7 +45,23 @@ const PASSE = { productId: 892913, variants: { 3: 1749990, 7: 1749928, 30: 17499
 // variantes e imprimir os ids conferidos. Enquanto estiver vazio, os tres
 // botoes com IA aparecem como Coming soon e nunca montam um carrinho errado.
 // Formato: { "fortnite": { 3: ID, 7: ID, 30: ID }, ... }.
-const AI_VARIANTS = Object.freeze({});
+// Criadas em 04/10 pelo iaSellauth.mjs --aplicar; ids conferidos contra o productMap da VM.
+const AI_VARIANTS = Object.freeze({
+  "fortnite": { 3: 1769013, 7: 1769014, 30: 1769002 },
+  "valorant": { 3: 1769015, 7: 1769016, 30: 1769003 },
+  "rocket-league": { 3: 1769017, 7: 1769018, 30: 1769004 },
+  "brawl-stars": { 3: 1769019, 7: 1769020, 30: 1769005 },
+  "rainbow-six-siege-x": { 3: 1769021, 7: 1769022, 30: 1769006 },
+  "marvel-rivals": { 3: 1769023, 7: 1769024, 30: 1769007 },
+  "league-of-legends": { 3: 1769025, 7: 1769026, 30: 1769008 },
+  "ea-sports-fc": { 3: 1769027, 7: 1769028, 30: 1769009 },
+  "apex-legends": { 3: 1769029, 7: 1769030, 30: 1769010 },
+  "call-of-duty": { 3: 1769031, 7: 1769032, 30: 1769011 },
+  "overwatch": { 3: 1769033, 7: 1769034, 30: 1769012 },
+  "counter-strike-2": { 3: 1769035, 7: 1769036, 30: 1769037 },
+  "dota-2": { 3: 1769038, 7: 1769039, 30: 1769040 },
+  "dead-by-daylight": { 3: 1769041, 7: 1769042, 30: 1769043 },
+});
 
 const CATALOGO = [
   { nome: "Fortnite", emoji: "🔫", logo: true,
