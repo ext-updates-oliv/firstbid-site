@@ -3,14 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- O site JÁ é escuro. Sem declarar isso, navegador com "modo escuro forçado"
-       (Samsung Internet, Chrome Android "escurecer sites", Opera, Dark Reader)
-       escurece o que acha que é fundo claro: o dourado vira marrom. -->
   <meta name="color-scheme" content="only dark" />
   <meta name="theme-color" content="#04070e" />
   <meta name="darkreader-lock" />
-  <title>Download FirstBid</title>
-  <meta name="description" content="Download FirstBid and a quick note on the Windows security prompts you'll see the first time you run it." />
+  <title>Open FirstBid Web</title>
+  <meta name="description" content="Open FirstBid Web, connect Eldorado once with FirstBid Connector, and run your bot on FirstBid servers 24/7." />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,46 +21,46 @@
 
   <header class="nav" id="siteNav">
     <div class="wrap nav-inner">
-      <a href="index.html" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
+      <a href="/" class="logo"><img src="logo.png" alt="" class="logo-mark" /><span class="logo-text">First<span class="logo-accent">Bid</span></span></a>
       <nav class="nav-links">
         <a href="/">Home</a>
         <a href="/pricing">Pricing</a>
         <a href="/subscription">Subscription</a>
         <a href="/terms">Terms</a>
       </nav>
-      <a class="btn btn-primary btn-small" href="https://discord.gg/UwD3a7ccG5" target="_blank" rel="noopener">Discord</a>
+      <a class="btn btn-primary btn-small" href="https://app.firstbid.xyz">Open app</a>
     </div>
   </header>
 
   <main>
     <div class="install-wrap">
-      <h1>Downloading FirstBid</h1>
-      <p class="section-sub">Two Windows prompts show up the first time you run it — both are expected. Here's why, and what to click.</p>
-
-      <div class="notice">
-        <h2>1. Browser says the file "isn't commonly downloaded"</h2>
-        <p>Microsoft Edge/Chrome flags any new file that hasn't been downloaded many times yet — it's a popularity check, not a virus scan.</p>
-        <ol>
-          <li>Open the Downloads panel and find <b>FirstBid-Setup-latest.exe</b></li>
-          <li>Click <b>"..."</b> (or "See more") next to it</li>
-          <li>Choose <b>"Keep"</b> (or "Download anyway")</li>
-        </ol>
-      </div>
-
-      <div class="notice">
-        <h2>2. "Windows protected your PC"</h2>
-        <p>This is Microsoft Defender SmartScreen. It appears for any app that doesn't yet have a paid code-signing certificate — FirstBid is a small tool sold directly, not distributed through an app store, so it hasn't built up that reputation yet. It does not mean the app is unsafe.</p>
-        <ol>
-          <li>Click <b>"More info"</b></li>
-          <li>Click <b>"Run anyway"</b></li>
-        </ol>
-      </div>
+      <h1>Open FirstBid Web</h1>
+      <p class="section-sub">Your bot runs on FirstBid servers 24/7. Sign in from a browser, connect Eldorado once, and your computer can be turned off.</p>
 
       <div class="download-cta">
-        <a class="btn btn-primary btn-block btn-shine" href="https://github.com/ext-updates-oliv/firstbid-releases/releases/latest/download/FirstBid-Setup-latest.exe">
-          Download FirstBid-Setup-latest.exe
-        </a>
-        <p class="download-hint">Your price table, ranks, messages, and Eldorado login are never touched by an update — only added to.</p>
+        <a class="btn btn-primary btn-block btn-shine" href="https://app.firstbid.xyz">Open FirstBid Web</a>
+        <p class="download-hint">Sign in with your purchase email and the 6-digit code sent to it. No password is needed.</p>
+      </div>
+
+      <div class="notice">
+        <h2>First Eldorado connection</h2>
+        <ol>
+          <li>On a computer, open <b>FirstBid Web in Google Chrome</b>.</li>
+          <li>Install <b>FirstBid Connector</b>.</li>
+          <li>Sign in to <b>Eldorado</b> in that same Chrome profile.</li>
+          <li>Return to FirstBid Web and click <b>Connect</b>.</li>
+        </ol>
+        <p>After this first connection, configure and monitor FirstBid from a desktop or phone browser. Hosting is included, so you do not need to keep your PC on or rent a personal VPS.</p>
+      </div>
+
+      <div class="notice">
+        <h2>Moving from desktop 3.1.4?</h2>
+        <p>Open the desktop app once and click <b>Move my bot to FirstBid Web</b>. Your settings move to the hosted version. Desktop 3.1.4 is frozen and receives no new features.</p>
+      </div>
+
+      <div class="notice">
+        <h2>Notifications wherever you are</h2>
+        <p>Turn on browser notifications from the Notifications section. FirstBid Web can link your phone there too, so buyer replies and important bot events reach both desktop and mobile.</p>
       </div>
     </div>
   </main>
