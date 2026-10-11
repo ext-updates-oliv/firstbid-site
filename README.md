@@ -13,7 +13,20 @@ npx serve .
 python -m http.server 8080
 ```
 
-## Deploy no Vercel
+## Deploy (VPS, desde 10/10)
+
+O site saiu da Vercel (o plano grátis bateu 100% de 1M de requisições). Agora fica na
+VPS, servido pela borda (`../vps/firstbid-borda`). **Push não publica mais nada**:
+
+```bash
+git commit ...                                   # aqui, no FirstBid-Site
+../vps/firstbid-borda/publicar-site.sh           # sobe o HEAD, sem o que está no .vercelignore
+```
+
+O `vercel.json` continua aqui como referência: os mesmos redirects e rewrites estão no
+`Caddyfile` da borda. Mudou um, mude o outro.
+
+## Deploy antigo no Vercel (histórico)
 
 1. Suba este repo pro GitHub (já feito, se você seguiu o fluxo com o Claude).
 2. Em https://vercel.com, entre com sua conta GitHub.
